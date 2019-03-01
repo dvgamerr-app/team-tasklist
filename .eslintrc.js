@@ -11,6 +11,7 @@ module.exports = {
   rules: {
     'no-console': 'off',
     'no-debugger': 'off',
+    'vue/no-v-html': 'off',
     'vue/singleline-html-element-content-newline': 'off',
     'vue/max-attributes-per-line': [ 2, {
       'singleline': 16,

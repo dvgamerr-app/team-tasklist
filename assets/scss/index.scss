@@ -4,4 +4,45 @@ $border-radius-lg:            .0rem;
 $border-radius-sm:            .0rem;
 // $font-size-base:              .78rem;
 
-@import '~bootstrap/scss/bootstrap.scss';
+@import 'bootstrap/scss/bootstrap.scss';
+@import 'bootstrap-vue/dist/bootstrap-vue.css';
+
+// .custom-control-label::before {
+//   position: absolute;
+//   top: 0.3rem;
+//   left: -3.25rem;
+// }
+// .custom-control-label::after {
+//   position: absolute;
+//   top: 0.3rem;
+//   left: -3.25rem;
+// }
+// .custom-switch .custom-control-label::before {
+//   left: -3.25rem;
+// }
+// .custom-switch .custom-control-label::after {
+//   top: calc(0.3rem + 2px);
+//   left: calc(-3.25rem + 2px);
+// }
+
+// .tasklist {
+//   font-size: 0.9rem;
+//   font-weight: 300;
+//   padding-left: 5rem;
+//   margin-bottom: 20px;
+// }
+pre {
+  background: #e4e4e4;
+  padding: 5px 10px;
+  border: #ccc solid 1px;
+  border-radius: 2px;
+  margin: 8px 0;
+}
+.form-group .problem {
+  z-index: 3;
+  font-size: 11px;
+  padding: 2px 9px;
+}
+.form-group > label {
+  font-weight: bold !important;
+}

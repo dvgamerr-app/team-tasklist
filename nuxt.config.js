@@ -3,7 +3,7 @@ const pkg = require('./package')
 module.exports = {
   mode: 'universal',
   head: {
-    title: pkg.name,
+    title: 'SURVEY-POS',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
@@ -21,11 +21,11 @@ module.exports = {
   ],
   modules: [
     '@nuxtjs/axios',
-    '@nuxtjs/pwa'
+    '@nuxtjs/pwa',
+    'bootstrap-vue/nuxt'
   ],
-  axios: {
-    // See https://github.com/nuxt-community/axios-module#options
-  },
+  bootstrapVue: { bootstrapCSS: false },
+  axios: { baseURL: process.env.AXIOS_BASE_URL || 'http://127.0.0.1:3001/' },
   build: {
     extend(config, ctx) {
       // Run ESLint on save
