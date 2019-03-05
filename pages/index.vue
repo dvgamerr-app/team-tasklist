@@ -73,15 +73,18 @@ export default {
     }).bind(this), 500)
     if (process.client) {
       this.username = window.localStorage.getItem('survey.username') || ''
-      let survey = window.localStorage.getItem('survey.tasks') || []
-      if (survey.length > 0) this.tasks = JSON.parse(survey)
+      let survey = window.localStorage.getItem('survey.tasks')
+      if (survey && survey !== '') {
+        survey = JSON.parse(survey)
+        if (this.tasks.length === survey.length && survey.filter(s => s.reason !== '' || s.selected).length > 0) this.tasks = survey
+      }
     }
   },
   methods: {
     onSave () {
       if (process.client) {
         window.localStorage.setItem('survey.username', this.username)
-        window.localStorage.setItem('survey.tasks', JSON.stringify(this.tasks))
+        if(this.tasks) window.localStorage.setItem('survey.tasks', JSON.stringify(this.tasks))
       }
     },
     onReset () {

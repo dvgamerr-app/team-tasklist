@@ -44,9 +44,9 @@ async function start() {
   app.use(bodyParser.urlencoded({ extended: false }))
   app.use(bodyParser.json())
 
+  const pool = await sqlConnectionPool()
   app.get('/api/list', async (req, res) => {
     try {
-      await sqlConnectionPool()
       let sql = 'SELECT nTaskId, sSubject, sDetail, sDescription, sSolve FROM SURVEY_CMG..UserTask WHERE bEnabled = 1 ORDER BY nTaskId ASC'
       let [ records ] = (await pool.request().query(sql)).recordsets
       res.json(records)
@@ -59,8 +59,6 @@ async function start() {
 
   app.post('/api/submit', async (req, res) => {
     try {
-      const pool = await sqlConnectionPool()
-      
       let { username, tasks } = req.body
       let created = moment() // 2019-03-01 18:04:09.503
       for (const e of tasks) {
