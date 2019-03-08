@@ -13,7 +13,7 @@ config.dev = !(process.env.NODE_ENV === 'production')
 
   
 const sqlConnectionPool = () => new Promise((resolve, reject) => {
-  const conn = new sql.ConnectionPool(db['dev'])
+  const conn = new sql.ConnectionPool(db[config.dev ? 'dev' : 'prd'])
   conn.connect(err => {
     if (err) return reject(err)
     resolve(conn)
@@ -86,4 +86,8 @@ async function start() {
     badge: true
   })
 }
-start()
+
+start().catch(ex => {
+  console.log(ex)
+  process.exit(1)
+})

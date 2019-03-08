@@ -77,6 +77,7 @@ export default {
       if (survey && survey !== '') {
         survey = JSON.parse(survey)
         if (this.tasks.length === survey.length && survey.filter(s => s.reason !== '' || s.selected).length > 0) this.tasks = survey
+        this.$forceUpdate()
       }
     }
   },
