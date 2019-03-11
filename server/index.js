@@ -3,8 +3,11 @@ const consola = require('consola')
 const sql = require('mssql')
 const moment = require('moment')
 const bodyParser = require('body-parser')
+const request = require('request-promise')
 const { Nuxt } = require('nuxt')
 const app = express()
+
+const auth = require('./authication')
 
 // Import and Set Nuxt.js options
 const config = require('../nuxt.config.js')
@@ -28,21 +31,20 @@ async function start() {
   const port = process.env.PORT || 3001
 
   // Build only in dev mode
-  if (config.dev) {
-    app.use((req, res, next) => {
-      const methodAllow = [ 'GET', 'HEAD', 'OPTIONS', 'POST', 'PUT' ]
-      res.setHeader('Content-Type', 'application/json')
-      res.setHeader('Access-Control-Allow-Origin', '*')
-      res.setHeader('Access-Control-Allow-Headers', '*')
-      res.setHeader('Access-Control-Allow-Credentials', 'true')
-      res.setHeader('Access-Control-Allow-Methods', methodAllow.join(','))
-      if (req.method === 'OPTIONS') return res.sendStatus(200)
-      next()
-    })
-  }
- 
+  app.use((req, res, next) => {
+    const methodAllow = [ 'GET', 'HEAD', 'OPTIONS', 'POST', 'PUT' ]
+    res.setHeader('Access-Control-Allow-Origin', '*')
+    res.setHeader('Access-Control-Allow-Headers', '*')
+    res.setHeader('Access-Control-Allow-Credentials', 'true')
+    res.setHeader('Access-Control-Allow-Methods', methodAllow.join(','))
+    if (req.method === 'OPTIONS') return res.sendStatus(200)
+    next()
+  })
+
   app.use(bodyParser.urlencoded({ extended: false }))
   app.use(bodyParser.json())
+
+  app.use(auth.path, auth.handler)
 
   const pool = await sqlConnectionPool()
   app.get('/api/list', async (req, res) => {
