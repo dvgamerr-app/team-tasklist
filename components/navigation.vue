@@ -1,5 +1,5 @@
 <template>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top d-block d-md-none">
+  <nav v-if="$route.name !== '/sign-in'" class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
     <div class="container">
       <nuxt-link class="navbar-brand" to="/">[POS] SERVER SURVEY</nuxt-link>
       <!-- <button 
@@ -10,9 +10,9 @@
       </button> -->
       <div id="navbarResponsive" class="collapse navbar-collapse">
         <ul class="navbar-nav ml-auto">
-          <!-- <li class="nav-item active">
-            <nuxt-link class="nav-link" to="/">Sign-In</nuxt-link>
-          </li> -->
+          <li class="nav-item active">
+            <nuxt-link class="nav-link" to="/">{{ $auth.user.name }}</nuxt-link>
+          </li>
           <!-- <li class="nav-item">
             <a class="nav-link">About</a>
           </li>

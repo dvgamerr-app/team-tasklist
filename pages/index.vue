@@ -4,9 +4,6 @@
       <div class="col-lg-36">
         <h2 class="mt-5 mb-5" />
         <b-form class="mb-5" @submit.prevent="onSubmit" @reset.prevent="onReset">
-          <b-form-group label-cols-md="7" label-cols-lg="5" label="Checker Name" label-for="chkChecker">
-            <b-form-input id="chkChecker" v-model="username" size="sm" maxlength="100" class="col-md-24 col-lg-14" type="text" required placeholder="Enter Name" />
-          </b-form-group>
           <div v-for="e in tasks" :key="e.nTaskId">
             <b-form-group :label-for="'chkTaskList' + e.nTaskId">
               <b-form-checkbox :id="'chkTaskList' + e.nTaskId" v-model="e.selected" :disabled="e.problem" switch required class="tasklist" name="check-button">

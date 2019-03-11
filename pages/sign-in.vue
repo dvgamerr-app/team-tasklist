@@ -7,19 +7,19 @@
       </div>
     </div>
     <div class="row main">
-      <div class="col-36 col-lg-24 col-xl-20 col-login mx-auto pt-5">
+      <div class="col-36 col-lg-24 col-xl-20 col-login mx-auto">
         <h2>Sign-In</h2>
         <div class="login-form">
-          <form>
+          <form method="post" @submit.prevent="onLogin">
             <div class="form-group">
-              <label>User Name</label>
-              <input type="text" class="form-control" placeholder="User Name">
+              <label>Email</label>
+              <input v-model="username" type="text" class="form-control" placeholder="User Name">
             </div>
             <div class="form-group">
               <label>Password</label>
-              <input type="password" class="form-control" placeholder="Password">
+              <input v-model="password" type="password" class="form-control" placeholder="Password">
             </div>
-            <button type="submit" class="btn btn-success">Login</button>
+            <button :disabled="submitted" type="submit" class="btn btn-success" v-text="submitted ? 'Please wait...' : 'Login'" />
           </form>
         </div>
       </div>
@@ -29,15 +29,28 @@
 
 <script>
 export default {
+  auth: false,
+  middleware: ['signin'],
   data: () => ({
-    loggingIn: false,
     username: '',
     password: '',
     submitted: false
   }),
   created () {
+    // await 
   },
   methods: {
+    async onLogin () {
+      if (!this.username || !this.password) return
+      this.submitted = true
+      try {
+        let data = await this.$auth.loginWith('local', { data: { user: this.username.trim(), pass: this.password } })
+        this.$router.replace('/')
+      } catch (error) {
+        console.log(error)
+      }
+      this.submitted = false
+    }
   }
 }
 </script>

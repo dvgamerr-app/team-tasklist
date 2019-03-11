@@ -19,13 +19,27 @@ module.exports = {
   ],
   plugins: [
   ],
+  router: {
+    middleware: ['auth']
+  },
   modules: [
     '@nuxtjs/axios',
     '@nuxtjs/auth',
     '@nuxtjs/pwa',
     'bootstrap-vue/nuxt'
   ],
-  proxy: { '/auth': 'http://10.0.80.52:25081/auth' },
+  auth: {
+    strategies: {
+      local: {
+        endpoints: {
+          login: { url: '/auth/login', method: 'post', propertyName: 'token' },
+          logout: { url: '/auth/logout', method: 'post' },
+          user: { url: '/auth/user', method: 'get', propertyName: 'user' }
+        }
+      }
+    },
+    redirect: { login: '/sign-in', logout: '/sign-in', home: '/' }
+  },
   bootstrapVue: { bootstrapCSS: false },
   axios: { baseURL: process.env.AXIOS_BASE_URL || 'http://127.0.0.1:3001/' },
   build: {
