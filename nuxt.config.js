@@ -21,9 +21,11 @@ module.exports = {
   ],
   modules: [
     '@nuxtjs/axios',
+    '@nuxtjs/auth',
     '@nuxtjs/pwa',
     'bootstrap-vue/nuxt'
   ],
+  proxy: { '/auth': 'http://10.0.80.52:25081/auth' },
   bootstrapVue: { bootstrapCSS: false },
   axios: { baseURL: process.env.AXIOS_BASE_URL || 'http://127.0.0.1:3001/' },
   build: {

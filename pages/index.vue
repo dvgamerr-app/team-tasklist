@@ -2,9 +2,7 @@
   <div class="container">
     <div class="row">
       <div class="col-lg-36">
-        <h2 class="mt-5 mb-5">
-          Checker POSServer <small>(at {{ getDateTime }})</small>
-        </h2>
+        <h2 class="mt-5 mb-5" />
         <b-form class="mb-5" @submit.prevent="onSubmit" @reset.prevent="onReset">
           <b-form-group label-cols-md="7" label-cols-lg="5" label="Checker Name" label-for="chkChecker">
             <b-form-input id="chkChecker" v-model="username" size="sm" maxlength="100" class="col-md-24 col-lg-14" type="text" required placeholder="Enter Name" />
@@ -21,7 +19,7 @@
                   v-text="!e.problem ? 'Problem' : 'Cancel'"
                 />
                 <b><span v-text="e.sSubject" /></b>
-                <span v-html="e.sDetail" />
+                <span class="d-none d-md-inline" v-html="e.sDetail" />
                 <div v-if="e.problem">
                   <h4 v-if="e.sSolve">Solve the problem</h4>
                   <span v-if="e.sSolve" v-html="e.sSolve" />
