@@ -13,16 +13,18 @@ module.exports = {
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
     ]
   },
-  loading: { color: '#999' },
+  loading: { color: '#4caf50' },
   css: [
     './assets/scss/index.scss'
   ],
   plugins: [
+    './plugins/vue-toast.js'
   ],
   router: {
     middleware: ['auth']
   },
   modules: [
+    'nuxt-fontawesome',
     '@nuxtjs/axios',
     '@nuxtjs/auth',
     '@nuxtjs/pwa',
@@ -39,6 +41,12 @@ module.exports = {
       }
     },
     redirect: { login: '/sign-in', logout: '/sign-in', home: '/' }
+  },
+  fontawesome: {
+    component: 'fa',
+    imports: [
+      { icons: ['fas'], set: '@fortawesome/free-solid-svg-icons' }
+    ]
   },
   bootstrapVue: { bootstrapCSS: false },
   axios: { baseURL: process.env.AXIOS_BASE_URL || 'http://127.0.0.1:3001/' },

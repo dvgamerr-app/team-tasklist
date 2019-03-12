@@ -14,6 +14,9 @@
     "precommit": "npm run lint"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.15",
+    "@fortawesome/free-solid-svg-icons": "^5.7.2",
+    "@fortawesome/vue-fontawesome": "^0.1.5",
     "@nuxtjs/auth": "^4.5.3",
     "@nuxtjs/axios": "^5.4.1",
     "@nuxtjs/pwa": "^2.6.0",
@@ -33,8 +36,10 @@
     "mssql": "^4.3.2",
     "numeral": "^2.0.6",
     "nuxt": "^2.4.0",
+    "nuxt-fontawesome": "^0.4.0",
     "request": "^2.88.0",
-    "request-promise": "^4.2.4"
+    "request-promise": "^4.2.4",
+    "vue-toast-notification": "0.0.2"
   },
   "devDependencies": {
     "@nuxtjs/eslint-config": "^0.0.1",

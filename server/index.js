@@ -49,7 +49,7 @@ async function start() {
   const pool = await sqlConnectionPool()
   app.get('/api/list', async (req, res) => {
     try {
-      let sql = 'SELECT nTaskId, sSubject, sDetail, sDescription, sSolve FROM SURVEY_CMG..UserTask WHERE bEnabled = 1 ORDER BY nTaskId ASC'
+      let sql = 'SELECT nTaskId, sSubject, sDetail, sDescription, sSolve FROM SURVEY_CMG..UserTask WHERE bEnabled = 1 ORDER BY nOrder ASC'
       let [ records ] = (await pool.request().query(sql)).recordsets
       res.json(records)
     } catch (ex) {
@@ -59,19 +59,47 @@ async function start() {
     }
   })
 
+
+  app.get('/api/history', async (req, res) => {
+    let page = parseInt(req.query.p || 1)
+    if (page === NaN) return res.json([])
+    try {
+      let sql = `
+      SELECT * FROM (
+        SELECT ROW_NUMBER() OVER (ORDER BY dCheckIn DESC) AS nRow
+          , CONVERT(VARCHAR, dCheckIn,112) + CONVERT(VARCHAR, dCheckIn,12) sKey
+          , sUsername, sName, CONVERT(VARCHAR, dCheckIn, 120) dCheckIn
+          , SUM(CASE WHEN sStatus = 'FAIL' THEN 1 ELSE 0 END) nFail
+          , SUM(CASE WHEN sStatus = 'PASS' THEN 1 ELSE 0 END) nSuccess
+        FROM SURVEY_CMG..UserTaskSubmit 
+        GROUP BY sUsername, sName, dCheckIn
+      ) AS r WHERE nRow >= ${page} * 100 - 99 AND nRow <= ${page} * 100
+      `
+      let [ records ] = (await pool.request().query(sql)).recordsets
+      return res.json(records)
+    } catch (ex) {
+      console.log(ex)
+    } finally {
+      res.end()
+    }
+  })
+
+
   app.post('/api/submit', async (req, res) => {
     try {
-      let { username, tasks } = req.body
+      let { name, username, tasks } = req.body
       let created = moment() // 2019-03-01 18:04:09.503
       for (const e of tasks) {
-        let command = `INSERT INTO [dbo].[UserTaskSubmit] ([nTaskId],[sUsername],[sStatus],[sRemark],[dCheckIn],[dCreated])
-          VALUES (${e.nTaskId},'${username.replace(`'`,`\'`)}','${e.problem ? 'FAIL' : 'PASS'}', '${e.reason.replace(`'`,`\'`)}'
+        let command = `INSERT INTO [dbo].[UserTaskSubmit] ([nTaskId],[sUsername],[sName],[sStatus],[sRemark],[dCheckIn],[dCreated])
+          VALUES (${e.nTaskId},'${username.trim()}','${name}','${e.problem ? 'FAIL' : 'PASS'}', '${(e.reason || '').replace(`'`,`\'`)}'
           , CONVERT(DATETIME, '${created.format('YYYY-MM-DD HH:mm:ss')}', 121),  GETDATE())
         `
         await pool.request().query(command)
       }
+      res.json({ success: true })
     } catch (ex) {
       console.log(ex)
+      res.json({ success: false })
     } finally {
       res.end()
     }

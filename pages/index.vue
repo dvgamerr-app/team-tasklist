@@ -1,10 +1,9 @@
 <template>
-  <div class="container">
+  <div class="container pt-5 pb-3">
     <div class="row">
       <div class="col-lg-36">
-        <h2 class="mt-5 mb-5" />
         <b-form class="mb-5" @submit.prevent="onSubmit" @reset.prevent="onReset">
-          <div v-for="e in tasks" :key="e.nTaskId">
+          <div v-for="(e, i) in tasks" :key="e.nTaskId">
             <b-form-group :label-for="'chkTaskList' + e.nTaskId">
               <b-form-checkbox :id="'chkTaskList' + e.nTaskId" v-model="e.selected" :disabled="e.problem" switch required class="tasklist" name="check-button">
                 <b-button
@@ -15,11 +14,11 @@
                   @click="onReason(e)"
                   v-text="!e.problem ? 'Problem' : 'Cancel'"
                 />
-                <b><span v-text="e.sSubject" /></b>
-                <span class="d-none d-md-inline" v-html="e.sDetail" />
+                <b class="checker-text"><span v-text="(i + 1) + '. ' + e.sSubject" /></b>
+                <span class="checker-text d-none d-md-inline" v-html="e.sDetail" />
                 <div v-if="e.problem">
-                  <h4 v-if="e.sSolve">Solve the problem</h4>
-                  <span v-if="e.sSolve" v-html="e.sSolve" />
+                  <h6 v-if="e.sSolve" class="pt-2">Solve the problem</h6>
+                  <span v-if="e.sSolve" class="checker-text" v-html="e.sSolve" />
                   <b-form-textarea
                     id="txtReason"
                     v-model="e.reason"
@@ -49,7 +48,6 @@ import moment from 'moment'
 export default {
   data: () => ({
     current: moment(),
-    username: '',
     tasks: []
   }),
   computed: {
@@ -67,7 +65,6 @@ export default {
       this.onSave()
     }).bind(this), 500)
     if (process.client) {
-      this.username = window.localStorage.getItem('survey.username') || ''
       let survey = window.localStorage.getItem('survey.tasks')
       if (survey && survey !== '') {
         survey = JSON.parse(survey)
@@ -79,7 +76,6 @@ export default {
   methods: {
     onSave () {
       if (process.client) {
-        window.localStorage.setItem('survey.username', this.username)
         if(this.tasks) window.localStorage.setItem('survey.tasks', JSON.stringify(this.tasks))
       }
     },
@@ -93,14 +89,22 @@ export default {
     },
     onSubmit () {
       let vm = this
+      let data = vm.tasks.map(e => {
+        return { nTaskId: e.nTaskId, selected: e.selected, problem: e.problem || false, reason: e.reason || '' }
+      })
       vm.$axios.post('/api/submit', {
-        username: vm.username,
+        username: vm.$auth.user.user_name,
+        name: vm.$auth.user.name,
         tasks: vm.tasks
-      }).then(res => {
-        console.log(res)
+      }).then(({ data }) => {
+        if (data.success) {
+          vm.$toast.success('Thanks.')
+        } else {
+          vm.$toast.error('Error API')
+        }
         vm.onReset()
       }).catch(ex => {
-        console.error(ex)
+        vm.$toast.error(ex.message)
       })
     },
     onReason (e) {
@@ -115,5 +119,8 @@ export default {
 </script>
 
 <style>
-
+.checker-text {
+  font-family: "Segoe UI";
+  font-size: 13px;
+}
 </style>

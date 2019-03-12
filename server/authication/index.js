@@ -116,23 +116,21 @@ router.post('/login', (req, res) => (async () => {
     return res.status(401).json({ error: 'Unauthorized (404)'})
   }
 
-  if (!/\@central/ig.test(auth.usr)) auth.usr = `${auth.usr}@central.co.th`
-
   let { User, UserHistory } = await db.open()
   try {
     if (!auth) throw new Error('Unauthorized (402)')
     auth.usr = auth.usr.trim().toLowerCase()
 
-    let user = await User.findOne({ mail: auth.usr })
-
+    let user = await User.findOne({ $or: [ { mail: auth.usr.toLowerCase() }, { user_name: auth.usr.toLowerCase() } ] })
     let data = null
     try {
       // throw new Error('Ignore LDAP')
-      data = await ldapAuth(auth.usr, auth.pwd)
+      data = await ldapAuth(user ? user.mail : auth.usr, auth.pwd)
       data.mail = data.mail.trim().toLowerCase()
+      data.user_name = data.user_name.trim().toLowerCase()
     } catch (ex) {
       data = { error: ex.message || ex }
-      user = await User.findOne({ mail: auth.usr.toLowerCase(), pwd: md5(auth.pwd) })
+      user = await User.findOne({ $or: [ { mail: auth.usr.toLowerCase() }, { user_name: auth.usr.toLowerCase() } ], pwd: md5(auth.pwd) })
     }
     if (!user && data.error) throw new Error(data.error)
     if (!user) {
