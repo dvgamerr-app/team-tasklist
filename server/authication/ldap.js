@@ -1,9 +1,10 @@
 const { createClient } = require('ldapjs')
 
 // LDAP Connection Settings
-const server = process.env.LDAP_SERVER_NAME || 'central.co.th'
-const adSuffix = process.env.LDAP_SUFFIX || 'dc=central,dc=co,dc=th'
-const timeout = process.env.LDAP_TIMEOUT || 5000
+const name = process.env.LDAP_NAME || 'central'
+const server = process.env.LDAP_SERVER_NAME || `${name}.co.th`
+const adSuffix = process.env.LDAP_SUFFIX || `dc=${name},dc=co,dc=th`
+const timeout = process.env.LDAP_TIMEOUT || 10000
 
 if (!server || !adSuffix) throw new Error('LDAP connection settings not found!')
 
@@ -12,7 +13,8 @@ module.exports = (usr, pwd, filter) => {
 
   const username = usr.trim()
   const password = pwd.trim()
-  const searchOptions = { scope: 'sub', filter: filter || `(userPrincipalName=${username})` }
+  const adUser = !/@/g.test(username)
+  const searchOptions = { scope: 'sub', filter: filter || adUser ? `(sAMAccountName=${username})` : `(userPrincipalName=${username})` }
 
   // Create client and bind to AD
   const client = createClient({
@@ -40,8 +42,8 @@ module.exports = (usr, pwd, filter) => {
       rejectClient('client bind timeout.')
     }, timeout)
 
-    // console.log('auth:', username, password)
-    client.bind(username, password, err => {
+    // console.log('user:', adUser ? `central\\${username}` : username, password)
+    client.bind((adUser ? `${name}\\${username}` : username), password, err => {
       // console.log('bind:', !err)
       if (err) return resolveClient({ err: err.lde_message })
       // Search AD for user

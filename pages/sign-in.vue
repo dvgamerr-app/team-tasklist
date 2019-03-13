@@ -10,10 +10,10 @@
       <div class="col-36 col-lg-24 col-xl-20 col-login mx-auto">
         <h2>Sign-In</h2>
         <div class="login-form">
-          <form method="post" @submit.prevent="() => onLogin()">
+          <form method="post" @submit.prevent="onLogin">
             <div class="form-group">
               <label>Email</label>
-              <input v-model="username" type="text" class="form-control" placeholder="User Name">
+              <input v-model="username" type="text" class="form-control" placeholder="@central.co.th">
             </div>
             <div class="form-group">
               <label>Password</label>

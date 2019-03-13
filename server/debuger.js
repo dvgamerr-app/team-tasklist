@@ -1,7 +1,7 @@
 const chalk = require('chalk')
 const moment = require('moment')
 const numeral = require('numeral')
-const isDev = process.env.NODE_ENV === 'production'
+const isDev = process.env.NODE_ENV !== 'production'
 
 class Time {
   constructor () {
