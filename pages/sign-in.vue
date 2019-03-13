@@ -12,7 +12,7 @@
         <div class="login-form">
           <form method="post" @submit.prevent="onLogin">
             <div class="form-group">
-              <label>Email</label>
+              <label>ADUser or Email</label>
               <input v-model="username" type="text" class="form-control" placeholder="@central.co.th">
             </div>
             <div class="form-group">
