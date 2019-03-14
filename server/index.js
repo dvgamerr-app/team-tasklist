@@ -14,9 +14,14 @@ const config = require('../nuxt.config.js')
 const db = require('./db')
 config.dev = !(process.env.NODE_ENV === 'production')
 
-  
-const sqlConnectionPool = () => new Promise((resolve, reject) => {
-  const conn = new sql.ConnectionPool(db[config.dev ? 'dev' : 'prd'])
+const sendLINE = async (msg) => {
+  const noti = await sqlConnectionPool(db['noti'])
+  await noti.request().query(`exec dbo.PushMessage 'Ca2338af8e1ae465a2541acde69cd4e0c', '${msg}'`)
+  noti.close()
+}
+
+const sqlConnectionPool = (db) => new Promise((resolve, reject) => {
+  const conn = new sql.ConnectionPool(db)
   conn.connect(err => {
     if (err) return reject(err)
     resolve(conn)
@@ -46,7 +51,8 @@ async function start() {
 
   app.use(auth.path, auth.handler)
 
-  const pool = await sqlConnectionPool()
+  const pool = await sqlConnectionPool(db[config.dev ? 'dev' : 'prd'])
+  
   app.get('/api/list', async (req, res) => {
     try {
       let sql = 'SELECT nTaskId, sSubject, sDetail, sDescription, sSolve FROM SURVEY_CMG..UserTask WHERE bEnabled = 1 ORDER BY nOrder ASC'
@@ -58,7 +64,6 @@ async function start() {
       res.end()
     }
   })
-
 
   app.get('/api/history', async (req, res) => {
     let page = parseInt(req.query.p || 1)
@@ -87,15 +92,34 @@ async function start() {
 
   app.post('/api/submit', async (req, res) => {
     try {
-      let { name, username, tasks } = req.body
+      let { checkin, name, username, tasks } = req.body
       let created = moment() // 2019-03-01 18:04:09.503
+      let msg = ''
+      let problem = 0
       for (const e of tasks) {
-        let command = `INSERT INTO [dbo].[UserTaskSubmit] ([nTaskId],[sUsername],[sName],[sStatus],[sRemark],[dCheckIn],[dCreated])
-          VALUES (${e.nTaskId},'${username.trim()}','${name}','${e.problem ? 'FAIL' : 'PASS'}', '${(e.reason || '').replace(`'`,`\'`)}'
-          , CONVERT(DATETIME, '${created.format('YYYY-MM-DD HH:mm:ss')}', 121),  GETDATE())
-        `
-        await pool.request().query(command)
+        if (!checkin) {
+          let command = `INSERT INTO [dbo].[UserTaskSubmit] ([nTaskId],[sUsername],[sName],[sStatus],[sRemark],[dCheckIn],[dCreated])
+            VALUES (${e.nTaskId},'${username.trim()}','${name}','${e.problem ? 'FAIL' : 'PASS'}', '${(e.reason || '').replace(`'`,`\'`)}'
+            , CONVERT(DATETIME, '${created.format('YYYY-MM-DD HH:mm:ss')}', 121),  GETDATE())
+          `
+          await pool.request().query(command)
+          if (e.problem) {
+            problem++
+            let [ task ] = (await pool.request().query(`SELECT sSubject FROM [dbo].[UserTask] WHERE nTaskId = ${e.nTaskId}`)).recordset
+            msg += `\n- ${task.sSubject.trim()} - \`${e.reason}\``
+          }
+        } else {
+
+        }
       }
+      if (!checkin) {
+        let fail = `*[FAIL]* พบข้อผิดพลาด ${problem} รายการ${msg}\n_(${name})_`
+        let pass = `*[PASS]* ตรวจสอบทุกระบบแล้ว.\n_(${name})_`
+        sendLINE(problem > 0 ? fail : pass)
+      } else {
+        
+      }
+
       res.json({ success: true })
     } catch (ex) {
       console.log(ex)
