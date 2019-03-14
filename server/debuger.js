@@ -31,8 +31,8 @@ class Time {
   }
 }
 
-const groupSize = 6
-const scopeSize = 8
+const groupSize = 7
+const scopeSize = 4
 const groupPadding = (msg, size, pad) => {
   return msg.length > size ? msg.substr(0, size) : msg[pad](size, ' ')
 }

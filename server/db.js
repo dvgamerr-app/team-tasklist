@@ -16,5 +16,14 @@ module.exports = {
     options: {
       encrypt: true
     }
+  },
+  'noti': {
+    user: 'posowner',
+    password: `,yo,ur]y'55`,
+    server: 'posdb.cmg.co.th',
+    database: 'LINE_BOT',
+    options: {
+      encrypt: true
+    }
   }
 }
