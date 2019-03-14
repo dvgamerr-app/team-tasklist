@@ -35,8 +35,8 @@
               </b-form-checkbox>
             </b-form-group>
           </div>
-          <b-button type="submit" variant="primary">Submit</b-button>
-          <b-button type="reset" variant="danger">Reset</b-button>
+          <b-button type="submit" :disabled="submited" variant="primary" v-text="submited ? 'Approving...' : 'Submit'" />
+          <b-button type="reset" :disabled="submited" variant="danger">Reset</b-button>
         </b-form>
       </div>
     </div>
@@ -47,6 +47,7 @@
 import moment from 'moment'
 export default {
   data: () => ({
+    submited: false,
     current: moment(),
     tasks: []
   }),
@@ -92,6 +93,7 @@ export default {
       let data = vm.tasks.map(e => {
         return { nTaskId: e.nTaskId, selected: e.selected, problem: e.problem || false, reason: e.reason || '' }
       })
+      this.submited = true
       vm.$axios.post('/api/submit', {
         username: vm.$auth.user.user_name,
         name: vm.$auth.user.name,
@@ -99,12 +101,14 @@ export default {
       }).then(({ data }) => {
         if (data.success) {
           vm.$toast.success('Thanks.')
+          vm.onReset()
         } else {
           vm.$toast.error('Error API')
         }
-        vm.onReset()
+        this.submited = false
       }).catch(ex => {
         vm.$toast.error(ex.message)
+        this.submited = false
       })
     },
     onReason (e) {

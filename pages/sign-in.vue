@@ -30,15 +30,13 @@
 <script>
 export default {
   auth: false,
-  middleware: ['signin'],
   data: () => ({
     username: '',
     password: '',
     submitted: false
   }),
   created () {
-    if (this.$auth.loggedIn) this.$router.replace('/') 
-    // await 
+    if (process.client && window.localStorage.getItem('auth._token.local') !== 'false') this.$router.replace('/')
   },
   methods: {
     onLogin () {
@@ -46,7 +44,7 @@ export default {
       this.submitted = true
       this.$auth.loginWith('local', { data: { user: this.username.trim(), pass: this.password } }).then(() => {
         if (this.$auth.loggedIn) {
-          this.$router.push('/')
+          this.$router.replace('/')
         } else {
           this.submitted = false
           this.$toast.error('Username or Password worng.', { duration: 1000 })
