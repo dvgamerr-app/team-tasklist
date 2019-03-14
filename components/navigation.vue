@@ -7,7 +7,7 @@
       <b-nav-item :active="$route.name === 'index'" to="/">Home</b-nav-item>
       <b-nav-item :active="$route.name === 'history'" to="/history">History</b-nav-item>
       <b-nav-item-dropdown :text="$auth.user.name" right>
-        <b-dropdown-item @click.prevent="$auth.logout">Logout</b-dropdown-item>
+        <b-dropdown-item @click.prevent="onSignOut">Logout</b-dropdown-item>
       </b-nav-item-dropdown>
     </b-navbar-nav>
   </b-navbar>
@@ -15,6 +15,11 @@
 <script>
 export default {
   created () {
+  },
+  methods: {
+    onSignOut () {
+      this.$auth.logout()
+    }
   }
 }
 </script>
