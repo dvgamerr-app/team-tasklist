@@ -4,8 +4,8 @@
       [POS] SERVER SURVEY
     </b-navbar-brand>
     <b-navbar-nav class="ml-auto">
-      <b-nav-item :active="$route.name === 'index'" to="/">Home</b-nav-item>
-      <b-nav-item :active="$route.name === 'history'" to="/history">History</b-nav-item>
+      <b-nav-item exact to="/">Home</b-nav-item>
+      <b-nav-item to="/history">History</b-nav-item>
       <b-nav-item-dropdown :text="$auth.user.name" right>
         <b-dropdown-item @click.prevent="onSignOut">Logout</b-dropdown-item>
       </b-nav-item-dropdown>

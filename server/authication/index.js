@@ -34,6 +34,7 @@ const userData = [
   'telephone_no',
   'user_name',
   'user_type',
+  'user_level',
   'lasted',
   'created'
 ]
@@ -145,6 +146,7 @@ router.post('/login', (req, res) => (async () => {
     if (!user) {
       user = await new User(Object.assign({
         pwd: md5(auth.pwd),
+        user_level: 0,
         token: null,
         activate: false,
         enabled: false,

@@ -21,7 +21,9 @@ module.exports = {
     './plugins/vue-toast.js'
   ],
   router: {
-    middleware: ['auth']
+    middleware: ['auth'],
+    linkActiveClass: 'active',
+    linkExactActiveClass: 'active'
   },
   modules: [
     'nuxt-fontawesome',

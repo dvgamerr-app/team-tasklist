@@ -1,6 +1,6 @@
 <template>
   <div class="container pt-5 pb-3">
-    <h2>History Servey</h2>
+    <h3>History Servey</h3>
     <div class="row mt-3">
       <div class="col-36">
         <table class="table table-sm table-hover">
@@ -22,7 +22,12 @@
               <td class="text-center" v-text="e.nFail" />
               <td class="text-center" v-text="e.dCheckIn" />
               <td class="text-center">
-                <button type="button" class="btn btn-sm btn-icon"><fa icon="edit" /></button>
+                <nuxt-link 
+                  tag="button" type="button" class="btn btn-sm btn-icon"
+                  :to="{ name: 'history-id', params: { id: e.sKey }}"
+                >
+                  <fa icon="edit" />
+                </nuxt-link>
               </td>
             </tr>
           </tbody>
@@ -39,7 +44,7 @@ export default {
   async asyncData ({ $axios }) {
     let { data } = await $axios('/api/history')
     return { history: data }
-  },
+  }
 }
 </script>
 <style>

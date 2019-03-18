@@ -57,6 +57,7 @@ module.exports = [
       telephone_no: String,
       user_name: String,
       user_type: String,
+      user_level: Number,
       pwd: String,
       permission: String,
       enabled: {

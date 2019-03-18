@@ -72,7 +72,7 @@ async function start() {
       let sql = `
       SELECT * FROM (
         SELECT ROW_NUMBER() OVER (ORDER BY dCheckIn DESC) AS nRow
-          , CONVERT(VARCHAR, dCheckIn,112) + CONVERT(VARCHAR, dCheckIn,12) sKey
+          , CONVERT(VARCHAR,dCheckIn,112) + REPLACE(CONVERT(VARCHAR,dCheckIn,114), ':', '') sKey
           , sUsername, sName, CONVERT(VARCHAR, dCheckIn, 120) dCheckIn
           , SUM(CASE WHEN sStatus = 'FAIL' THEN 1 ELSE 0 END) nFail
           , SUM(CASE WHEN sStatus = 'PASS' THEN 1 ELSE 0 END) nSuccess
@@ -100,7 +100,7 @@ async function start() {
         if (!checkin) {
           let command = `INSERT INTO [dbo].[UserTaskSubmit] ([nTaskId],[sUsername],[sName],[sStatus],[sRemark],[dCheckIn],[dCreated])
             VALUES (${e.nTaskId},'${username.trim()}','${name}','${e.problem ? 'FAIL' : 'PASS'}', '${(e.reason || '').replace(`'`,`\'`)}'
-            , CONVERT(DATETIME, '${created.format('YYYY-MM-DD HH:mm:ss')}', 121),  GETDATE())
+            , CONVERT(DATETIME, '${created.format('YYYY-MM-DD HH:mm:ss.SSS')}', 121),  GETDATE())
           `
           await pool.request().query(command)
           if (e.problem) {
