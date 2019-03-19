@@ -66,7 +66,7 @@ async function start() {
 
   app.get('/api/history', async (req, res) => {
     let page = parseInt(req.query.p || 1)
-    if (page === NaN) return res.json([])
+    if (isNaN(page)) return res.json([])
     try {
       let sql = `
       SELECT * FROM (
@@ -96,7 +96,7 @@ async function start() {
 
   app.get('/api/history/:id', async (req, res) => {
     let key = parseInt(req.params.id)
-    if (key === NaN) return res.json({})
+    if (isNaN(key)) return res.json({})
     if (!moment.isMoment(moment(key, 'YYYYMMDDHHmmssSSS'))) return res.json({})
     let dCheckIn = moment(key, 'YYYYMMDDHHmmssSSS').format('YYYY-MM-DD HH:mm:ss.SSS')
     try {
@@ -132,7 +132,7 @@ async function start() {
 
   app.get('/api/version/:id', async (req, res) => {
     let key = parseInt(req.params.id)
-    if (key === NaN) return res.json({})
+    if (isNaN(key)) return res.json({})
     if (!moment.isMoment(moment(key, 'YYYYMMDDHHmmssSSS'))) return res.json({})
     let dCheckIn = moment(key, 'YYYYMMDDHHmmssSSS').format('YYYY-MM-DD HH:mm:ss.SSS')
     try {
@@ -157,6 +157,25 @@ async function start() {
       return res.json({ editor: editor.join(', '), records: records })
     } catch (ex) {
       console.log(ex)
+    } finally {
+      res.end()
+    }
+  })
+
+  app.get('/api/check-last/:hour', async (req, res) => {
+    try {
+      let hour = parseInt(req.params.hour)
+      if (isNaN(hour)) throw new Error('Hour param not int.')
+      let command = `
+      SELECT COUNT(*) nTask FROM UserTaskSubmit
+      WHERE dCheckIn BETWEEN DATEADD(HOUR, -${hour}, GETDATE()) AND GETDATE()
+      `
+      let [ [ record ] ] = (await pool.request().query(command)).recordsets
+      if (parseInt(record.nTask) === 0) {
+        sendLINE(`ช่วงเวลา ${moment().add(hour * -1, 'hour').format('HH:mm')} - ${moment().format('HH:mm')} ไม่พบรายการตรวจสอบใหม่`)
+      }
+    } catch (ex) {
+      console.log(ex.message)
     } finally {
       res.end()
     }

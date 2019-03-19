@@ -51,7 +51,7 @@ module.exports = {
     ]
   },
   bootstrapVue: { bootstrapCSS: false },
-  axios: { baseURL: process.env.AXIOS_BASE_URL || 'http://127.0.0.1:3001/' },
+  axios: { baseURL: process.env.AXIOS_BASE_URL || 'http://10.0.80.52:3001/' },
   build: {
     extend(config, ctx) {
       // Run ESLint on save
