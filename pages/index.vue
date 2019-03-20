@@ -43,8 +43,7 @@
                     <b-form-textarea
                       id="txtReason"
                       v-model="e.reason"
-                      class="mt-3"
-                      style="max-width:600px;"
+                      class="mt-3 reason"
                       :required="e.problem"
                       :state="e.reason.length >= 10"
                       size="sm"
@@ -116,10 +115,10 @@ export default {
       let sKey = parseInt(params.id)
       if (sKey == NaN) return redirect('/history')
 
-      let { data } = await $axios('/api/history/' + sKey)
+      let { data } = await $axios('/api/history/' + params.id)
       if (!data.records) return redirect('/history')
       
-      return { editor: data.editor, tasks: data.records, taskKey: sKey }
+      return { editor: data.editor, tasks: data.records, taskKey: params.id }
     } else {
       let { data } = await $axios('/api/list')
       return { tasks: data, taskKey: null }
