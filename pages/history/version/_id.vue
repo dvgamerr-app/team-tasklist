@@ -14,12 +14,16 @@
             <b-form-group :label-for="'chkTaskList' + e.nTaskId">
               <fa :class="!e.problem ? 'text-pass' : 'text-fail'" :icon="!e.problem ? 'check-square' : 'window-close'" />
               <b class="history-text"><span v-text="(i + 1) + '. ' + e.sSubject" /></b>
-              <span class="history-text d-none d-md-inline" v-html="e.sDetail" />
+              <small>at {{ parseDate(e.dCreated) }} {{ e.nVersion !== 1 ? 'updated' : 'submited' }} by {{ e.sName }}</small>
+              <div class="history-text d-none d-md-block ml-35" v-html="e.sDetail" />
+              <pre v-if="e.problem" class="ml-35" v-html="e.reason" />
               <div v-if="e.nVersion !== 1" class="history-detail">
                 <div v-for="d in getDetailVersion(e.nTaskId)" :key="d.nVersion">
-                  <fa :class="!d.problem ? 'text-pass' : 'text-fail'" :icon="!d.problem ? 'check-square' : 'window-close'" />
-                  {{ parseDate(d.dCreated) }} updated by {{ d.sName }}
-                  <pre v-if="d.problem" v-html="d.reason" />
+                  <div v-if="e.nVersion != d.nVersion">
+                    <fa :class="!d.problem ? 'text-pass' : 'text-fail'" :icon="!d.problem ? 'check-square' : 'window-close'" />
+                    {{ parseDate(d.dCreated) }} {{ d.nVersion !== 1 ? 'updated' : 'submited' }} by {{ d.sName }}
+                    <pre v-if="d.problem" v-html="d.reason" />
+                  </div>
                 </div>
               </div>
             </b-form-group>
@@ -47,10 +51,10 @@ export default {
     let sKey = parseInt(params.id)
     if (sKey == NaN) return redirect('/history')
 
-    let { data } = await $axios('/api/version/' + sKey)
+    let { data } = await $axios('/api/version/' + params.id)
     if (!data.records) return redirect('/history')
     
-    return { editor: data.editor, tasks: data.records, taskKey: sKey }
+    return { editor: data.editor, tasks: data.records, taskKey: params.id }
   },
   methods: {
     parseDate (date) {
@@ -93,5 +97,8 @@ export default {
 }
 .text-pass {
   color: #4caf50
+}
+.ml-35 {
+  margin-left: 20px;
 }
 </style>

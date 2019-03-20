@@ -68,6 +68,10 @@ pre {
   display: flex;
   align-items: center;
 }
+textarea.reason {
+  min-width: 290px;
+  max-width: 600px;
+}
 
 @media screen and (max-height: 450px) {
   .sidenav {padding-top: 15px;}
@@ -77,11 +81,27 @@ pre {
   .register-form{
     margin-top: 10%;
   }
+
+  textarea.reason {
+    width: 290px;
+  }
+
+}
+
+@media screen and (min-width: 450px) {
+  textarea.reason {
+    width: 380px;
+  }
+
 }
 
 @media screen and (min-width: 768px){
   .main {
     margin-left: 40%; 
+  }
+
+  textarea.reason {
+    width: 600px;
   }
 
   .sidenav{
