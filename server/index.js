@@ -12,10 +12,11 @@ const auth = require('./authication')
 const config = require('../nuxt.config.js')
 const db = require('./db')
 config.dev = !(process.env.NODE_ENV === 'production')
-
+const hostName = `10.0.80.52:3001`
+const groupKey = process.env.LINE_API || 'Ca2338af8e1ae465a2541acde69cd4e0c'
 const sendLINE = async (msg) => {
   const noti = await sqlConnectionPool(db['noti'])
-  await noti.request().query(`exec dbo.PushMessage 'Ca2338af8e1ae465a2541acde69cd4e0c', '${msg}'`)
+  await noti.request().query(`exec dbo.PushMessage '${groupKey}', '${msg}'`)
   noti.close()
 }
 
@@ -50,16 +51,17 @@ async function start() {
 
   app.use(auth.path, auth.handler)
 
-  const pool = await sqlConnectionPool(db[config.dev ? 'dev' : 'prd'])
-  
   app.get('/api/list', async (req, res) => {
+    let pool = { close: () => {} }
     try {
+      pool = await sqlConnectionPool(db[config.dev ? 'dev' : 'prd'])
       let sql = 'SELECT nTaskId, sSubject, sDetail, sDescription, sSolve, nOrder FROM SURVEY_CMG..UserTask WHERE bEnabled = 1 ORDER BY nOrder ASC'
       let [ records ] = (await pool.request().query(sql)).recordsets
       res.json(records)
     } catch (ex) {
       console.log(ex)
     } finally {
+      pool.close()
       res.end()
     }
   })
@@ -67,6 +69,7 @@ async function start() {
   app.get('/api/history', async (req, res) => {
     let page = parseInt(req.query.p || 1)
     if (isNaN(page)) return res.json([])
+    let pool = { close: () => {} }
     try {
       let sql = `
       SELECT * FROM (
@@ -85,32 +88,36 @@ async function start() {
         GROUP BY g.sKey, sUsername, sName, g.dCreated
       ) AS r WHERE nRow >= ${page} * 100 - 99 AND nRow <= ${page} * 100
       `
+      pool = await sqlConnectionPool(db[config.dev ? 'dev' : 'prd'])
       let [ records ] = (await pool.request().query(sql)).recordsets
       return res.json(records)
     } catch (ex) {
       console.log(ex)
     } finally {
+      pool.close()
       res.end()
     }
   })
 
   app.get('/api/history/:id', async (req, res) => {
-    let key = parseInt(req.params.id)
-    if (isNaN(key)) return res.json({})
-    if (!moment.isMoment(moment(key, 'YYYYMMDDHHmmssSSS'))) return res.json({})
-    let dCheckIn = moment(key, 'YYYYMMDDHHmmssSSS').format('YYYY-MM-DD HH:mm:ss.SSS')
+    let key = req.params.id
+    let pool = { close: () => {} }
+    let dCheckIn = moment(key, 'YYYYMMDDHHmmssSSS')
+    if (!moment.isMoment(dCheckIn)) return res.json({})
     try {
       let sql = `
-      SELECT s.nIndex, s.nTaskId, s.sName, t.sSubject, t.sDetail, t.sSolve, t.nOrder, sStatus, sRemark, nVersion
+      SELECT s.nIndex, s.nTaskId, s.sName, t.sSubject, ISNULL(t.sDetail,'') sDetail
+        , ISNULL(t.sSolve,'') sSolve, t.nOrder, sStatus, sRemark, nVersion
       FROM UserTaskSubmit s
       INNER JOIN UserTask t ON t.nTaskId = s.nTaskId
       INNER JOIN (
         SELECT MAX(nIndex) nIndex  FROM UserTaskSubmit
-        WHERE dCheckIn = CONVERT(DATETIME, '${dCheckIn}')
+        WHERE dCheckIn = CONVERT(DATETIME, '${dCheckIn.format('YYYY-MM-DD HH:mm:ss.SSS')}')
         GROUP BY nTaskId
       ) i ON i.nIndex = s.nIndex
       ORDER BY s.nOrder ASC, nVersion DESC, s.dCreated ASC
       `
+      pool = await sqlConnectionPool(db[config.dev ? 'dev' : 'prd'])
       let [ records ] = (await pool.request().query(sql)).recordsets
       let editor = []
       records = records.map(e => {
@@ -126,6 +133,7 @@ async function start() {
     } catch (ex) {
       console.log(ex)
     } finally {
+      pool.close()
       res.end()
     }
   })
@@ -133,16 +141,18 @@ async function start() {
   app.get('/api/version/:id', async (req, res) => {
     let key = parseInt(req.params.id)
     if (isNaN(key)) return res.json({})
-    if (!moment.isMoment(moment(key, 'YYYYMMDDHHmmssSSS'))) return res.json({})
-    let dCheckIn = moment(key, 'YYYYMMDDHHmmssSSS').format('YYYY-MM-DD HH:mm:ss.SSS')
+    let pool = { close: () => {} }
+    let dCheckIn = moment(req.params.id, 'YYYYMMDDHHmmssSSS')
+    if (!moment.isMoment(dCheckIn)) return res.json({})
     try {
       let sql = `
       SELECT s.nTaskId, s.sName, t.sSubject, t.sDetail, sStatus, sRemark, nVersion, CONVERT(VARCHAR, s.dCreated, 120) dCreated
       FROM UserTaskSubmit s
       INNER JOIN UserTask t ON t.nTaskId = s.nTaskId
-      WHERE dCheckIn = CONVERT(DATETIME, '${dCheckIn}')
+      WHERE dCheckIn = CONVERT(DATETIME, '${dCheckIn.format('YYYY-MM-DD HH:mm:ss.SSS')}')
       ORDER BY s.nOrder ASC, nVersion DESC, s.dCreated ASC
       `
+      pool = await sqlConnectionPool(db[config.dev ? 'dev' : 'prd'])
       let [ records ] = (await pool.request().query(sql)).recordsets
       let editor = []
       records = records.map(e => {
@@ -158,11 +168,13 @@ async function start() {
     } catch (ex) {
       console.log(ex)
     } finally {
+      pool.close()
       res.end()
     }
   })
 
   app.get('/api/check-last/:hour', async (req, res) => {
+    let pool = { close: () => {} }
     try {
       let hour = parseInt(req.params.hour)
       if (isNaN(hour)) throw new Error('Hour param not int.')
@@ -170,24 +182,28 @@ async function start() {
       SELECT COUNT(*) nTask FROM UserTaskSubmit
       WHERE dCheckIn BETWEEN DATEADD(HOUR, -${hour}, GETDATE()) AND GETDATE()
       `
+      pool = await sqlConnectionPool(db[config.dev ? 'dev' : 'prd'])
       let [ [ record ] ] = (await pool.request().query(command)).recordsets
       if (parseInt(record.nTask) === 0) {
-        sendLINE(`ช่วงเวลา ${moment().add(hour * -1, 'hour').format('HH:mm')} - ${moment().format('HH:mm')} ไม่พบรายการตรวจสอบใหม่`)
+        sendLINE(`*SURVEY-POS*\nไม่มีข้อมูลในช่วงเวลา ${moment().add(hour * -1, 'hour').format('HH:mm')} - ${moment().format('HH:mm')}`)
       }
     } catch (ex) {
       console.log(ex.message)
     } finally {
+      pool.close()
       res.end()
     }
   })
 
   app.post('/api/submit', async (req, res) => {
+    let pool = { close: () => {} }
     try {
       let { key, name, username, tasks } = req.body
       let created = moment() // 2019-03-01 18:04:09.503
       let msg = ''
       let problem = 0
       let updated = 0
+      pool = await sqlConnectionPool(db[config.dev ? 'dev' : 'prd'])
       for (const e of tasks) {
         let nVersion = 1
         let isUpdated = false
@@ -219,19 +235,22 @@ async function start() {
           `
           await pool.request().query(command)
           updated++
+          let [ task ] = (await pool.request().query(`SELECT sSubject FROM [dbo].[UserTask] WHERE nTaskId = ${e.nTaskId}`)).recordset
+          msg += `\n- ${task.sSubject.trim()}`
           if (e.problem) {
             problem++
-            let [ task ] = (await pool.request().query(`SELECT sSubject FROM [dbo].[UserTask] WHERE nTaskId = ${e.nTaskId}`)).recordset
-            msg += `\n- ${task.sSubject.trim()} - \`${e.reason}\``
+            msg += ` - FAIL \`${e.reason}\``
+          } else {
+            msg += ` - PASS`
           }
         }
       }
       if (!key) {
-        let fail = `*[FAIL]* พบข้อผิดพลาด ${problem} รายการ${msg}\n_(${name})_`
-        let pass = `*[PASS]* ตรวจสอบทุกระบบแล้ว.\n_(${name})_`
+        let fail = `[FAIL] *SURVEY-POS*\nพบปัญหา ${problem} รายการ${msg}\n(${name})`
+        let pass = `[PASS] *SURVEY-POS*\n${msg}.\n(${name})`
         sendLINE(problem > 0 ? fail : pass)
-      } else {
-        if (updated > 0) sendLINE(`*[UPDATE]* ${updated} รายการ.\nhttp://${host}:${port}/history/version/${key}`)
+      } else if (updated > 0) {
+        sendLINE(`[UPDATE] *SURVEY-POS*\n${updated} รายการ.\nhttp://${hostName}/history/version/${key}\n${msg}\n(${name})`)
       }
 
       res.json({ success: true })
@@ -239,6 +258,7 @@ async function start() {
       console.log(ex)
       res.json({ success: false })
     } finally {
+      pool.close()
       res.end()
     }
   })
