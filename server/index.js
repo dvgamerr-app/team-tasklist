@@ -180,10 +180,7 @@ async function start() {
     let dCheckIn = moment(req.params.id, 'YYYYMMDDHHmmssSSS')
     if (!moment.isMoment(dCheckIn)) return res.json({})
     try {
-      let sql = `
-      DELETE FROM UserTaskSubmit
-      WHERE dCheckIn = CONVERT(DATETIME, '${dCheckIn.format('YYYY-MM-DD HH:mm:ss.SSS')}')
-      `
+      let sql = `DELETE FROM UserTaskSubmit WHERE dCheckIn = CONVERT(DATETIME, '${dCheckIn.format('YYYY-MM-DD HH:mm:ss.SSS')}')`
       pool = await sqlConnectionPool(db[config.dev ? 'dev' : 'prd'])
       await pool.request().query(sql)
       return res.json({})

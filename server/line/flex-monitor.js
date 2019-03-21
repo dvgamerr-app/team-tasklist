@@ -1,12 +1,12 @@
-module.exports = () => {
-  
+module.exports = (task) => {
+
   return {
     type: 'bubble',
     body: {
       type: 'box',
       layout: 'vertical',
       contents: [
-        {
+        { 
           type: 'box',
           layout: 'horizontal',
           contents: [
