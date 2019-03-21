@@ -27,6 +27,9 @@
                 <button type="button" class="btn btn-sm btn-icon" @click.prevent="onEdit(e.sKey)">
                   <fa icon="edit" />
                 </button>
+                <button v-if="$auth.user.user_level >= 3" type="button" class="btn btn-sm btn-icon" @click.prevent="onDelete(e.sKey)">
+                  <fa icon="trash-alt" />
+                </button>
               </td>
             </tr>
           </tbody>
@@ -45,6 +48,8 @@ export default {
     let { data } = await $axios('/api/history')
     return { history: data }
   },
+  created () {
+  },
   methods: {
     onView (e) {
       if (!this.editor) this.$router.push({ name: 'history-version-id', params: { id: e } })
@@ -52,6 +57,15 @@ export default {
     onEdit (e) {
       this.editor = true
       this.$router.push({ name: 'history-edit-id', params: { id: e } })
+    },
+    onDelete (e) {
+      let vm = this
+      this.editor = true
+      vm.$axios('/api/history/del/' + e).then(() => {
+        vm.$toast.success('Task Delete')
+      }).catch(ex => {
+        vm.$toast.error(ex.message)
+      })
     }
   }
 }

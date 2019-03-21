@@ -173,6 +173,27 @@ async function start() {
     }
   })
 
+  app.get('/api/history/del/:id', async (req, res) => {
+    let key = parseInt(req.params.id)
+    if (isNaN(key)) return res.json({})
+    let pool = { close: () => {} }
+    let dCheckIn = moment(req.params.id, 'YYYYMMDDHHmmssSSS')
+    if (!moment.isMoment(dCheckIn)) return res.json({})
+    try {
+      let sql = `
+      DELETE FROM UserTaskSubmit
+      WHERE dCheckIn = CONVERT(DATETIME, '${dCheckIn.format('YYYY-MM-DD HH:mm:ss.SSS')}')
+      `
+      pool = await sqlConnectionPool(db[config.dev ? 'dev' : 'prd'])
+      await pool.request().query(sql)
+      return res.json({})
+    } catch (ex) {
+      console.log(ex)
+    } finally {
+      pool.close()
+      res.end()
+    }
+  })
   app.get('/api/check-last/:hour', async (req, res) => {
     let pool = { close: () => {} }
     try {

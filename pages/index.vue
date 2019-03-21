@@ -159,6 +159,7 @@ export default {
           e.problem = false
           e.reason = ''
         }
+        this.$forceUpdate()
         if (process.client && this.tasks) window.localStorage.removeItem('survey.tasks')
       }
     },
