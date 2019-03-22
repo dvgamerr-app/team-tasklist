@@ -1,12 +1,10 @@
 module.exports = {
   'dev': {
-    user: 'posappadm',
-    password: 'qwerty8*',
-    server: '10.0.80.46\\poscmg',
+    user: 'sa',
+    password: 'asdasdasd',
+    server: 'RISHSLTSD3NBZXD',
     database: 'SURVEY_CMG',
-    options: {
-      encrypt: true
-    }
+    options: {}
   },
   'prd': {
     user: 'posappadm',
