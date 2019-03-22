@@ -16,7 +16,7 @@ config.dev = !(process.env.NODE_ENV === 'production')
 const hostName = `10.0.80.52:3001`
 const groupKey = process.env.LINE_API || 'Ca2338af8e1ae465a2541acde69cd4e0c'
 const sendLINE = async (msg, body) => {
-  if (process.env.BOT_ROOM) {
+  if (!process.env.BOT_ROOM) {
     const noti = await sqlConnectionPool(db['noti'])
     await noti.request().query(`exec dbo.PushMessage '${groupKey}', '${msg}'`)
     noti.close()
