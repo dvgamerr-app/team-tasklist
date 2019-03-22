@@ -22,7 +22,8 @@
                 <b-form-checkbox
                   :id="'chkTaskList' + e.nTaskId"
                   v-model="e.selected"
-                  :disabled="e.problem" switch required
+                  :disabled="e.problem"
+                  switch required
                   class="tasklist"
                   name="check-button"
                   @change="onChange"
@@ -38,24 +39,51 @@
                   <b class="checker-text"><span v-text="(i + 1) + '. ' + e.sSubject" /></b>
                   <span class="checker-text d-none d-md-inline" v-html="e.sDetail" />
                   <div v-if="e.problem">
-                    <h6 v-if="e.sSolve" class="pt-2">Solve the problem</h6>
-                    <span v-if="e.sSolve" class="checker-text" v-html="e.sSolve" />
+                    <div>
+                      <span class="badge badge-light">STATUS :</span>
+                      <b-button
+                        :class="[ 'status', e.status === 'FAIL' ? 'active' : '' ]"
+                        type="button"
+                        size="sm"
+                        :variant="e.status === 'FAIL' ? 'outline-danger' : 'outline-secondary'"
+                        @click.prevent="onStatus(e, 'FAIL')"
+                        v-text="'FAIL'"
+                      />
+                      <b-button
+                        :class="[ 'status', e.status === 'WARN' ? 'active' : '' ]"
+                        type="button"
+                        size="sm"
+                        :variant="e.status === 'WARN' ? 'outline-warning' : 'outline-secondary'"
+                        @click.prevent="onStatus(e, 'WARN')"
+                        v-text="'WARN'"
+                      />
+                      <b-button
+                        :class="[ 'status', e.status === 'INFO' ? 'active' : '' ]"
+                        type="button"
+                        size="sm"
+                        :variant="e.status === 'INFO' ? 'outline-info' : 'outline-secondary'"
+                        @click.prevent="onStatus(e, 'INFO')"
+                        v-text="'INFO'"
+                      />
+                    </div>
                     <b-form-textarea
                       id="txtReason"
                       v-model="e.reason"
                       class="mt-3 reason"
                       :required="e.problem"
-                      :state="e.reason.length >= 10"
                       size="sm"
                       maxlength="500"
-                      placeholder="Enter at least 10 characters"
-                      rows="3"
+                      placeholder="Enter at least 5 characters"
+                      rows="2"
                       @change="onChange"
                     />
                   </div>
                   <div v-else />
                 </b-form-checkbox>
               </b-form-group>
+            </div>
+            <div v-if="tasks.length === 0" class="text-center">
+              No Transaction
             </div>
           </div>
           <div class="survey-submit">
@@ -158,6 +186,7 @@ export default {
           e.selected = false
           e.problem = false
           e.reason = ''
+          e.status = ''
         }
         this.$forceUpdate()
         if (process.client && this.tasks) window.localStorage.removeItem('survey.tasks')
@@ -166,7 +195,15 @@ export default {
     onSubmit () {
       let vm = this
       let data = vm.tasks.map(e => {
-        return { nTaskId: e.nTaskId, selected: e.selected, problem: e.problem || false, reason: e.reason || '' }
+        return {
+          nTaskId: e.nTaskId,
+          nOrder: e.nOrder,
+          sSubject: e.sSubject,
+          selected: e.selected,
+          status: e.status,
+          problem: e.problem || false,
+          reason: e.reason || ''
+        }
       })
       this.submited = true
       vm.$axios.post('/api/submit', {
@@ -193,9 +230,10 @@ export default {
       })
     },
     onReason (e) {
-      this.$forceUpdate()
       e.selected = false
       e.problem = !e.problem
+      if (!e.status) e.status = e.problem ? 'FAIL' : ''
+      this.$forceUpdate()
 
       this.problem = 0
       for (const i of this.tasks) {
@@ -209,6 +247,12 @@ export default {
       this.$forceUpdate()
       if (this.taskKey) return
       this.onSave()
+    },
+    onStatus (e, text) {
+      e.status = text
+      this.$forceUpdate()
+      if (this.taskKey) return
+      this.onSave()
     }
   }
 }
@@ -218,6 +262,12 @@ export default {
 .checker-text {
   font-family: "Segoe UI";
   font-size: 13px;
+}
+button.status {
+  width: 40px;
+  padding: 0px;
+  font-size: 10px;
+  font-weight: bold;
 }
 button[type=submit] {
   min-width: 120px;

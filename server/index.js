@@ -2,24 +2,33 @@ const express = require('express')
 const consola = require('consola')
 const sql = require('mssql')
 const moment = require('moment')
+const request = require('request-promise')
 const bodyParser = require('body-parser')
 const { Nuxt } = require('nuxt')
 const app = express()
 
 const auth = require('./authication')
-
+let lineMonitor = require('./line/flex-monitor')
 // Import and Set Nuxt.js options
 const config = require('../nuxt.config.js')
 const db = require('./db')
 config.dev = !(process.env.NODE_ENV === 'production')
 const hostName = `10.0.80.52:3001`
 const groupKey = process.env.LINE_API || 'Ca2338af8e1ae465a2541acde69cd4e0c'
-const sendLINE = async (msg) => {
-  const noti = await sqlConnectionPool(db['noti'])
-  await noti.request().query(`exec dbo.PushMessage '${groupKey}', '${msg}'`)
-  noti.close()
+const sendLINE = async (msg, body) => {
+  if (process.env.BOT_ROOM) {
+    const noti = await sqlConnectionPool(db['noti'])
+    await noti.request().query(`exec dbo.PushMessage '${groupKey}', '${msg}'`)
+    noti.close()
+  } else {
+    await request({
+      method: 'PUT',
+      url: `https://intense-citadel-55702.herokuapp.com/sd3-robo/${process.env.BOT_ROOM}`,
+      body: lineMonitor(body),
+      json: true
+    })
+  }
 }
-
 const sqlConnectionPool = (db) => new Promise((resolve, reject) => {
   const conn = new sql.ConnectionPool(db)
   conn.connect(err => {
@@ -55,7 +64,7 @@ async function start() {
     let pool = { close: () => {} }
     try {
       pool = await sqlConnectionPool(db[config.dev ? 'dev' : 'prd'])
-      let sql = 'SELECT nTaskId, sSubject, sDetail, sDescription, sSolve, nOrder FROM SURVEY_CMG..UserTask WHERE bEnabled = 1 ORDER BY nOrder ASC'
+      let sql = 'SELECT nTaskId, sSubject, ISNULL(sDetail,\'\') sDetail, sDescription, sSolve, nOrder FROM SURVEY_CMG..UserTask WHERE bEnabled = 1 ORDER BY nOrder ASC'
       let [ records ] = (await pool.request().query(sql)).recordsets
       res.json(records)
     } catch (ex) {
@@ -76,7 +85,9 @@ async function start() {
         SELECT ROW_NUMBER() OVER (ORDER BY g.dCreated DESC) AS nRow
           , g.sKey, sUsername, sName, g.dCreated, MAX(g.dModified) dModified
           , SUM(CASE WHEN sStatus = 'FAIL' THEN 1 ELSE 0 END) nFail
-          , SUM(CASE WHEN sStatus = 'PASS' THEN 1 ELSE 0 END) nSuccess
+          , SUM(CASE WHEN sStatus = 'WARN' THEN 1 ELSE 0 END) nWarn
+          , SUM(CASE WHEN sStatus = 'INFO' THEN 1 ELSE 0 END) nInfo
+          , SUM(CASE WHEN sStatus = 'PASS' THEN 1 ELSE 0 END) nPass
         FROM SURVEY_CMG..UserTaskSubmit s
         INNER JOIN (
           SELECT CONVERT(VARCHAR,dCheckIn,112) + REPLACE(CONVERT(VARCHAR,dCheckIn,114), ':', '') sKey, nTaskId, MAX(nIndex) nIndex
@@ -123,7 +134,8 @@ async function start() {
       records = records.map(e => {
         if (editor.indexOf(e['sName']) === -1) editor.push(e['sName'])
         e.selected = e['sStatus'] === 'PASS'
-        e.problem = e['sStatus'] === 'FAIL'
+        e.problem = e['sStatus'] !== 'PASS'
+        e.status = e['sStatus']
         e.reason = e['sRemark']
         delete e['sStatus']
         delete e['sRemark']
@@ -146,11 +158,11 @@ async function start() {
     if (!moment.isMoment(dCheckIn)) return res.json({})
     try {
       let sql = `
-      SELECT s.nTaskId, s.sName, t.sSubject, t.sDetail, sStatus, sRemark, nVersion, CONVERT(VARCHAR, s.dCreated, 120) dCreated
+      SELECT s.nTaskId, s.sName, t.sSubject, ISNULL(t.sDetail,'') sDetail, sStatus, sRemark, nVersion, CONVERT(VARCHAR, s.dCreated, 120) dCreated
       FROM UserTaskSubmit s
       INNER JOIN UserTask t ON t.nTaskId = s.nTaskId
       WHERE dCheckIn = CONVERT(DATETIME, '${dCheckIn.format('YYYY-MM-DD HH:mm:ss.SSS')}')
-      ORDER BY s.nOrder ASC, nVersion DESC, s.dCreated ASC
+      ORDER BY s.nOrder ASC, nVersion DESC
       `
       pool = await sqlConnectionPool(db[config.dev ? 'dev' : 'prd'])
       let [ records ] = (await pool.request().query(sql)).recordsets
@@ -158,7 +170,8 @@ async function start() {
       records = records.map(e => {
         if (editor.indexOf(e['sName']) === -1) editor.push(e['sName'])
         e.selected = e['sStatus'] === 'PASS'
-        e.problem = e['sStatus'] === 'FAIL'
+        e.problem = e['sStatus'] !== 'PASS'
+        e.status = e['sStatus']
         e.reason = e['sRemark']
         delete e['sStatus']
         delete e['sRemark']
@@ -238,7 +251,7 @@ async function start() {
             ) i ON i.nIndex = s.nIndex
           `
           let [ [ record ] ] = (await pool.request().query(checkRow)).recordsets
-          let sStatus = record['sStatus'] === (e.problem ? 'FAIL' : 'PASS')
+          let sStatus = record['sStatus'] === (e.problem ? e.status : 'PASS')
           let sRemark = record['sRemark'] === (e.reason || '')
           if (!sStatus || !sRemark) {
             nVersion = parseInt(record['nVersion']) + 1
@@ -248,27 +261,31 @@ async function start() {
 
         if (!key || isUpdated) {
           let command = `INSERT INTO [dbo].[UserTaskSubmit] ([nTaskId],[sUsername],[sName],[sStatus],[sRemark],[nOrder],[dCheckIn],[dCreated],[nVersion])
-            VALUES (${e.nTaskId},'${username.trim()}','${name}','${e.problem ? 'FAIL' : 'PASS'}', '${(e.reason || '').replace(`'`,`\'`)}'
+            VALUES (${e.nTaskId},'${username.trim()}','${name}','${e.problem ? e.status : 'PASS'}', '${(e.reason || '').replace(`'`,`\'`)}'
             , ${e.nOrder}, CONVERT(DATETIME, '${created.format('YYYY-MM-DD HH:mm:ss.SSS')}', 121),  GETDATE(), ${nVersion})
           `
           await pool.request().query(command)
           updated++
-          let [ task ] = (await pool.request().query(`SELECT sSubject FROM [dbo].[UserTask] WHERE nTaskId = ${e.nTaskId}`)).recordset
-          msg += `\n- ${task.sSubject.trim()}`
+          msg += `\n[${e.problem ? e.status : 'PASS'}] - ${e.sSubject.trim()}`
           if (e.problem) {
             problem++
-            msg += ` - FAIL \`${e.reason}\``
-          } else {
-            msg += ` - PASS`
+            msg += ` | \`${e.reason}\``
           }
         }
       }
-      if (!key) {
-        let fail = `[FAIL] *SURVEY-POS*\nพบปัญหา ${problem} รายการ${msg}\n(${name})`
-        let pass = `[PASS] *SURVEY-POS*\n${msg}.\n(${name})`
-        sendLINE(problem > 0 ? fail : pass)
+
+      
+      let totalFail = tasks.filter(e => e.status === 'FAIL').length
+      let totalWarn = tasks.filter(e => e.status === 'WARN').length
+      let totalInfo = tasks.filter(e => e.status === 'INFO').length
+    
+      let topName = `Summary Monitor DailyClose`
+      let topStatus = (totalFail > 0) ? 'FAIL' : totalWarn > 0 ? 'WARN' : totalInfo > 0 ? 'INFO' : 'PASS'
+      let topDate = moment().format('HH:mm, DD MMM YYYY')
+      if (!key) { // สรุป Monitor DailyClose 21.03.2019 Time 22.30
+        sendLINE(`*[${topStatus}] ${topName}*\n${msg}\n\n(${name} at ${topDate})`, req.body)
       } else if (updated > 0) {
-        sendLINE(`[UPDATE] *SURVEY-POS*\n${updated} รายการ.\nhttp://${hostName}/history/version/${key}\n${msg}\n(${name})`)
+        sendLINE(`*[UPDATE] ${topName}*\nhttp://${hostName}/history/version/${key}\n${msg}\n\n(${name} at ${topDate})`, req.body)
       }
 
       res.json({ success: true })

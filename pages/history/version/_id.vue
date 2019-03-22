@@ -12,7 +12,7 @@
         <div class="col-sm-36">
           <div v-for="(e, i) in getLastVersion()" :key="e.nTaskId">
             <b-form-group :label-for="'chkTaskList' + e.nTaskId">
-              <fa :class="!e.problem ? 'text-pass' : 'text-fail'" :icon="!e.problem ? 'check-square' : 'window-close'" />
+              <fa :class="'text-'+getColor(e)" :icon="getIcon(e)" />
               <b class="history-text"><span v-text="(i + 1) + '. ' + e.sSubject" /></b>
               <small>at {{ parseDate(e.dCreated) }} {{ e.nVersion !== 1 ? 'updated' : 'submited' }} by {{ e.sName }}</small>
               <div class="history-text d-none d-md-block ml-35" v-html="e.sDetail" />
@@ -20,7 +20,7 @@
               <div v-if="e.nVersion !== 1" class="history-detail">
                 <div v-for="d in getDetailVersion(e.nTaskId)" :key="d.nVersion">
                   <div v-if="e.nVersion != d.nVersion">
-                    <fa :class="!d.problem ? 'text-pass' : 'text-fail'" :icon="!d.problem ? 'check-square' : 'window-close'" />
+                    <fa :class="'text-'+getColor(d)" :icon="getIcon(d)" />
                     {{ parseDate(d.dCreated) }} {{ d.nVersion !== 1 ? 'updated' : 'submited' }} by {{ d.sName }}
                     <pre v-if="d.problem" v-html="d.reason" />
                   </div>
@@ -57,6 +57,28 @@ export default {
     return { editor: data.editor, tasks: data.records, taskKey: params.id }
   },
   methods: {
+    getIcon (e) {
+      if (e.status === 'FAIL') {
+        return 'times-circle'
+      } else if (e.status === 'WARN') {
+        return 'exclamation-circle'
+      } else if (e.status === 'INFO') {
+        return 'info-circle'
+      } else if (e.status === 'PASS') {
+        return 'check-circle'
+      }
+    },
+    getColor (e) {
+      if (e.status === 'FAIL') {
+        return 'danger'
+      } else if (e.status === 'WARN') {
+        return 'warning'
+      } else if (e.status === 'INFO') {
+        return 'info'
+      } else if (e.status === 'PASS') {
+        return 'success'
+      }
+    },
     parseDate (date) {
       return moment(date).format('DD MMM YYYY HH:mm:ss')
     },

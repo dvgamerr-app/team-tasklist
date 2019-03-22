@@ -16,8 +16,8 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="e in history" :key="e.nRow" :class="e.nFail > 0 ? 'table-warning' : ''" @click.prevent="onView(e.sKey)">
-              <td class="text-center"><fa :icon="e.nFail > 0 ? 'times' : 'check'" :class="e.nFail > 0 ? 'text-danger' : 'text-success'" /></td>
+            <tr v-for="e in history" :key="e.nRow" :class="e.nFail > 0 ? 'table-danger' : ''" @click.prevent="onView(e.sKey)">
+              <td class="text-center"><fa :icon="getIcon(e)" :class="'text-'+getColor(e)" /></td>
               <th class="text-center" scope="row" v-text="e.nRow" />
               <td v-text="e.sName" />
               <td class="text-center" v-text="e.nFail" />
@@ -31,6 +31,9 @@
                   <fa icon="trash-alt" />
                 </button>
               </td>
+            </tr>
+            <tr v-if="history.length === 0" class="text-center">
+              <th colspan="7" class="text-center">No Transaction</th>
             </tr>
           </tbody>
         </table>
@@ -51,6 +54,28 @@ export default {
   created () {
   },
   methods: {
+    getIcon (e) {
+      if (e.nFail > 0) {
+        return 'times-circle'
+      } else if (e.nWarn > 0) {
+        return 'exclamation-circle'
+      } else if (e.nInfo > 0) {
+        return 'info-circle'
+      } else if (e.nPass > 0) {
+        return 'check-circle'
+      }
+    },
+    getColor (e) {
+      if (e.nFail > 0) {
+        return 'danger'
+      } else if (e.nWarn > 0) {
+        return 'warning'
+      } else if (e.nInfo > 0) {
+        return 'info'
+      } else if (e.nPass > 0) {
+        return 'success'
+      }
+    },
     onView (e) {
       if (!this.editor) this.$router.push({ name: 'history-version-id', params: { id: e } })
     },
@@ -61,8 +86,10 @@ export default {
     onDelete (e) {
       let vm = this
       this.editor = true
+      
       vm.$axios('/api/history/del/' + e).then(() => {
         vm.$toast.success('Task Delete')
+        vm.$router.go()
       }).catch(ex => {
         vm.$toast.error(ex.message)
       })
