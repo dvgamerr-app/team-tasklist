@@ -200,11 +200,12 @@ export default {
           nOrder: e.nOrder,
           sSubject: e.sSubject,
           selected: e.selected,
-          status: e.status,
+          status: e.problem ? e.status : '',
           problem: e.problem || false,
-          reason: e.reason || ''
+          reason: e.problem ? e.reason : ''
         }
       })
+      console.log(data)
       this.submited = true
       vm.$axios.post('/api/submit', {
         key: vm.taskKey,
@@ -233,17 +234,18 @@ export default {
       e.selected = false
       e.problem = !e.problem
       if (!e.status) e.status = e.problem ? 'FAIL' : ''
+      if (!e.problem) e.status = ''
       this.$forceUpdate()
 
       this.problem = 0
       for (const i of this.tasks) {
         this.problem += i.problem ? 1 : 0
       }
-      e.reason = ''
+      console.log(e)
       if (this.taskKey) return
       this.onSave()
     },
-    onChange (e) {
+    onChange () {
       this.$forceUpdate()
       if (this.taskKey) return
       this.onSave()
