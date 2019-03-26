@@ -188,9 +188,8 @@ router.post('/logout', (req, res) => (async () => {
   res.status(401).json({})
 }))
 
-if (process.env.NODE_ENV === 'production') {
-  logger.start(`Authentication listening on ${process.env.AXIOS_BASE_URL}`)
-}
+const port = process.env.PORT || 3001
+logger.start(`Authentication listening on ${port}`)
 // Export the server middleware
 module.exports = {
   path: '/auth',

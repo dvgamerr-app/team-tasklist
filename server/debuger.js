@@ -57,27 +57,27 @@ module.exports = scopeName => {
   let measure = null
   return {
     log (...msg) {
-      if (!isDev) return
-      let msg2 = [ chalk.gray(moment().format('HH:mm:ss.SSS')), chalk.gray.bold('…') ]
-      msg2.push(measure ? groupPadding(measure.nanoseconds(), groupSize, 'padStart') : chalk.gray.bold(groupPadding('debug', groupSize, 'padStart')))
-      if (scopeName) {
-        msg2.push(groupPadding(scopeName, scopeSize, 'padEnd'))
-        msg2.push(chalk.cyan('»'))
-      }
-      console.log(...(msg2.concat(msg)))
+      // let msg2 = [ chalk.gray(moment().format('HH:mm:ss.SSS')), chalk.gray.bold('…') ]
+      // msg2.push(measure ? groupPadding(measure.nanoseconds(), groupSize, 'padStart') : chalk.gray.bold(groupPadding('debug', groupSize, 'padStart')))
+      // if (scopeName) {
+      //   msg2.push(groupPadding(scopeName, scopeSize, 'padEnd'))
+      //   msg2.push(chalk.cyan('»'))
+      // }
+      // console.log(...(msg2.concat(msg)))
+      if (isDev) logWindows(scopeName, '…', 'debug', chalk.gray.bold, msg); else logLinux(scopeName, '…', msg)
     },
     start (...msg) {
-      measure = new Time()
+      // measure = new Time()
       if (isDev) logWindows(scopeName, '○', 'start', chalk.cyan.bold, msg); else logLinux(scopeName, '○', msg)
     },
     success (...msg) {
-      if (measure) msg.push(`(${measure.total()})`)
+      // if (measure) msg.push(`(${measure.total()})`)
       if (isDev) logWindows(scopeName, '●', 'success', chalk.green.bold, msg); else logLinux(scopeName, '●', msg)
-      measure = null
+      // measure = null
     },
     warning (...msg) {
       if (isDev) logWindows(scopeName, '▲', 'warning', chalk.yellow.bold, msg); else logLinux(scopeName, '▲', msg)
-      measure = null
+      // measure = null
     },
     info (...msg) {
       if (isDev) logWindows(scopeName, '╍', 'info', chalk.blue.bold, msg); else logLinux(scopeName, null, msg)
