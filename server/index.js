@@ -7,29 +7,22 @@ const bodyParser = require('body-parser')
 const { Nuxt } = require('nuxt')
 const app = express()
 
+const logger = require('./debuger')('SERVER')
 const auth = require('./authication')
 let lineMonitor = require('./line/flex-monitor')
+let lineNone = require('./line/flex-none')
 // Import and Set Nuxt.js options
 const config = require('../nuxt.config.js')
 const db = require('./db')
+const mongodb = require('./mongodb')
 config.dev = !(process.env.NODE_ENV === 'production')
 const hostName = `10.0.80.52:3001`
 const groupKey = process.env.LINE_API || 'Ca2338af8e1ae465a2541acde69cd4e0c'
-const sendLINE = async (msg, body) => {
-  // if (process.env.BOT_ROOM) {
-  //   const noti = await sqlConnectionPool(db['noti'])
-  //   await noti.request().query(`exec dbo.PushMessage '${groupKey}', '${msg}'`)
-  //   noti.close()
-  // } else {
-  await request({
-    method: 'PUT',
-    url: `http://10.101.147.48:3000/cmgpos-bot/${groupKey}`,
-    body: lineMonitor(body),
-    json: true
-  })
-  // }
+const sendLINE = async (body) => {
+  logger.info('LINE pushMessage.')
+  await request({ method: 'PUT', url: `http://10.101.147.48:3000/cmgpos-bot/${groupKey}`, body, json: true })
 }
-const sqlConnectionPool = (db) => new Promise((resolve, reject) => {
+const sqlConnectionPool = db => new Promise((resolve, reject) => {
   const conn = new sql.ConnectionPool(db)
   conn.connect(err => {
     if (err) return reject(err)
@@ -68,7 +61,7 @@ async function start() {
       let [ records ] = (await pool.request().query(sql)).recordsets
       res.json(records)
     } catch (ex) {
-      console.log(ex)
+      logger.error(ex)
     } finally {
       pool.close()
       res.end()
@@ -103,7 +96,7 @@ async function start() {
       let [ records ] = (await pool.request().query(sql)).recordsets
       return res.json(records)
     } catch (ex) {
-      console.log(ex)
+      logger.error(ex)
     } finally {
       pool.close()
       res.end()
@@ -143,7 +136,7 @@ async function start() {
       })
       return res.json({ editor: editor.join(', '), records: records })
     } catch (ex) {
-      console.log(ex)
+      logger.error(ex)
     } finally {
       pool.close()
       res.end()
@@ -179,7 +172,7 @@ async function start() {
       })
       return res.json({ editor: editor.join(', '), records: records })
     } catch (ex) {
-      console.log(ex)
+      logger.error(ex)
     } finally {
       pool.close()
       res.end()
@@ -190,6 +183,7 @@ async function start() {
     let key = parseInt(req.params.id)
     if (isNaN(key)) return res.json({})
     let pool = { close: () => {} }
+    logger.info('History ID:', req.params.id, 'Deleted.')
     let dCheckIn = moment(req.params.id, 'YYYYMMDDHHmmssSSS')
     if (!moment.isMoment(dCheckIn)) return res.json({})
     try {
@@ -198,7 +192,7 @@ async function start() {
       await pool.request().query(sql)
       return res.json({})
     } catch (ex) {
-      console.log(ex)
+      logger.error(ex)
     } finally {
       pool.close()
       res.end()
@@ -216,7 +210,8 @@ async function start() {
       pool = await sqlConnectionPool(db[config.dev ? 'dev' : 'prd'])
       let [ [ record ] ] = (await pool.request().query(command)).recordsets
       if (parseInt(record.nTask) === 0) {
-        sendLINE(`*SURVEY-POS*\nไม่มีข้อมูลในช่วงเวลา ${moment().add(hour * -1, 'hour').format('HH:mm')} - ${moment().format('HH:mm')}`)
+        sendLINE(lineNone(`ไม่มีข้อมูลในช่วงเวลา ${moment().add(hour * -1, 'hour').format('HH:mm')} - ${moment().format('HH:mm')}`))
+        // sendLINE(`*SURVEY-POS*\nไม่มีข้อมูลในช่วงเวลา ${moment().add(hour * -1, 'hour').format('HH:mm')} - ${moment().format('HH:mm')}`)
       }
     } catch (ex) {
       console.log(ex.message)
@@ -231,9 +226,7 @@ async function start() {
     try {
       let { key, name, username, tasks } = req.body
       let created = moment() // 2019-03-01 18:04:09.503
-      let msg = ''
-      let problem = 0
-      let updated = 0
+      let updated = []
       pool = await sqlConnectionPool(db[config.dev ? 'dev' : 'prd'])
       for (const e of tasks) {
         let nVersion = 1
@@ -265,15 +258,9 @@ async function start() {
             , ${e.nOrder}, CONVERT(DATETIME, '${created.format('YYYY-MM-DD HH:mm:ss.SSS')}', 121),  GETDATE(), ${nVersion})
           `
           await pool.request().query(command)
-          updated++
-          msg += `\n[${e.problem ? e.status : 'PASS'}] - ${e.sSubject.trim()}`
-          if (e.problem) {
-            problem++
-            msg += ` | \`${e.reason}\``
-          }
+          updated.push(e)
         }
       }
-
       
       let totalFail = tasks.filter(e => e.status === 'FAIL').length
       let totalWarn = tasks.filter(e => e.status === 'WARN').length
@@ -282,18 +269,39 @@ async function start() {
       let topName = `Summary Monitor DailyClose`
       let topStatus = (totalFail > 0) ? 'FAIL' : totalWarn > 0 ? 'WARN' : totalInfo > 0 ? 'INFO' : 'PASS'
       let topDate = moment().format('HH:mm, DD MMM YYYY')
-      if (!key) { // สรุป Monitor DailyClose 21.03.2019 Time 22.30
-        sendLINE(`*[${topStatus}] ${topName}*\n${msg}\n\n(${name} at ${topDate})`, req.body)
-      } else if (updated > 0) {
-        sendLINE(`*[UPDATE] ${topName}*\nhttp://${hostName}/history/version/${key}\n${msg}\n\n(${name} at ${topDate})`, req.body)
-      }
 
+      let logText = `Monitor ${updated.length > 0 ? updated.length : tasks.length} (F:${totalFail} W:${totalWarn}  I:${totalInfo})`
+      logger.info(logText, created.format('YYYY-MM-DD HH:mm:ss.SSS'), key ? 'Updated.' : 'Insterted.')
+      if (!key) { // สรุป Monitor DailyClose 21.03.2019 Time 22.30
+        sendLINE(lineMonitor(name, tasks))
+        // sendLINE(`*[${topStatus}] ${topName}*\n${msg}\n\n(${name} at ${topDate})`, req.body)
+      } else if (updated.length > 0) {
+        sendLINE(lineMonitor(name, updated, `http://${hostName}/history/version/${key}`))
+      }
       res.json({ success: true })
     } catch (ex) {
-      console.log(ex)
+      logger.error(ex)
       res.json({ success: false })
     } finally {
       pool.close()
+      res.end()
+    }
+  })
+
+  app.put('/api/logs/:app/:group/:status/:msg?', async (req, res) => {
+    try {
+      let { app, group, status, msg } = req.params
+      const appLogs = require('./debuger')(app)
+      if (!appLogs[status]) return res.end()
+      const { ServiceLog } = await mongodb.open()
+      let { text } = req.body
+      msg = msg || (!text ? JSON.stringify(req.body) : text)
+
+      appLogs[status](`${group !== 'null' ? `[${group}]` : ''} ${msg}`)
+      await new ServiceLog({ app, group: (group !== 'null' ? group : ''), status, message: msg, created: new Date() }).save()
+    } catch {
+      res.statusCode(404)
+    } finally {
       res.end()
     }
   })
@@ -303,14 +311,11 @@ async function start() {
     app.use(nuxt.render)
   }
   // Listen the server
-  app.listen(port, host)
-  consola.ready({
-    message: `Server listening on http://${host}:${port}`,
-    badge: true
-  })
+  await app.listen(port, host)
+  logger.start(`Listening on http://${host}:${port}`)
 }
 
 start().catch(ex => {
-  console.log(ex)
+  logger.error(ex)
   process.exit(1)
 })

@@ -114,14 +114,14 @@ module.exports = [
     })
   },
   {
-    id: 'TerminalLog',
-    name: 'db-terminal-log',
+    id: 'ServiceLog',
+    name: 'db-service-log',
     schema: Schema({
-      user: String,
-      stdin: String,
-      exec: String,
-      stdout: String,
-      created: Date
+      app: { type: String, index: true },
+      group: { type: String, index: true },
+      status: { type: String, index: true },
+      message: String,
+      created: { type: Date, index: true }
     })
   },
   {
