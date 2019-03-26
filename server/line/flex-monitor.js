@@ -10,15 +10,14 @@ const statusColor = (e) => {
   }
 }
 
-module.exports = body => {
-  let { name, tasks } = body
+module.exports = (name, tasks, updated = false) => {
 
   let totalFail = tasks.filter(e => e.status === 'FAIL').length
   let totalWarn = tasks.filter(e => e.status === 'WARN').length
   let totalInfo = tasks.filter(e => e.status === 'INFO').length
 
   let topName = `Monitor DailyClose`
-  let topStatus = (totalFail > 0) ? 'FAIL' : totalWarn > 0 ? 'WARN' : totalInfo > 0 ? 'INFO' : 'PASS'
+  let topStatus = updated ? 'UPDATE' : totalFail > 0 ? 'FAIL' : totalWarn > 0 ? 'WARN' : totalInfo > 0 ? 'INFO' : 'PASS'
   let topColor = statusColor(topStatus)
   let topDate = moment().format('HH:mm, DD MMM YYYY')
 
@@ -47,6 +46,7 @@ module.exports = body => {
     }
     return contents
   })
+  if (updated) tasks.push({ type: 'button', action: { type: 'uri', label: 'View History', uri: updated } })
   let flexMessage = {
     type: 'bubble',
     body: {
