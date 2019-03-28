@@ -3,6 +3,7 @@
     <h3>History Survey</h3>
     <div class="row mt-3">
       <div class="col-36">
+        {{ getGroupHistory() }}
         <table class="table table-sm table-hover">
           <thead class="thead-light">
             <tr>
@@ -42,6 +43,8 @@
   </div>
 </template>
 <script>
+import moment from 'moment'
+
 export default {
   data: () => ({
     history: [],
@@ -54,6 +57,10 @@ export default {
   created () {
   },
   methods: {
+    getGroupHistory () {
+      let group = this.history.map(e => moment(e.dCreated).format('YYYY-MM-DD'))
+      return [ ...new Set(group) ]
+    },
     getIcon (e) {
       if (e.nFail > 0) {
         return 'times-circle'

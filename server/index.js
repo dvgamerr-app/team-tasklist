@@ -19,8 +19,8 @@ config.dev = !(process.env.NODE_ENV === 'production')
 const hostName = `10.0.80.52:3001`
 const groupKey = process.env.LINE_API || 'Ca2338af8e1ae465a2541acde69cd4e0c'
 const sendLINE = async (body) => {
-  logger.info('LINE pushMessage.')
   await request({ method: 'PUT', url: `http://10.101.147.48:3000/cmgpos-bot/${groupKey}`, body, json: true })
+  logger.info('LINE pushMessage.')
 }
 const sqlConnectionPool = db => new Promise((resolve, reject) => {
   const conn = new sql.ConnectionPool(db)
@@ -57,7 +57,7 @@ async function start() {
     let pool = { close: () => {} }
     try {
       pool = await sqlConnectionPool(db[config.dev ? 'dev' : 'prd'])
-      let sql = 'SELECT nTaskId, sSubject, ISNULL(sDetail,\'\') sDetail, sDescription, sSolve, nOrder FROM SURVEY_CMG..UserTask WHERE bEnabled = 1 ORDER BY nOrder ASC'
+      let sql = 'SELECT nTaskDetailId, sSubject, ISNULL(sDetail,\'\') sDetail, sDescription, sSolve, nOrder FROM SURVEY_CMG..UserTaskDetail WHERE bEnabled = 1 ORDER BY nOrder ASC'
       let [ records ] = (await pool.request().query(sql)).recordsets
       res.json(records)
     } catch (ex) {
@@ -83,11 +83,11 @@ async function start() {
           , SUM(CASE WHEN sStatus = 'PASS' THEN 1 ELSE 0 END) nPass
         FROM SURVEY_CMG..UserTaskSubmit s
         INNER JOIN (
-          SELECT CONVERT(VARCHAR,dCheckIn,112) + REPLACE(CONVERT(VARCHAR,dCheckIn,114), ':', '') sKey, nTaskId, MAX(nIndex) nIndex
+          SELECT CONVERT(VARCHAR,dCheckIn,112) + REPLACE(CONVERT(VARCHAR,dCheckIn,114), ':', '') sKey, nTaskDetailId, MAX(nIndex) nIndex
 		      , CONVERT(VARCHAR, MIN(dCreated), 120) dCreated
           , CONVERT(VARCHAR, MAX(dCreated), 120) dModified
           FROM SURVEY_CMG..UserTaskSubmit
-          GROUP BY CONVERT(VARCHAR,dCheckIn,112) + REPLACE(CONVERT(VARCHAR,dCheckIn,114), ':', ''), nTaskId
+          GROUP BY CONVERT(VARCHAR,dCheckIn,112) + REPLACE(CONVERT(VARCHAR,dCheckIn,114), ':', ''), nTaskDetailId
         ) g ON g.nIndex = s.nIndex
         GROUP BY g.sKey, sUsername, sName, g.dCreated
       ) AS r WHERE nRow >= ${page} * 100 - 99 AND nRow <= ${page} * 100
@@ -110,14 +110,14 @@ async function start() {
     if (!moment.isMoment(dCheckIn)) return res.json({})
     try {
       let sql = `
-      SELECT s.nIndex, s.nTaskId, s.sName, t.sSubject, ISNULL(t.sDetail,'') sDetail
+      SELECT s.nIndex, s.nTaskDetailId, s.sName, t.sSubject, ISNULL(t.sDetail,'') sDetail
         , ISNULL(t.sSolve,'') sSolve, t.nOrder, sStatus, sRemark, nVersion
       FROM UserTaskSubmit s
-      INNER JOIN UserTask t ON t.nTaskId = s.nTaskId
+      INNER JOIN UserTaskDetail t ON t.nTaskDetailId = s.nTaskDetailId
       INNER JOIN (
         SELECT MAX(nIndex) nIndex  FROM UserTaskSubmit
         WHERE dCheckIn = CONVERT(DATETIME, '${dCheckIn.format('YYYY-MM-DD HH:mm:ss.SSS')}')
-        GROUP BY nTaskId
+        GROUP BY nTaskDetailId
       ) i ON i.nIndex = s.nIndex
       ORDER BY s.nOrder ASC, nVersion DESC, s.dCreated ASC
       `
@@ -151,9 +151,9 @@ async function start() {
     if (!moment.isMoment(dCheckIn)) return res.json({})
     try {
       let sql = `
-      SELECT s.nTaskId, s.sName, t.sSubject, ISNULL(t.sDetail,'') sDetail, sStatus, sRemark, nVersion, CONVERT(VARCHAR, s.dCreated, 120) dCreated
+      SELECT s.nTaskDetailId, s.sName, t.sSubject, ISNULL(t.sDetail,'') sDetail, sStatus, sRemark, nVersion, CONVERT(VARCHAR, s.dCreated, 120) dCreated
       FROM UserTaskSubmit s
-      INNER JOIN UserTask t ON t.nTaskId = s.nTaskId
+      INNER JOIN UserTaskDetail t ON t.nTaskDetailId = s.nTaskDetailId
       WHERE dCheckIn = CONVERT(DATETIME, '${dCheckIn.format('YYYY-MM-DD HH:mm:ss.SSS')}')
       ORDER BY s.nOrder ASC, nVersion DESC
       `
@@ -237,10 +237,10 @@ async function start() {
           let checkRow = `
             SELECT sStatus, sRemark, nVersion
             FROM UserTaskSubmit s
-            INNER JOIN UserTask t ON t.nTaskId = s.nTaskId
+            INNER JOIN UserTaskDetail t ON t.nTaskDetailId = s.nTaskDetailId
             INNER JOIN (
               SELECT MAX(nIndex) nIndex  FROM UserTaskSubmit
-              WHERE dCheckIn = CONVERT(DATETIME, '${dCheckIn.format('YYYY-MM-DD HH:mm:ss.SSS')}') AND nTaskId = ${e.nTaskId}
+              WHERE dCheckIn = CONVERT(DATETIME, '${dCheckIn.format('YYYY-MM-DD HH:mm:ss.SSS')}') AND nTaskDetailId = ${e.nTaskDetailId}
             ) i ON i.nIndex = s.nIndex
           `
           let [ [ record ] ] = (await pool.request().query(checkRow)).recordsets
@@ -253,8 +253,8 @@ async function start() {
         }
 
         if (!key || isUpdated) {
-          let command = `INSERT INTO [dbo].[UserTaskSubmit] ([nTaskId],[sUsername],[sName],[sStatus],[sRemark],[nOrder],[dCheckIn],[dCreated],[nVersion])
-            VALUES (${e.nTaskId},'${username.trim()}','${name}','${e.problem ? e.status : 'PASS'}', '${(e.reason || '').replace(`'`,`\'`)}'
+          let command = `INSERT INTO [dbo].[UserTaskSubmit] ([nTaskDetailId],[sUsername],[sName],[sStatus],[sRemark],[nOrder],[dCheckIn],[dCreated],[nVersion])
+            VALUES (${e.nTaskDetailId},'${username.trim()}','${name}','${e.problem ? e.status : 'PASS'}', '${(e.reason || '').replace(`'`,`\'`)}'
             , ${e.nOrder}, CONVERT(DATETIME, '${created.format('YYYY-MM-DD HH:mm:ss.SSS')}', 121),  GETDATE(), ${nVersion})
           `
           await pool.request().query(command)
