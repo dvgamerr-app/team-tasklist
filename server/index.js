@@ -1,8 +1,6 @@
 const express = require('express')
 const consola = require('consola')
-const sql = require('mssql')
 const moment = require('moment')
-const request = require('request-promise')
 const bodyParser = require('body-parser')
 const { Nuxt } = require('nuxt')
 const app = express()
@@ -13,7 +11,6 @@ let lineMonitor = require('./line/flex-monitor')
 let lineNone = require('./line/flex-none')
 // Import and Set Nuxt.js options
 const config = require('../nuxt.config.js')
-const db = require('./db')
 const mongodb = require('./mongodb')
 config.dev = !(process.env.NODE_ENV === 'production')
 const hostName = `10.0.80.52:3001`
@@ -22,51 +19,35 @@ const sendLINE = async (body) => {
   await request({ method: 'PUT', url: `http://10.101.147.48:3000/cmgpos-bot/${groupKey}`, body, json: true })
   logger.info('LINE pushMessage.')
 }
-const sqlConnectionPool = db => new Promise((resolve, reject) => {
-  const conn = new sql.ConnectionPool(db)
-  conn.connect(err => {
-    if (err) return reject(err)
-    resolve(conn)
-  })
+
+const pool = require('./mssql')
+
+// Init Nuxt.js
+const nuxt = new Nuxt(config)
+
+const host = process.env.HOST || '127.0.0.1'
+const port = process.env.PORT || 3001
+
+// Build only in dev mode
+app.use((req, res, next) => {
+  const methodAllow = [ 'GET', 'HEAD', 'OPTIONS', 'POST', 'PUT' ]
+  res.setHeader('Access-Control-Allow-Origin', '*')
+  res.setHeader('Access-Control-Allow-Headers', '*')
+  res.setHeader('Access-Control-Allow-Credentials', 'true')
+  res.setHeader('Access-Control-Allow-Methods', methodAllow.join(','))
+  if (req.method === 'OPTIONS') return res.sendStatus(200)
+  next()
 })
 
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json())
+
+app.use(auth.path, auth.handler)
+
+
 async function start() {
-  // Init Nuxt.js
-  const nuxt = new Nuxt(config)
 
-  const host = process.env.HOST || '127.0.0.1'
-  const port = process.env.PORT || 3001
-
-  // Build only in dev mode
-  app.use((req, res, next) => {
-    const methodAllow = [ 'GET', 'HEAD', 'OPTIONS', 'POST', 'PUT' ]
-    res.setHeader('Access-Control-Allow-Origin', '*')
-    res.setHeader('Access-Control-Allow-Headers', '*')
-    res.setHeader('Access-Control-Allow-Credentials', 'true')
-    res.setHeader('Access-Control-Allow-Methods', methodAllow.join(','))
-    if (req.method === 'OPTIONS') return res.sendStatus(200)
-    next()
-  })
-
-  app.use(bodyParser.urlencoded({ extended: false }))
-  app.use(bodyParser.json())
-
-  app.use(auth.path, auth.handler)
-
-  app.get('/api/list', async (req, res) => {
-    let pool = { close: () => {} }
-    try {
-      pool = await sqlConnectionPool(db[config.dev ? 'dev' : 'prd'])
-      let sql = 'SELECT nTaskDetailId, sSubject, ISNULL(sDetail,\'\') sDetail, sDescription, sSolve, nOrder FROM SURVEY_CMG..UserTaskDetail WHERE bEnabled = 1 ORDER BY nOrder ASC'
-      let [ records ] = (await pool.request().query(sql)).recordsets
-      res.json(records)
-    } catch (ex) {
-      logger.error(ex)
-    } finally {
-      pool.close()
-      res.end()
-    }
-  })
+  app.get('/api/list', )
 
   app.get('/api/history', async (req, res) => {
     let page = parseInt(req.query.p || 1)
@@ -92,7 +73,7 @@ async function start() {
         GROUP BY g.sKey, sUsername, sName, g.dCreated
       ) AS r WHERE nRow >= ${page} * 100 - 99 AND nRow <= ${page} * 100
       `
-      pool = await sqlConnectionPool(db[config.dev ? 'dev' : 'prd'])
+      pool = await sqlConnectionPool()
       let [ records ] = (await pool.request().query(sql)).recordsets
       return res.json(records)
     } catch (ex) {
@@ -211,10 +192,11 @@ async function start() {
       let [ [ record ] ] = (await pool.request().query(command)).recordsets
       if (parseInt(record.nTask) === 0) {
         sendLINE(lineNone(`ไม่มีข้อมูลในช่วงเวลา ${moment().add(hour * -1, 'hour').format('HH:mm')} - ${moment().format('HH:mm')}`))
-        // sendLINE(`*SURVEY-POS*\nไม่มีข้อมูลในช่วงเวลา ${moment().add(hour * -1, 'hour').format('HH:mm')} - ${moment().format('HH:mm')}`)
+      } else {
+
       }
     } catch (ex) {
-      console.log(ex.message)
+      logger.error(ex)
     } finally {
       pool.close()
       res.end()
