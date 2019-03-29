@@ -4,7 +4,7 @@ const { createClient } = require('ldapjs')
 // LDAP Connection Settings
 const name = process.env.LDAP_NAME || 'central'
 const server = process.env.LDAP_SERVER_NAME || `${name}.co.th`
-const adSuffix = process.env.LDAP_SUFFIX || `dc=${name},dc=co,dc=th`
+const adSuffix = process.env.LDAP_SUFFIX || `OU=RIS,OU=UsersAccount,DC=${name},DC=co,DC=th`
 const timeout = process.env.LDAP_TIMEOUT || 10000
 
 if (!server || !adSuffix) throw new Error('LDAP connection settings not found!')
