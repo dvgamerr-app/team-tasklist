@@ -11,16 +11,23 @@
         </div>
         <div v-else class="row">
           <div class="col-sm-36">
-            <h3>Survey</h3>
+            <h3>{{ title }}</h3>
+            <b-button
+              type="button"
+              size="ssm"
+              :variant="tasks.length !== tasks.filter(e => e.selected).length ? 'outline-info' : 'outline-secondary'"
+              @click="onCheckAll"
+              v-text="tasks.length !== tasks.filter(e => e.selected).length ? 'Checked All' : 'Unchecked All'"
+            />
             <hr>
           </div>
         </div>
         <div class="row mb-5 pb-5">
           <div class="col-sm-36">
-            <div v-for="(e, i) in tasks" :key="e.nTaskId">
-              <b-form-group :label-for="'chkTaskList' + e.nTaskId">
+            <div v-for="(e, i) in tasks" :key="e.nTaskDetailId">
+              <b-form-group :label-for="'chkTaskList' + e.nTaskDetailId">
                 <b-form-checkbox
-                  :id="'chkTaskList' + e.nTaskId"
+                  :id="'chkTaskList' + e.nTaskDetailId"
                   v-model="e.selected"
                   :disabled="e.problem"
                   switch required
@@ -119,6 +126,7 @@ export default {
     submited: false,
     current: moment(),
     problem: 0,
+    title: '',
     tasks: []
   }),
   computed: {
@@ -148,8 +156,8 @@ export default {
       
       return { editor: data.editor, tasks: data.records, taskKey: params.id }
     } else {
-      let { data } = await $axios('/api/history/list')
-      return { tasks: data, taskKey: null }
+      let { data } = await $axios('/api/history/detail/1')
+      return { title: data.title, tasks: data.tasks, taskKey: null }
     }
   },
   created () {
@@ -179,6 +187,20 @@ export default {
         }).bind(this))
       }
     },
+    onCheckAll () {
+      let checkAll = this.tasks.length ===  this.tasks.filter(e => e.selected).length
+      if (checkAll) return this.onReset()
+      
+      for (const e of this.tasks) {
+        e.selected = true
+        e.problem = false
+        e.reason = ''
+        e.status = ''
+      }
+      this.problem = 0
+      this.$forceUpdate()
+      this.onSave()
+    },
     onReset () {
       if (!this.taskKey) {
         this.problem = 0
@@ -196,7 +218,7 @@ export default {
       let vm = this
       let data = vm.tasks.map(e => {
         return {
-          nTaskId: e.nTaskId,
+          nTaskDetailId: e.nTaskDetailId,
           nOrder: e.nOrder,
           sSubject: e.sSubject,
           selected: e.selected,
@@ -240,7 +262,6 @@ export default {
       for (const i of this.tasks) {
         this.problem += i.problem ? 1 : 0
       }
-      console.log(e)
       if (this.taskKey) return
       this.onSave()
     },

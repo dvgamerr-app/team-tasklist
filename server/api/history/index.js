@@ -9,7 +9,7 @@ module.exports = async (req, res) => {
     let sql = `
     SELECT * FROM (
       SELECT ROW_NUMBER() OVER (ORDER BY g.dCreated DESC) AS nRow
-        , g.sKey, sUsername, sName, g.dCreated, MAX(g.dModified) dModified
+        , t.sTitleName, g.sKey, sUsername, sName, g.dCreated, MAX(g.dModified) dModified
         , SUM(CASE WHEN sStatus = 'FAIL' THEN 1 ELSE 0 END) nFail
         , SUM(CASE WHEN sStatus = 'WARN' THEN 1 ELSE 0 END) nWarn
         , SUM(CASE WHEN sStatus = 'INFO' THEN 1 ELSE 0 END) nInfo
@@ -22,7 +22,9 @@ module.exports = async (req, res) => {
         FROM SURVEY_CMG..UserTaskSubmit
         GROUP BY CONVERT(VARCHAR,dCheckIn,112) + REPLACE(CONVERT(VARCHAR,dCheckIn,114), ':', ''), nTaskDetailId
       ) g ON g.nIndex = s.nIndex
-      GROUP BY g.sKey, sUsername, sName, g.dCreated
+	  INNER JOIN SURVEY_CMG..UserTaskDetail d ON d.nTaskDetailId = s.nTaskDetailId
+	  INNER JOIN SURVEY_CMG..UserTask t ON t.nTaskId = d.nTaskId
+      GROUP BY t.sTitleName, g.sKey, sUsername, sName, g.dCreated
     ) AS r WHERE nRow >= ${page} * 100 - 99 AND nRow <= ${page} * 100
     `
     pool = await mssql()

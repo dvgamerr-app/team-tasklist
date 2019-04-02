@@ -2,6 +2,7 @@ const logger = require('@debuger')('SERVER')
 const lineMonitor = require('@line-flex-monitor')
 const mssql = require('@mssql')
 const moment = require('moment')
+const LINE = require('@line')
 
 module.exports = async (req, res) => {
   let pool = { close: () => {} }
@@ -35,9 +36,9 @@ module.exports = async (req, res) => {
       }
 
       if (!key || isUpdated) {
-        let command = `INSERT INTO [dbo].[UserTaskSubmit] ([nTaskDetailId],[sUsername],[sName],[sStatus],[sRemark],[nOrder],[dCheckIn],[dCreated],[nVersion])
+        let command = `INSERT INTO [dbo].[UserTaskSubmit] ([nTaskDetailId],[sUsername],[sName],[sStatus],[sRemark],[nType],[nOrder],[dCheckIn],[dCreated],[nVersion])
           VALUES (${e.nTaskDetailId},'${username.trim()}','${name}','${e.problem ? e.status : 'PASS'}', '${(e.reason || '').replace(`'`,`\'`)}'
-          , ${e.nOrder}, CONVERT(DATETIME, '${created.format('YYYY-MM-DD HH:mm:ss.SSS')}', 121),  GETDATE(), ${nVersion})
+          , 1, ${e.nOrder}, CONVERT(DATETIME, '${created.format('YYYY-MM-DD HH:mm:ss.SSS')}', 121),  GETDATE(), ${nVersion})
         `
         await pool.request().query(command)
         updated.push(e)
@@ -55,10 +56,10 @@ module.exports = async (req, res) => {
     let logText = `Monitor ${updated.length > 0 ? updated.length : tasks.length} (F:${totalFail} W:${totalWarn}  I:${totalInfo})`
     logger.info(logText, created.format('YYYY-MM-DD HH:mm:ss.SSS'), key ? 'Updated.' : 'Insterted.')
     if (!key) { // สรุป Monitor DailyClose 21.03.2019 Time 22.30
-      sendLINE(lineMonitor(name, tasks))
-      // sendLINE(`*[${topStatus}] ${topName}*\n${msg}\n\n(${name} at ${topDate})`, req.body)
+      LINE(lineMonitor(name, tasks))
+      // LINE(`*[${topStatus}] ${topName}*\n${msg}\n\n(${name} at ${topDate})`, req.body)
     } else if (updated.length > 0) {
-      sendLINE(lineMonitor(name, updated, `http://${hostName}/history/version/${key}`))
+      LINE(lineMonitor(name, updated, `http://10.0.80.52:3001/history/version/${key}`))
     }
     res.json({ success: true })
   } catch (ex) {
