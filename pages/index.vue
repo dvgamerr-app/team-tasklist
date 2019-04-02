@@ -148,7 +148,7 @@ export default {
       
       return { editor: data.editor, tasks: data.records, taskKey: params.id }
     } else {
-      let { data } = await $axios('/api/list')
+      let { data } = await $axios('/api/history/list')
       return { tasks: data, taskKey: null }
     }
   },
@@ -205,9 +205,8 @@ export default {
           reason: e.problem ? e.reason : ''
         }
       })
-      console.log(data)
       this.submited = true
-      vm.$axios.post('/api/submit', {
+      vm.$axios.post('/api/history/submit', {
         key: vm.taskKey,
         username: vm.$auth.user.user_name,
         name: vm.$auth.user.name,

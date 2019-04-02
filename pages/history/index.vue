@@ -94,7 +94,7 @@ export default {
       let vm = this
       this.editor = true
       
-      vm.$axios('/api/history/del/' + e).then(() => {
+      vm.$axios.post('/api/history/del/' + e).then(() => {
         vm.$toast.success('Task Delete')
         vm.$router.go()
       }).catch(ex => {

@@ -51,7 +51,7 @@ export default {
     let sKey = parseInt(params.id)
     if (sKey == NaN) return redirect('/history')
 
-    let { data } = await $axios('/api/version/' + params.id)
+    let { data } = await $axios('/api/history/version/' + params.id)
     if (!data.records) return redirect('/history')
     
     return { editor: data.editor, tasks: data.records, taskKey: params.id }
