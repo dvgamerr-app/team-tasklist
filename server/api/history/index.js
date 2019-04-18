@@ -14,16 +14,16 @@ module.exports = async (req, res) => {
         , SUM(CASE WHEN sStatus = 'WARN' THEN 1 ELSE 0 END) nWarn
         , SUM(CASE WHEN sStatus = 'INFO' THEN 1 ELSE 0 END) nInfo
         , SUM(CASE WHEN sStatus = 'PASS' THEN 1 ELSE 0 END) nPass
-      FROM SURVEY_CMG..UserTaskSubmit s
+      FROM UserTaskSubmit s
       INNER JOIN (
         SELECT CONVERT(VARCHAR,dCheckIn,112) + REPLACE(CONVERT(VARCHAR,dCheckIn,114), ':', '') sKey, nTaskDetailId, MAX(nIndex) nIndex
         , CONVERT(VARCHAR, MIN(dCreated), 120) dCreated
         , CONVERT(VARCHAR, MAX(dCreated), 120) dModified
-        FROM SURVEY_CMG..UserTaskSubmit
+        FROM UserTaskSubmit
         GROUP BY CONVERT(VARCHAR,dCheckIn,112) + REPLACE(CONVERT(VARCHAR,dCheckIn,114), ':', ''), nTaskDetailId
       ) g ON g.nIndex = s.nIndex
-	  INNER JOIN SURVEY_CMG..UserTaskDetail d ON d.nTaskDetailId = s.nTaskDetailId
-	  INNER JOIN SURVEY_CMG..UserTask t ON t.nTaskId = d.nTaskId
+	  INNER JOIN UserTaskDetail d ON d.nTaskDetailId = s.nTaskDetailId
+	  INNER JOIN UserTask t ON t.nTaskId = d.nTaskId
       GROUP BY t.sTitleName, g.sKey, sUsername, sName, g.dCreated
     ) AS r WHERE nRow >= ${page} * 100 - 99 AND nRow <= ${page} * 100
     `

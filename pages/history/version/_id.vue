@@ -10,15 +10,15 @@
       </div>
       <div class="row">
         <div class="col-sm-36">
-          <div v-for="(e, i) in getLastVersion()" :key="e.nTaskId">
-            <b-form-group :label-for="'chkTaskList' + e.nTaskId">
+          <div v-for="(e, i) in getLastVersion()" :key="e.nTaskDetailId">
+            <b-form-group :label-for="'chkTaskList' + e.nTaskDetailId">
               <fa :class="'text-'+getColor(e)" :icon="getIcon(e)" />
               <b class="history-text"><span v-text="(i + 1) + '. ' + e.sSubject" /></b>
               <small>at {{ parseDate(e.dCreated) }} {{ e.nVersion !== 1 ? 'updated' : 'submited' }} by {{ e.sName }}</small>
               <div class="history-text d-none d-md-block ml-35" v-html="e.sDetail" />
               <pre v-if="e.problem" class="ml-35" v-html="e.reason" />
               <div v-if="e.nVersion !== 1" class="history-detail">
-                <div v-for="d in getDetailVersion(e.nTaskId)" :key="d.nVersion">
+                <div v-for="d in getDetailVersion(e.nTaskDetailId)" :key="d.nVersion">
                   <div v-if="e.nVersion != d.nVersion">
                     <fa :class="'text-'+getColor(d)" :icon="getIcon(d)" />
                     {{ parseDate(d.dCreated) }} {{ d.nVersion !== 1 ? 'updated' : 'submited' }} by {{ d.sName }}
@@ -85,16 +85,16 @@ export default {
     getLastVersion () {
       let nTask = []
       return this.tasks.filter(e => {
-        if (nTask.indexOf(e.nTaskId) === -1) {
-          nTask.push(e.nTaskId)
+        if (nTask.indexOf(e.nTaskDetailId) === -1) {
+          nTask.push(e.nTaskDetailId)
           return true
         } else {
           return false
         }
       })
     },
-    getDetailVersion (nTaskId) {
-      return this.tasks.filter(e => e.nTaskId === nTaskId)
+    getDetailVersion (nTaskDetailId) {
+      return this.tasks.filter(e => e.nTaskDetailId === nTaskDetailId)
     }
   }
 }

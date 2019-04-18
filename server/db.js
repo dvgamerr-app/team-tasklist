@@ -7,13 +7,11 @@ module.exports = {
     options: {}
   },
   'prd': {
-    user: 'posappadm',
-    password: 'qwerty8*',
-    server: '10.0.80.46\\poscmg',
-    database: 'SURVEY_CMG',
-    options: {
-      encrypt: true
-    }
+    user: 'T1CAdmin',
+    password: 'T!C@dmin',
+    server: 'S-THCW-POSDB95\\CMGSTAGING',
+    database: 'POSDEVOPS_UI',
+    options: { encrypt: true }
   },
   'noti': {
     user: 'posowner',

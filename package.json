@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "env-cmd .env nuxt dev",
     "serv": "env-cmd .env nodemon server/index.js --watch server",
-    "build": "nuxt build",
+    "build": "nuxt build && tar pczf ris-check-list.zip .nuxt node_modules static nuxt.config.js package.json",
     "start": "cross-env NODE_ENV=production JWT_KEYHASH=k5o%Uvt2eh!k_8URG#V0rPCzDDe4@hKJ8z@XO!8nTpKQAZx3M3GlBf!rwHz5Lh$o node server/index.js",
     "prepare": "link-module-alias",
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
@@ -40,7 +40,7 @@
     "md5": "^2.2.1",
     "moment": "^2.24.0",
     "moment-timezone": "^0.5.23",
-    "mongoose": "^5.4.20",
+    "mongoose": "^5.4.21",
     "mssql": "^4.3.7",
     "numeral": "^2.0.6",
     "nuxt": "^2.5.1",
