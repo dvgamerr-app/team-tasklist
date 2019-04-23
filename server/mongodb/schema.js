@@ -4,133 +4,61 @@ const { Mixed } = Schema.Types
 
 module.exports = [
   {
-    id: 'GlobalConfig',
-    name: 'config-global',
+    id: 'UserAccount',
+    name: 'db-account',
     schema: Schema({
-      segment: {
-        type: String,
-        index: true
-      },
-      field: {
-        type: String,
-        index: true
-      },
-      value: Mixed,
-      type: String,
-      created: Date
-    })
-  },
-  {
-    id: 'PageSync',
-    name: 'db-page-sync',
-    schema: Schema({
-      route: String,
-      module: String,
-      query: String,
-      crontab: String,
-      data: Object,
-      updated: Date,
-      created: Date
-    })
-  },
-  {
-    id: 'User',
-    name: 'db-user',
-    schema: Schema({
-      name: {
-        type: String,
-        index: true
-      },
-      mail: {
-        type: String,
-        index: true
-      },
-      title: {
-        type: String,
-        index: true
-      },
-      company: String,
-      department: String,
-      office_name: String,
-      description: String,
-      display_name: String,
-      telephone_no: String,
-      user_name: String,
-      user_type: String,
-      user_level: Number,
+      username: { type: String, index: true },
+      fullname: { type: String, index: true },
+      email: { type: String, index: true },
+      level: { type: Number, index: true },
       pwd: String,
-      permission: String,
-      enabled: {
-        type: Boolean,
-        index: true
-      },
-      activate: {
-        type: Boolean,
-        index: true
-      },
-      token: String,
-      lasted: {
-        type: Date,
-        index: true
-      },
+      enabled: { type: Boolean, index: true },
+      lasted: { type: Date, index: true },
       updated: Date,
-      created: {
-        type: Date,
-        index: true
-      },
+      created: Date,
     })
   },
   {
-    id: 'UserHistory',
-    name: 'db-user-history',
+    id: 'TaskList',
+    name: 'db-tasklist',
     schema: Schema({
-      mail: {
-        type: String,
-        index: true
-      },
-      error: String,
-      token: String,
-      created: {
-        type: Date,
-        index: true
-      },
-    })
-  },
-  {
-    id: 'Snippet',
-    name: 'db-snippet',
-    schema: Schema({
-      title: String,
-      mode: String,
-      file: String,
-      task: String,
-      order: Number,
-      user: String,
-      avatar: String,
-      private: Boolean,
-      content: String,
+      description: String,
+      project: { type: String, index: true },
+      duedate: { type: Date, index: true },
+      priority: { type: Number, index: true },
+      assign: Array,
+      tags: Array,
+      deleted: { type: Boolean, index: true },
       updated: Date,
-      created: Date
+      created: Date,
     })
   },
   {
-    id: 'ServiceLog',
-    name: 'db-service-log',
+    id: 'TaskList',
+    name: 'db-tasklist-history',
     schema: Schema({
-      app: { type: String, index: true },
-      group: { type: String, index: true },
-      status: { type: String, index: true },
-      message: String,
-      created: { type: Date, index: true }
+      description: String,
+      project: { type: String, index: true },
+      duedate: { type: Date, index: true },
+      priority: { type: Number, index: true },
+      tags: Array,
+      deleted: { type: Boolean, index: true },
+      updated: Date,
+      created: Date,
     })
   },
   {
-    id: 'TerminalCommand',
-    name: 'db-terminal-command',
+    id: 'TaskList',
+    name: 'db-tasklist-comment',
     schema: Schema({
-      cmd: String,
-      template: String,
-      created: Date
+      description: String,
+      project: { type: String, index: true },
+      duedate: { type: Date, index: true },
+      priority: { type: Number, index: true },
+      tags: Array,
+      deleted: { type: Boolean, index: true },
+      updated: Date,
+      created: Date,
     })
   }
 ]

@@ -7,6 +7,9 @@ $border-radius-sm:            .0rem;
 @import 'bootstrap/scss/bootstrap.scss';
 @import 'bootstrap-vue/dist/bootstrap-vue.css';
 
+.nav-link {
+  padding: 0.2rem 1rem;
+}
 // .custom-control-label::before {
 //   position: absolute;
 //   top: 0.3rem;
@@ -115,7 +118,6 @@ textarea.reason {
     margin-top: 20%;
   }
 }
-
 
 .login-main-text{
   margin-top: 20%;

@@ -1,7 +1,8 @@
 {
-  "name": "tasks-check-list",
+  "name": "tasks-list",
+  "fullname": "Team Task-List",
   "version": "1.0.0",
-  "description": "Tasks checking list.",
+  "description": "Team Task-List to-do project.",
   "author": "Mr.Kananek T.",
   "private": true,
   "scripts": {

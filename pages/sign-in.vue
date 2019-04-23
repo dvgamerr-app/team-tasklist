@@ -2,8 +2,8 @@
   <div>
     <div class="row sidenav d-none d-md-block">
       <div class="col-36 login-main-text">
-        <h2>SURVEY<br> POS SERVER</h2>
-        <p>Login or register from here to access.</p>
+        <h2>TEAM<br> TASK-LIST</h2>
+        <p>Login or register from touno.io</p>
       </div>
     </div>
     <div class="row main">
@@ -12,8 +12,8 @@
         <div class="login-form">
           <form method="post" @submit.prevent="onLogin">
             <div class="form-group">
-              <label>ADUser or Email</label>
-              <input v-model="username" type="text" class="form-control" placeholder="@central.co.th">
+              <label>Username</label>
+              <input v-model="username" type="text" class="form-control" placeholder="@touno.io">
             </div>
             <div class="form-group">
               <label>Password</label>
@@ -36,7 +36,8 @@ export default {
     submitted: false
   }),
   created () {
-    if (process.client && window.localStorage.getItem('auth._token.local') !== 'false') this.$router.replace('/')
+    // console.log(this.$auth.$storage.$state)
+    // if (process.client && window.localStorage.getItem('_token.local') !== 'false') this.$router.replace('/')
   },
   methods: {
     onLogin () {

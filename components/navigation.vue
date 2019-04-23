@@ -1,15 +1,20 @@
 <template>
-  <b-navbar v-if="$route.name !== 'sign-in'" type="dark" variant="dark">
-    <b-navbar-brand to="/">
-      [POS] SERVER SURVEY
-    </b-navbar-brand>
-    <b-navbar-nav class="ml-auto">
-      <b-nav-item exact to="/">Home</b-nav-item>
-      <b-nav-item to="/history">History</b-nav-item>
-      <b-nav-item-dropdown :text="$auth.user.name" right>
-        <b-dropdown-item @click.prevent="onSignOut">Logout</b-dropdown-item>
-      </b-nav-item-dropdown>
-    </b-navbar-nav>
+  <b-navbar class="border-bottom">
+    <b-container>
+      <b-navbar-brand to="/">
+        <img src="~assets/time_data-512.png" style="width:24px;padding-top:3px;vertical-align:top;">
+      </b-navbar-brand>
+      <b-navbar-nav>
+        <b-nav-item to="/task">Tasks</b-nav-item>
+        <b-nav-item to="/project">Projects</b-nav-item>
+      </b-navbar-nav>
+      <b-navbar-nav class="ml-auto">
+        <b-nav-item exact to="/to-do"><fa icon="plus" /> Add Task</b-nav-item>
+        <b-nav-item-dropdown :text="'User'" right>
+          <b-dropdown-item @click.prevent="onSignOut">Logout</b-dropdown-item>
+        </b-nav-item-dropdown>
+      </b-navbar-nav>
+    </b-container>
   </b-navbar>
 </template>
 <script>
@@ -26,5 +31,7 @@ export default {
 
 
 <style>
-
+.navbar {
+  padding: 0rem 1rem;
+}
 </style>

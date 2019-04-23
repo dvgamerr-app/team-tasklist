@@ -3,15 +3,36 @@ const pkg = require('./package')
 module.exports = {
   mode: 'universal',
   head: {
-    title: 'SURVEY-POS',
-    meta: [
-      { charset: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: pkg.description }
+    titleTemplate: title => `${title ? `${title} · ` : ''}Team Task-List`
+  },
+  meta: [
+    { charset: 'utf-8' },
+    { name: 'application-name', content: pkg.fullname },
+    { name: 'name', content: pkg.fullname },
+    { name: 'description', content: pkg.description, id: 'desc' },
+    { name: 'viewport', content: 'width=device-width, user-scalable=no' },
+    { name: 'author', content: 'Mr. Kananek T.' }
+  ],
+  manifest: {
+    name: 'Task-List Projects',
+    lang: 'en',
+    description: '',
+    short_name: 'Task-List',
+    icons: [
+      { src: '/favicon.ico', sizes: '16x16' }
     ],
-    link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
-    ]
+    start_url: '/',
+    display: 'fullscreen',
+    orientation: 'portrait',
+    theme_color: '#ffffff',
+    background_color: '#ffffff',
+    browser_action: {
+      default_icon: '/favicon.ico',
+      default_popup: '/'
+    }
+  },
+  workbox: {
+    // Workbox options
   },
   loading: { color: '#4caf50' },
   css: [
