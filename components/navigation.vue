@@ -9,7 +9,7 @@
         <b-nav-item to="/project">Projects</b-nav-item>
       </b-navbar-nav>
       <b-navbar-nav class="ml-auto">
-        <b-nav-item exact to="/to-do"><fa icon="plus" /> Add Task</b-nav-item>
+        <b-nav-item exact to="/task-new"><fa icon="plus" /> Add Task</b-nav-item>
         <b-nav-item-dropdown :text="'User'" right>
           <b-dropdown-item @click.prevent="onSignOut">Logout</b-dropdown-item>
         </b-nav-item-dropdown>
