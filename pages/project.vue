@@ -1,14 +1,50 @@
 <template>
-  <div class="container pt-5 pb-3">
+  <div class="container pt-5 pb-3 projects">
     <div class="row">
       <div class="col-sm-36">
-        <h3>History</h3>
-        <small>History group by date and lastet 100 rows.</small>
+        <h3>Projects</h3>
+        <small>History project detail and hide at 30 days lasted and completed.</small>
         <hr>
       </div>
     </div>
     <div class="row mt-3">
       <div class="col-36">
+        <div class="card mb-2">
+          <div class="card-header">
+            <div class="d-flex flex-wrap">
+              <nuxt-link to="/">
+                <h5 class="mr-3 mb-1">Team Task-List</h5>
+              </nuxt-link>
+              <b-badge v-if="1 > 1" variant="success" v-text="'Completed'" />
+              <b-badge v-if="1 > 0" variant="info" v-text="'To-do ' + 2" />
+              <b-badge v-if="1 > 0" variant="warning" v-text="'Issue ' + 3" />
+            </div>
+            <b-progress :value="30" height="0.5rem" animated />
+          </div>
+          <div class="card-body pt-0">
+            <div class="group-detail">
+              <b>DueDate:</b> 26 Apr 2019
+              <b>Assign: </b> Kananek Thongkam
+              <p>update dashboard.</p>
+            </div>
+          </div>
+        </div>
+        <div class="card mb-2">
+          <div class="card-header">
+            <div class="d-flex flex-wrap">
+              <nuxt-link to="/">
+                <h5 class="mr-3 mb-1">Team Task-List Server-Side</h5>
+              </nuxt-link>
+              <b-badge variant="success" v-text="'Completed'" />
+            </div>
+            <b-progress v-if="false" :value="30" height="0.5rem" animated />
+          </div>
+          <div class="card-body pt-0">
+            <div class="group-detail">
+              <b>Assign: </b> Kananek Thongkam
+            </div>
+          </div>
+        </div>
         <div v-for="(day, i) in getGroupHistory()" :key="day" class="group-history">
           <h6 v-text="parseDays(day)" />
           <div v-for="e in filterHistory(day)" :key="e.nRow" class="text-inline">
@@ -69,13 +105,13 @@
 import moment from 'moment'
 
 export default {
+  auth: false,
   data: () => ({
     history: [],
     editor: false
   }),
   async asyncData ({ $axios }) {
-    let { data } = await $axios('/api/history')
-    return { history: data }
+    return { history: [] }
   },
   created () {
   },
@@ -150,9 +186,14 @@ export default {
   }
 }
 </script>
-<style>
-.group-history {
-  padding-bottom: 10px;
+<style lang="scss">
+.card-header {
+  background: transparent;
+  border-bottom: none;
+  span.badge {
+    display: inline-table;
+    margin: 4px 4px;
+  }
 }
 .text-inline {
   font-size: 14px;

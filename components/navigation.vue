@@ -33,5 +33,7 @@ export default {
 <style>
 .navbar {
   padding: 0rem 1rem;
+  font-weight: bold;
+  font-family: 'Segoe UI';
 }
 </style>

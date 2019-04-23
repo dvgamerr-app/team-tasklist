@@ -28,28 +28,16 @@ module.exports = [
       priority: { type: Number, index: true },
       assign: Array,
       tags: Array,
+      status: String,
+      private: { type: Boolean, index: true },
       deleted: { type: Boolean, index: true },
       updated: Date,
       created: Date,
     })
   },
   {
-    id: 'TaskList',
+    id: 'TaskListHistory',
     name: 'db-tasklist-history',
-    schema: Schema({
-      description: String,
-      project: { type: String, index: true },
-      duedate: { type: Date, index: true },
-      priority: { type: Number, index: true },
-      tags: Array,
-      deleted: { type: Boolean, index: true },
-      updated: Date,
-      created: Date,
-    })
-  },
-  {
-    id: 'TaskList',
-    name: 'db-tasklist-comment',
     schema: Schema({
       description: String,
       project: { type: String, index: true },

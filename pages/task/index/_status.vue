@@ -42,6 +42,12 @@
 
 <script>
 export default {
+  props: {
+    items: {
+      type: Array,
+      default: () => ([])
+    }
+  },
   data: () => ({
     fields: [
       { key: 'index', label: '#', sortable: false, class: 'text-center' },
@@ -50,13 +56,7 @@ export default {
       { key: 'duedate', label: 'Due', sortable: true, class: 'text-center' },
       { key: 'assign', label: 'Assign', sortable: true, class: '' },
       { key: 'action', label: '', sortable: false, class: '' }
-    ],
-    items: [
-      // { description: 'Dickerson', project: 'Macdonald', duedate: '23 Apr 2019', assign: [ 'Kananek T.' ], priority: 0 },
-      // { description: 'Dickerson', project: 'Macdonald', duedate: '23 Apr 2019', assign: [ 'Kananek T.' ], priority: 1 },
-      // { description: 'Dickerson', project: 'Macdonald', duedate: '23 Apr 2019', assign: [ 'Kananek T.' ], priority: 2 },
-      // { description: 'Dickerson', project: 'Macdonald', duedate: '23 Apr 2019', assign: [ 'Kananek T.' ], priority: 3 }
-    ]
+    ] 
   }),
   computed: {
     status () {
