@@ -1,5 +1,5 @@
 {
-  "name": "tasks-list",
+  "name": "team-tasklist",
   "fullname": "Team Task-List",
   "version": "1.0.0",
   "description": "Team Task-List to-do project.",
@@ -11,7 +11,7 @@
     "serv": "env-cmd .env nodemon server/index.js --watch server",
     "build": "nuxt build && tar pczf ris-check-list.zip .nuxt node_modules static nuxt.config.js package.json",
     "start": "node server/index.js",
-    "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
+    "lint": "eslint --ext .js,.vue --ignore-path .gitignore . --fix",
     "precommit": "npm run lint"
   },
   "_moduleAliasIgnoreWarning": true,
@@ -29,11 +29,13 @@
     "body-parser": "^1.18.3",
     "bootstrap": "^4.3.1",
     "bootstrap-vue": "^2.0.0-rc.18",
-    "chalk": "^2.4.2",
     "env-cmd": "^8.0.2",
     "express": "^4.16.4",
+    "jquery": "^3.4.0",
     "jsonwebtoken": "^8.5.1",
     "link-module-alias": "^1.2.0",
+    "markdown-it": "^8.4.2",
+    "markdownparser": "^1.0.8",
     "md5": "^2.2.1",
     "moment": "^2.24.0",
     "moment-timezone": "^0.5.25",
@@ -43,6 +45,7 @@
     "nuxt-fontawesome": "^0.4.0",
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
+    "vue-codemirror": "^4.0.6",
     "vue-toast-notification": "0.0.2"
   },
   "devDependencies": {
@@ -60,6 +63,7 @@
     "eslint-plugin-vue": "^5.0.0",
     "node-sass": "^4.11.0",
     "nodemon": "^1.18.11",
-    "sass-loader": "^7.1.0"
+    "sass-loader": "^7.1.0",
+    "simplemde": "^1.11.2"
   }
 }

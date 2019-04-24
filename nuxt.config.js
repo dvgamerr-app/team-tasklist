@@ -14,15 +14,15 @@ module.exports = {
     { name: 'author', content: 'Mr. Kananek T.' }
   ],
   manifest: {
-    name: 'Task-List Projects',
+    name: 'Team Task-List Projects',
     lang: 'en',
     description: '',
-    short_name: 'Task-List',
+    short_name: 'Team Task-List',
     icons: [
       { src: '/favicon.ico', sizes: '16x16' }
     ],
     start_url: '/',
-    display: 'fullscreen',
+    display: 'standalone',
     orientation: 'portrait',
     theme_color: '#ffffff',
     background_color: '#ffffff',
@@ -32,22 +32,25 @@ module.exports = {
     }
   },
   workbox: {
-    // Workbox options
+    globDirectory: '.nuxt',
+    globPatterns: [ '**/*.{js,vue,html}' ],
+    swDest: 'static/sw.js'
   },
   loading: { color: '#4caf50' },
   css: [
-    './assets/scss/index.scss'
+    './assets/scss/index.scss',
+    'codemirror/lib/codemirror.css'
   ],
   plugins: [
-    './plugins/vue-toast.js'
+    './plugins/vue-toast.js',
+    { src: './plugins/vue-codemirror.js', ssr: false }
   ],
   router: {
     middleware: ['auth'],
     linkActiveClass: 'active',
     linkExactActiveClass: 'active'
   },
-  modules: [
-    'nuxt-fontawesome',
+  modules: [ 'nuxt-fontawesome',
     '@nuxtjs/axios',
     '@nuxtjs/auth',
     '@nuxtjs/pwa',
@@ -72,7 +75,7 @@ module.exports = {
     ]
   },
   bootstrapVue: { bootstrapCSS: false },
-  axios: { baseURL: process.env.AXIOS_BASE_URL || 'http://10.0.80.52:3001/' },
+  axios: { baseURL: process.env.AXIOS_BASE_URL || 'https://team.touno.io/' },
   build: {
     extend(config, ctx) {
       // Run ESLint on save
