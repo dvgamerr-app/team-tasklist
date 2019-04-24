@@ -105,7 +105,6 @@
 import moment from 'moment'
 
 export default {
-  auth: false,
   data: () => ({
     history: [],
     editor: false

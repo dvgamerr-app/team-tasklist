@@ -20,7 +20,6 @@
 <script>
 import moment from 'moment'
 export default {
-  auth: false,
   data: () => ({
     items: [
       { description: 'Dickerson', project: 'Macdonald', duedate: '23 Apr 2019', assign: [ 'Kananek T.' ], priority: 0 },

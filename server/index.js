@@ -4,8 +4,8 @@ const bodyParser = require('body-parser')
 const { Nuxt } = require('nuxt')
 const app = express()
 
-const logger = require('./debuger')('SERVER')
-const mongo = require('./mongodb')
+const logger = require('@debuger')('SERVER')
+const mongo = require('@mongo')
 // Import and Set Nuxt.js options
 const config = require('../nuxt.config.js')
 config.dev = !(process.env.NODE_ENV === 'production')
@@ -31,9 +31,9 @@ app.use(bodyParser.json())
 
 const auth = require('./authication')
 
-app.use(auth.path, auth.handler)
+app.use('/auth', auth())
 
-app.use('/api', require('./api'))
+// app.use('/api', require('./api'))
 
 const NuxtBuilder = async () => {
   // Init Nuxt.js

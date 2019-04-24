@@ -28,31 +28,35 @@
 </template>
 
 <script>
+import md5 from 'md5'
+
 export default {
   auth: false,
+  middleware: 'authenticated',
   data: () => ({
     username: '',
     password: '',
     submitted: false
   }),
   created () {
-    // console.log(this.$auth.$storage.$state)
+    console.log('loggedIn', this.$auth.loggedIn)
     // if (process.client && window.localStorage.getItem('_token.local') !== 'false') this.$router.replace('/')
   },
   methods: {
     onLogin () {
-      if (!this.username || !this.password) return
-      this.submitted = true
-      this.$auth.loginWith('local', { data: { user: this.username.trim(), pass: this.password } }).then(() => {
-        if (this.$auth.loggedIn) {
-          this.$router.replace('/')
+      let vm = this
+      if (!vm.username || !vm.password) return
+      vm.submitted = true
+      vm.$auth.loginWith('local', { data: { username: vm.username.trim(), password: md5(vm.password) } }).then(() => {
+        if (vm.$auth.loggedIn) {
+          vm.$router.replace('/')
         } else {
-          this.submitted = false
-          this.$toast.error('Username or Password worng.', { duration: 1000 })
+          vm.submitted = false
+          vm.$toast.error('Username or Password worng.', { duration: 1000 })
         }
       }).catch(ex => {
-        this.submitted = false
-        this.$toast.error(ex.message, { duration: 5000 })
+        vm.submitted = false
+        vm.$toast.error(ex.message, { duration: 5000 })
         console.log(ex)
       })
     }
