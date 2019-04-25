@@ -113,7 +113,8 @@ export default {
       indentUnit: 2
     }
   }),
-  async asyncData ({ $axios }) {
+  async asyncData ({ $axios, param, params }) {
+    console.log(param, params)
     return { history: [] }
   },
   created () {
@@ -128,8 +129,8 @@ export default {
         let { data } = await this.$axios.post('/api/task-list', this.todo)
         this.saved = false
         if (data.error) throw new Error(data.error)
-        this.$toast.open({ message: 'Task Added.' + data.id, type: 'success' })
-        // this.$router.push({ name: 'task-index-status', param: { status: 'pending' } })
+        this.$toast.open({ message: 'Task Added.', type: 'success' })
+        this.$router.push({ name: 'task-id', param: { id: data.id } })
       } catch (ex) {
         this.$bvToast.toast(ex.message || ex, {
           title: 'Task-List',
