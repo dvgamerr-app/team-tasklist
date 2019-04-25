@@ -8,16 +8,19 @@
       </div>
     </div>
     <div class="row mt-3">
-      <div class="col-lg-18">
+      <div class="col-lg-20">
+        <b-form-group>
+          <b-form-input v-model="todo.title" placeholder="Title" />
+        </b-form-group>
         <editor v-model="todo.description" />
       </div>
       
-      <div class="col-lg-18 mt-sm-4 mt-lg-0">
+      <div class="col-lg-16 mt-sm-4 mt-lg-0">
         <b-form-group label-cols-sm="6" label="Project:" label-align-sm="right" label-for="project">
           <vue-multiselect
             id="project" v-model="todo.project" :options="optProject" :taggable="true"
             placeholder="Project name" tag-placeholder="enter to project created."
-            @select="onProjectSelect" @tag="onProjectChange"
+            @tag="onProjectChange"
           />
         </b-form-group>
 
@@ -47,7 +50,7 @@
             id="assign" v-model="todo.assign" :options="optAssign"
             placeholder="Worker" tag-placeholder="enter to assign name"
             label="name" track-by="_id" :multiple="true"
-            @select="onAssignSelect" @tag="onAssignChange"
+            @tag="onAssignChange"
           />
         </b-form-group>
 
@@ -89,6 +92,7 @@ export default {
       status: 1,
       private: false
     },
+    optTitle: [],
     optProject: [],
     optAssign: [
       { name: 'Kananek T.', _id: '23423tgasdfgWHZDS' }
@@ -135,18 +139,10 @@ export default {
       }
     },
     onProjectChange (value) {
-      // console.log('onProjectChange', value)
       this.todo.project = value
-      // this.$refs.dueweb.focus()
-    },
-    onProjectSelect (option) {
-      // console.log('onProjectSelect', option)
     },
     onAssignChange (value) {
       this.todo.assign.push(value)
-    },
-    onAssignSelect (option) {
-      // console.log('onAssignSelect', option)
     },
     onDueDateChange (date) {
       this.todo.duedate = date.toISOString()
