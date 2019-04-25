@@ -1,9 +1,10 @@
 <template>
   <div />
-</template>
+</template> 
 
 <script>
 export default {
+  name: 'Dashboard',
   data: () => ({
   }),
   async asyncData ({ redirect }) {

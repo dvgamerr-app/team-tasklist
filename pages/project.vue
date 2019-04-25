@@ -62,45 +62,12 @@
             <b-badge v-if="e.nInfo > 0" variant="info" v-text="'Info ' + e.nInfo" />
             <small v-text="'by ' + e.sName" />
           </div>
-          <!--<table class="table table-sm table-hover">
-            <thead class="thead-light">
-              <tr>
-                <th scope="col" style="width: 40px" />
-                <th scope="col" class="text-center" style="width: 40px">#</th>
-                <th scope="col">Name</th>
-                <th scope="col" class="text-center" style="width: 80px">Fail</th>
-                <th scope="col" class="text-center" style="width: 160px">Created</th>
-                <th scope="col" class="text-center" style="width: 160px">Updated</th>
-                <th scope="col" class="text-center" style="width: 80px" />
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="e in filterHistory(day)" :key="e.nRow" :class="e.nFail > 0 ? 'table-danger' : ''" @click.prevent="onView(e.sKey)">
-                <td class="text-center"><fa :icon="getIcon(e)" :class="'text-'+getColor(e)" /></td>
-                <th class="text-center" scope="row" v-text="e.nRow" />
-                <td v-text="e.sName" />
-                <td class="text-center" v-text="e.nFail" />
-                <td class="text-center" v-text="e.dCreated" />
-                <td class="text-center" v-text="e.dModified" />
-                <td class="text-center">
-                  <button type="button" class="btn btn-sm btn-icon" @click.prevent="onEdit(e.sKey)">
-                    <fa icon="edit" />
-                  </button>
-                  <button v-if="$auth.user.user_level >= 3" type="button" class="btn btn-sm btn-icon" @click.prevent="onDelete(e.sKey)">
-                    <fa icon="trash-alt" />
-                  </button>
-                </td>
-              </div>
-              <tr v-if="history.length === 0" class="text-center">
-                <th colspan="7" class="text-center">No Transaction</th>
-              </tr>
-            </tbody>
-          </table> -->
         </div>
       </div>
     </div>
   </div>
 </template>
+
 <script>
 import moment from 'moment'
 
@@ -111,8 +78,6 @@ export default {
   }),
   async asyncData ({ $axios }) {
     return { history: [] }
-  },
-  created () {
   },
   methods: {
     toTime (datetime, i) {
@@ -185,6 +150,7 @@ export default {
   }
 }
 </script>
+
 <style lang="scss">
 .card-header {
   background: transparent;
@@ -207,4 +173,3 @@ tbody > tr {
   cursor: pointer;
 }
 </style>
-

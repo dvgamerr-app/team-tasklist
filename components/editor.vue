@@ -1,21 +1,28 @@
 <template>
-  <div :id="uid('container')" :class="['v-md-container', css]">
-    <div :id="uid('toolbar')" class="v-md-toolbar">
+  <div :class="['v-md-container', css, fullscreen ? 'v-md-fullscreen' : '']">
+    <div class="v-md-toolbar">
       <div v-for="(group, i) in groupButtons()" :key="i" class="btn-group mr-3" role="group">
-        <button v-for="btn in group" :key="btn.cmd" type="button" :data-cmd="btn.cmd" :title="btn.title" :class="btn.className">
+        <button
+          v-for="btn in group" :key="btn.cmd" type="button"
+          :data-cmd="btn.cmd" :title="btn.title" :class="btn.className" @click.prevent="command(btn.cmd)"
+        >
           <fa :icon="btn.faIcon" />
         </button>
       </div>
     </div>
-    <div class="v-md-wrapper">
-      <codemirror v-model="value" :style="styles" :name="name" @change="onChange" />
-      <div :id="uid('html-preview')" class="v-md-preview" />
+    <div class="v-md-wrapper" :style="styles">
+      <no-ssr placeholder="Loading">
+        <codemirror
+          v-if="!preview" ref="cm" v-model="cmValue" :style="styles" :options="cmOptions" :name="name" 
+          @ready="onCmReady" @focus="onCmFocus" @input="onCmChange"
+        />
+        <div v-else class="v-md-preview" v-html="cmHtmlRender" />
+      </no-ssr>
     </div>
   </div>
 </template>
 
 <script>
-  import $ from 'jquery';
   import Markdown from 'markdownparser'
   import MarkdownIt from 'markdown-it'
 
@@ -35,7 +42,7 @@
       },
       toolbar: {
         type: String,
-        default: 'clipboard redo undo | bold italic strikethrough heading | image link | numlist bullist code quote | preview fullscreen'
+        default: 'bold italic strikethrough heading | image link | numlist bullist code quote | preview fullscreen'
       },
       name: {
         type: String,
@@ -46,125 +53,118 @@
         default: '',
         required: false
       },
-
       buttonClass: {
         type: String,
         default: 'btn'
       },
       options: {
         type: Object,
-        default: function () {
-          return {
-
-          };
-        }
-      },
+        default: () => ({})
+      }
     },
     data() {
       return {
         id: 'v-md-editor-' + new Date().getTime(),
         preview: false,
+        fullscreen: false,
         buttons: {
-          'bold': {
-            title: 'Bold',
-            className: 'bold',
-            cmd: 'bold',
-            hotkey: 'Ctrl-B'
-          },
+          // 'bold': {
+          //   title: 'Bold',
+          //   className: 'bold',
+          //   cmd: 'bold',
+          //   hotkey: 'Ctrl-B'
+          // },
+          // 'italic': {
+          //   title: 'Italic',
+          //   className: 'italic',
+          //   cmd: 'italic',
+          //   hotkey: 'Ctrl-I'
+          // },
 
-          'italic': {
-            title: 'Italic',
-            className: "italic",
-            cmd: 'italic',
-            hotkey: 'Ctrl-I'
-          },
+          // 'strikethrough': {
+          //   cmd: 'strikethrough',
+          //   className: 'strikethrough',
+          //   title: 'Strikethrough'
+          // },
 
-          "strikethrough": {
-            cmd: "strikethrough",
-            className: "strikethrough",
-            title: "Strikethrough"
-          },
+          // 'heading': {
+          //   title: 'Heading',
+          //   className: 'heading',
+          //   cmd: 'heading',
+          //   hotkey: 'Ctrl-H'
+          // },
 
-          'heading': {
-            title: 'Heading',
-            className: "heading",
-            cmd: 'heading',
-            hotkey: 'Ctrl-H'
-          },
-
-          'code': {
-            title: 'Code',
-            className: "code",
-            cmd: 'code',
-            hotkey: 'Ctrl-X'
-          },
-          'quote': {
-            title: 'Quote',
-            className: "quote-left",
-            cmd: 'quote',
-            hotkey: 'Ctrl-Q'
-          },
-          'link': {
-            title: 'Link',
-            className: "link",
-            cmd: 'link',
-            hotkey: 'Ctrl-K'
-          },
-          'image': {
-            title: 'Image',
-            className: "image",
-            cmd: 'image',
-            hotkey: 'Ctrl-P'
-          },
-          "fullscreen": {
-            cmd: "fullscreen",
-            className: "arrows-alt",
-            title: "Toggle Fullscreen",
+          // 'code': {
+          //   title: 'Code',
+          //   className: 'code',
+          //   cmd: 'code',
+          //   hotkey: 'Ctrl-X'
+          // },
+          // 'quote': {
+          //   title: 'Quote',
+          //   className: 'quote-left',
+          //   cmd: 'quote',
+          //   hotkey: 'Ctrl-Q'
+          // },
+          // 'link': {
+          //   title: 'Link',
+          //   className: 'link',
+          //   cmd: 'link',
+          //   hotkey: 'Ctrl-K'
+          // },
+          // 'image': {
+          //   title: 'Image',
+          //   className: 'image',
+          //   cmd: 'image',
+          //   hotkey: 'Ctrl-P'
+          // },
+          'fullscreen': {
+            cmd: 'fullscreen',
+            className: 'arrows-alt',
+            title: 'Toggle Fullscreen',
             hotkey: 'F11',
             ready: true
           },
-          "preview": {
-            cmd: "preview",
-            className: "eye",
-            title: "Toggle Preview",
+          'preview': {
+            cmd: 'preview',
+            className: 'eye',
+            title: 'Toggle Preview',
             hotkey: 'Ctrl-P',
             ready: true
           },
 
-          "clipboard": {
-            cmd: "clipboard",
-            className: "clipboard",
-            title: "Copy & Markdown Format",
+          'clipboard': {
+            cmd: 'clipboard',
+            className: 'clipboard',
+            title: 'Copy & Markdown Format',
             hotkey: 'Ctrl-V'
-          },
+          }
 
-          "undo": {
-            cmd: "undo",
-            className: "undo-alt",
-            title: "Undo",
-            hotkey: 'Ctrl-Z'
-          },
+          // 'undo': {
+          //   cmd: 'undo',
+          //   className: 'undo-alt',
+          //   title: 'Undo',
+          //   hotkey: 'Ctrl-Z'
+          // },
 
-          "redo": {
-            cmd: "redo",
-            className: "redo-alt",
-            title: "Redo",
-            hotkey: 'Ctrl-Y'
-          },
+          // 'redo': {
+          //   cmd: 'redo',
+          //   className: 'redo-alt',
+          //   title: 'Redo',
+          //   hotkey: 'Ctrl-Y'
+          // },
 
-          "bullist": {
-            cmd: "bullist",
-            className: "list-ul",
-            title: "Generic List",
+          // 'bullist': {
+          //   cmd: 'bullist',
+          //   className: 'list-ul',
+          //   title: 'Generic List',
 
-          },
-          "numlist": {
-            cmd: "numlist",
-            className: "list-ol",
-            title: "Numbered List"
-          },
-
-
+          // },
+          // 'numlist': {
+          //   cmd: 'numlist',
+          //   className: 'list-ol',
+          //   title: 'Numbered List'
+          // }
         },
         defaults: {
           mode: 'gfm',
@@ -178,8 +178,10 @@
           tabSize: 2,
           indentUnit: 2
         },
-        shortcuts: {},
-
+        cmValue: '',
+        cmOptions: {},
+        cmHtmlRender: '',
+        shortcuts: {}
       }
     },
     computed: {
@@ -192,19 +194,16 @@
     },
 
     watch: {
-      value(val) {
-        // if (val != this.editor.getValue()){
-        //   this.editor.setValue(val);
-        // }
+      cmValue (val) {
+        if (val != this.value) this.$emit('input', val)
       },
     },
     mounted() {
-      // this.build();
+      this.build()
     },
-    destroyed() {
-      this.editor = null;
-    },
-
+    // destroyed() {
+    //   this.editor = null;
+    // },
     methods: {
       groupButtons () {
         let vm = this
@@ -212,10 +211,11 @@
         let btns = []
         for (const e of vm.toolbar.toLowerCase().split(/(\s)/).filter(w => !vm.isEmpty(w))) {
           if (e === '|') {
-            groups.push(btns)
+            if (btns.length > 0) groups.push(btns)
             btns = []
           } else {
             let btn = vm.buttons[e]
+            if (!btn) continue
             btns.push({
               id: `${vm.id}-${e}`,
               cmd: btn.cmd,
@@ -225,6 +225,7 @@
             })
           }
         }
+        if (btns.length > 0) groups.push(btns)
         return groups.length === 0 ? [ btns ] : groups
       },
       isEmpty: function (s) {
@@ -244,343 +245,319 @@
       uid(name) {
         return this.format('%s-%s', this.id, name);
       },
-      obj(name) {
-        return $('#' + this.uid(name));
-      },
+      // obj(name) {
+      //   return $('#' + this.uid(name));
+      // },
 
-      _toggleBlock(type, start, end) {
+      // _toggleBlock(type, start, end) {
 
-        end = this.isEmpty(end) ? start : end;
-        var ed = this.editor;
-        var startPoint = ed.getCursor("start");
-        var endPoint = ed.getCursor("end");
-        var text;
-        var stat = this.state();
+      //   end = this.isEmpty(end) ? start : end;
+      //   var ed = this.editor;
+      //   var startPoint = ed.getCursor("start");
+      //   var endPoint = ed.getCursor("end");
+      //   var text;
+      //   var stat = this.state();
 
-        if (stat[type]) {
+      //   if (stat[type]) {
 
-          text = ed.getLine(startPoint.line);
-          start = text.slice(0, startPoint.ch);
-          end = text.slice(startPoint.ch);
-          if (type == "bold") {
-            start = start.replace(/(\*\*|__)(?![\s\S]*(\*\*|__))/, "");
-            end = end.replace(/(\*\*|__)/, "");
-          } else if (type == "italic") {
-            start = start.replace(/(\*|_)(?![\s\S]*(\*|_))/, "");
-            end = end.replace(/(\*|_)/, "");
-          } else if (type == "strikethrough") {
-            start = start.replace(/(\*\*|~~)(?![\s\S]*(\*\*|~~))/, "");
-            end = end.replace(/(\*\*|~~)/, "");
-          }
-          ed.replaceRange(start + end, {
-            line: startPoint.line,
-            ch: 0
-          }, {
-              line: startPoint.line,
-              ch: 99999999999999
-            });
+      //     text = ed.getLine(startPoint.line);
+      //     start = text.slice(0, startPoint.ch);
+      //     end = text.slice(startPoint.ch);
+      //     if (type == "bold") {
+      //       start = start.replace(/(\*\*|__)(?![\s\S]*(\*\*|__))/, "");
+      //       end = end.replace(/(\*\*|__)/, "");
+      //     } else if (type == "italic") {
+      //       start = start.replace(/(\*|_)(?![\s\S]*(\*|_))/, "");
+      //       end = end.replace(/(\*|_)/, "");
+      //     } else if (type == "strikethrough") {
+      //       start = start.replace(/(\*\*|~~)(?![\s\S]*(\*\*|~~))/, "");
+      //       end = end.replace(/(\*\*|~~)/, "");
+      //     }
+      //     ed.replaceRange(start + end, {
+      //       line: startPoint.line,
+      //       ch: 0
+      //     }, {
+      //         line: startPoint.line,
+      //         ch: 99999999999999
+      //       });
 
-          if (type == "bold" || type == "strikethrough") {
-            startPoint.ch -= 2;
-            if (startPoint !== endPoint) {
-              endPoint.ch -= 2;
-            }
-          } else if (type == "italic") {
-            startPoint.ch -= 1;
-            if (startPoint !== endPoint) {
-              endPoint.ch -= 1;
-            }
-          }
-        } else {
+      //     if (type == "bold" || type == "strikethrough") {
+      //       startPoint.ch -= 2;
+      //       if (startPoint !== endPoint) {
+      //         endPoint.ch -= 2;
+      //       }
+      //     } else if (type == "italic") {
+      //       startPoint.ch -= 1;
+      //       if (startPoint !== endPoint) {
+      //         endPoint.ch -= 1;
+      //       }
+      //     }
+      //   } else {
 
-          text = ed.getSelection();
-          if (type == "bold") {
-            text = text.split("**").join("");
-            text = text.split("__").join("");
-          } else if (type == "italic") {
-            text = text.split("*").join("");
-            text = text.split("_").join("");
-          } else if (type == "strikethrough") {
-            text = text.split("~~").join("");
-          }
-          ed.replaceSelection(start + text + end);
+      //     text = ed.getSelection();
+      //     if (type == "bold") {
+      //       text = text.split("**").join("");
+      //       text = text.split("__").join("");
+      //     } else if (type == "italic") {
+      //       text = text.split("*").join("");
+      //       text = text.split("_").join("");
+      //     } else if (type == "strikethrough") {
+      //       text = text.split("~~").join("");
+      //     }
+      //     ed.replaceSelection(start + text + end);
 
-          startPoint.ch += start.length;
-          endPoint.ch = startPoint.ch + text.length;
-        }
+      //     startPoint.ch += start.length;
+      //     endPoint.ch = startPoint.ch + text.length;
+      //   }
 
-        ed.setSelection(startPoint, endPoint);
-      },
+      //   ed.setSelection(startPoint, endPoint);
+      // },
 
-      _toggleLine(name) {
-        var ed = this.editor;
-        var stat = this.state();
-        var startPoint = ed.getCursor("start");
-        var endPoint = ed.getCursor("end");
-        var repl = {
-          "quote": /^(\s*)\>\s+/,
-          "bullist": /^(\s*)(\*|\-|\+)\s+/,
-          "numlist": /^(\s*)\d+\.\s+/
-        };
-        var map = {
-          "quote": "> ",
-          "bullist": "* ",
-          "numlist": "1. "
-        };
-        for (var i = startPoint.line; i <= endPoint.line; i++) {
-          (function (i) {
-            var text = ed.getLine(i);
-            if (stat[name]) {
-              text = text.replace(repl[name], "$1");
-            } else {
-              text = map[name] + text;
-            }
-            ed.replaceRange(text, {
-              line: i, ch: 0
-            }, {
-                line: i, ch: 99999999999999
-              });
-          })(i);
-        }
+      // _toggleLine(name) {
+      //   var ed = this.editor;
+      //   var stat = this.state();
+      //   var startPoint = ed.getCursor("start");
+      //   var endPoint = ed.getCursor("end");
+      //   var repl = {
+      //     "quote": /^(\s*)\>\s+/,
+      //     "bullist": /^(\s*)(\*|\-|\+)\s+/,
+      //     "numlist": /^(\s*)\d+\.\s+/
+      //   };
+      //   var map = {
+      //     "quote": "> ",
+      //     "bullist": "* ",
+      //     "numlist": "1. "
+      //   };
+      //   for (var i = startPoint.line; i <= endPoint.line; i++) {
+      //     (function (i) {
+      //       var text = ed.getLine(i);
+      //       if (stat[name]) {
+      //         text = text.replace(repl[name], "$1");
+      //       } else {
+      //         text = map[name] + text;
+      //       }
+      //       ed.replaceRange(text, {
+      //         line: i, ch: 0
+      //       }, {
+      //           line: i, ch: 99999999999999
+      //         });
+      //     })(i);
+      //   }
 
-      },
+      // },
 
-      state(pos) {
-        pos = pos || this.editor.getCursor("start");
-        var stat = this.editor.getTokenAt(pos);
-        if (!stat.type) return {};
+      // state(pos) {
+      //   pos = pos || this.editor.getCursor("start");
+      //   var stat = this.editor.getTokenAt(pos);
+      //   if (!stat.type) return {};
 
-        var types = stat.type.split(" ");
+      //   var types = stat.type.split(" ");
 
-        var ret = {},
-          data, text;
-        for (var i = 0; i < types.length; i++) {
-          data = types[i];
-          if (data === "strong") {
-            ret.bold = true;
-          } else if (data === "variable-2") {
-            text = this.editor.getLine(pos.line);
-            if (/^\s*\d+\.\s/.test(text)) {
-              ret["numlist"] = true;
-            } else {
-              ret["bullist"] = true;
-            }
-          } else if (data === "atom") {
-            ret.quote = true;
-          } else if (data === "em") {
-            ret.italic = true;
-          } else if (data === "quote") {
-            ret.quote = true;
-          } else if (data === "strikethrough") {
-            ret.strikethrough = true;
-          } else if (data === "comment") {
-            ret.code = true;
-          } else if (data === "link") {
-            ret.link = true;
-          } else if (data === "tag") {
-            ret.image = true;
-          } else if (data.match(/^header(\-[1-6])?$/)) {
-            ret[data.replace("header", "heading")] = true;
-          }
-        }
-        return ret;
-      },
+      //   var ret = {},
+      //     data, text;
+      //   for (var i = 0; i < types.length; i++) {
+      //     data = types[i];
+      //     if (data === "strong") {
+      //       ret.bold = true;
+      //     } else if (data === "variable-2") {
+      //       text = this.editor.getLine(pos.line);
+      //       if (/^\s*\d+\.\s/.test(text)) {
+      //         ret["numlist"] = true;
+      //       } else {
+      //         ret["bullist"] = true;
+      //       }
+      //     } else if (data === "atom") {
+      //       ret.quote = true;
+      //     } else if (data === "em") {
+      //       ret.italic = true;
+      //     } else if (data === "quote") {
+      //       ret.quote = true;
+      //     } else if (data === "strikethrough") {
+      //       ret.strikethrough = true;
+      //     } else if (data === "comment") {
+      //       ret.code = true;
+      //     } else if (data === "link") {
+      //       ret.link = true;
+      //     } else if (data === "tag") {
+      //       ret.image = true;
+      //     } else if (data.match(/^header(\-[1-6])?$/)) {
+      //       ret[data.replace("header", "heading")] = true;
+      //     }
+      //   }
+      //   return ret;
+      // },
 
-      _replaceSelection(active, startEnd, val) {
-        var ed = this.editor;
+      // _replaceSelection(active, startEnd, val) {
+      //   var ed = this.editor;
 
-        var text;
-        var start = startEnd[0];
-        var end = startEnd[1];
-        var startPoint = ed.getCursor("start");
-        var endPoint = ed.getCursor("end");
-        if (val) {
-          Object.keys(val).forEach(key => {
-            start = start.replace('#' + key + '#', val[key]);
-            end = end.replace('#' + key + '#', val[key]);
-          });
-        }
+      //   var text;
+      //   var start = startEnd[0];
+      //   var end = startEnd[1];
+      //   var startPoint = ed.getCursor("start");
+      //   var endPoint = ed.getCursor("end");
+      //   if (val) {
+      //     Object.keys(val).forEach(key => {
+      //       start = start.replace('#' + key + '#', val[key]);
+      //       end = end.replace('#' + key + '#', val[key]);
+      //     });
+      //   }
 
-        if (active) {
-          text = ed.getLine(startPoint.line);
-          start = text.slice(0, startPoint.ch);
-          end = text.slice(startPoint.ch);
-          ed.replaceRange(start + end, {
-            line: startPoint.line,
-            ch: 0
-          });
-        } else {
-          text = ed.getSelection();
-          ed.replaceSelection(start + text + end);
+      //   if (active) {
+      //     text = ed.getLine(startPoint.line);
+      //     start = text.slice(0, startPoint.ch);
+      //     end = text.slice(startPoint.ch);
+      //     ed.replaceRange(start + end, {
+      //       line: startPoint.line,
+      //       ch: 0
+      //     });
+      //   } else {
+      //     text = ed.getSelection();
+      //     ed.replaceSelection(start + text + end);
 
-          startPoint.ch += start.length;
-          if (startPoint !== endPoint) {
-            endPoint.ch += start.length;
-          }
-        }
-        ed.setSelection(startPoint, endPoint);
-        ed.focus();
+      //     startPoint.ch += start.length;
+      //     if (startPoint !== endPoint) {
+      //       endPoint.ch += start.length;
+      //     }
+      //   }
+      //   ed.setSelection(startPoint, endPoint);
+      //   ed.focus();
 
-      },
-      command(key) {
-
-        var ed = this.editor;         
-        var text = ed.getSelection();
-        var stat = this.state();
+      // },
+      command (key) {
+        console.log('command:', key)
+        let ed = this.$refs.cm
+        console.log(ed)
+      //   var text = ed.getSelection();
+      //   var stat = this.state();
 
         switch (key) {
-          case 'undo':
-            ed.undo();
-            break;
+          case 'undo': ed.undo(); break
+          case 'redo': ed.redo(); break
 
-          case 'redo':
-            ed.redo();
-            break;
+      //     case 'bold':
+      //       this._toggleBlock('bold', '**');
+      //       break;
 
-          case 'bold':
-            this._toggleBlock('bold', '**');
-            break;
+      //     case 'italic':
+      //       this._toggleBlock('italic', '*');
+      //       break;
 
-          case 'italic':
-            this._toggleBlock('italic', '*');
-            break;
+      //     case 'strikethrough':
+      //       this._toggleBlock('strikethrough', '~~');
+      //       break;
 
-          case 'strikethrough':
-            this._toggleBlock('strikethrough', '~~');
-            break;
-
-          case 'code':
-            this._toggleBlock('code', '```');
-            break;
+      //     case 'code':
+      //       this._toggleBlock('code', '```');
+      //       break;
 
 
-          case 'heading':
-            ed.replaceSelection('\n### ' + text);
-            break;
+      //     case 'heading':
+      //       ed.replaceSelection('\n### ' + text);
+      //       break;
 
-          case 'clipboard':
-            this.obj('modal-clipboard').modal('show');
-            break;
+      //     case 'clipboard':
+      //       this.obj('modal-clipboard').modal('show');
+      //       break;
 
-          case 'image':
-            this.obj('modal-image').modal('show');
-            break;
+      //     case 'image':
+      //       this.obj('modal-image').modal('show');
+      //       break;
 
-          case 'link':
-            this.obj('modal-link').modal('show');
-            break;
+      //     case 'link':
+      //       this.obj('modal-link').modal('show');
+      //       break;
 
-          case 'quote':
-            this._toggleLine('quote');
-            break;
+      //     case 'quote':
+      //       this._toggleLine('quote');
+      //       break;
 
-          case 'quote':
-            this._toggleLine('quote');
-            break;
+      //     case 'quote':
+      //       this._toggleLine('quote');
+      //       break;
 
-          case 'numlist':
-            this._toggleLine('numlist');
-            break;
+      //     case 'numlist':
+      //       this._toggleLine('numlist');
+      //       break;
 
-          case 'bullist':
-            this._toggleLine('bullist');
-            break;
+      //     case 'bullist':
+      //       this._toggleLine('bullist');
+      //       break;
 
+          case 'fullscreen': this.fullscreen ^= true; break
           case 'preview':
-
-            var md = new MarkdownIt({
-              html: true,
-              linkify: true,
-              typographer: true,
-              breaks: true,
-              quotes: '“”‘’',
-              langPrefix: 'language-',  // CSS language prefix for fenced blocks. Can be useful for external highlighters. 
-              highlight: function (str, lang) {
-                return '<pre class="hljs" data-lang="' + lang + '"><code>' + md.utils.escapeHtml(str) + '</code></pre>';
-              }
-            });
-            var txt = md.render(ed.getValue());
-
-            this.obj('html-preview').html(txt).toggle();
-            this.obj('preview').toggleClass('active');
-            this.preview ^= true;
-
-            this.obj('toolbar').find('.btn:not(".ready")').prop('disabled', this.preview);
-
-            break;
-
-          case 'fullscreen':
-
-            this.obj('container').toggleClass('v-md-fullscreen');
-            this.obj('fullscreen').toggleClass('active');
-            ed.setOption("fullScreen", !ed.getOption("fullScreen"));
-
-            break;
-
+            if (!this.preview) {
+              let md = new MarkdownIt({
+                html: true,
+                linkify: true,
+                typographer: true,
+                breaks: true,
+                quotes: '“”‘’',
+                langPrefix: 'language-',  // CSS language prefix for fenced blocks. Can be useful for external highlighters. 
+                highlight: (str, lang) => '<pre class="hljs" data-lang="' + lang + '"><code>' + md.utils.escapeHtml(str) + '</code></pre>'
+              })
+              this.cmHtmlRender = md.render(this.cmValue)
+            }
+            this.preview ^= true
+            break
         }
-
-        ed.focus();
-
       },
+      // drawImage() {
+      //   var url = this.obj('img-src').val();
+      //   var title = this.obj('img-title').val();
+      //   if (this.isUrl(url)) {
+      //     var stat = this.state();
+      //     this._replaceSelection(stat.image, ["![#title#](", '#url# "#title#")'], {
+      //       title: title,
+      //       url: url
+      //     });
+      //      this.hideModal('modal-image');
 
-      drawImage() {
-        var url = this.obj('img-src').val();
-        var title = this.obj('img-title').val();
-        if (this.isUrl(url)) {
-          var stat = this.state();
-          this._replaceSelection(stat.image, ["![#title#](", '#url# "#title#")'], {
-            title: title,
-            url: url
-          });
-           this.hideModal('modal-image');
+      //   } else {
+      //     this.obj('image-alert').fadeIn();
+      //   }
 
-        } else {
-          this.obj('image-alert').fadeIn();
-        }
+      // },
 
-      },
-
-      drawLink() {
-        var url = this.obj('link-src').val();
-        var title = this.obj('link-title').val();
-        if (this.isUrl(url)) {
-          var stat = this.state();
-          this._replaceSelection(stat.link, ['[#title#]', '(#url# "#title#")'], {
-            title: title,
-            url: url
-          });
+      // drawLink() {
+      //   var url = this.obj('link-src').val();
+      //   var title = this.obj('link-title').val();
+      //   if (this.isUrl(url)) {
+      //     var stat = this.state();
+      //     this._replaceSelection(stat.link, ['[#title#]', '(#url# "#title#")'], {
+      //       title: title,
+      //       url: url
+      //     });
            
-          this.hideModal('modal-link');
+      //     this.hideModal('modal-link');
           
 
-        } else {
-          this.obj('link-alert').fadeIn();
-        }
+      //   } else {
+      //     this.obj('link-alert').fadeIn();
+      //   }
 
+      // },
+
+      // toMarkdown() {
+      //   var html = this.obj('clipboard-text').val();
+      //   var text = Markdown.parse(html);
+      //   this.editor.replaceSelection(text);
+      //   this.editor.focus();
+
+      //   this.hideModal('modal-clipboard');
+      // },
+      onCmReady () {
       },
-
-      toMarkdown() {
-        var html = this.obj('clipboard-text').val();
-        var text = Markdown.parse(html);
-        this.editor.replaceSelection(text);
-        this.editor.focus();
-
-        this.hideModal('modal-clipboard');
+      onCmFocus () {
       },
-
-      hideModal(n) {
-        this.obj(n).modal('hide');
-      },
-      onChange () {
-        let vm = this
-        console.log(this.$refs.textarea)
-          //_t.value = ed.getValue();
+      onCmChange () {
       },
       build () {
-
-      //   var btns = _t.toolbar.toLowerCase().split(/(\s)/).filter(function (w) {
-      //     return !_t.isEmpty(w);
-      //   });
+        let vm = this
+        for (const key in this.buttons) {
+          const e = this.buttons[key];
+          this.shortcuts[e.hotkey] = () => vm.command(e.cmd)
+        }
+        this.cmOptions = Object.assign({ extraKeys: this.shortcuts, initialValue: this.value }, this.defaults, this.options)
       }
       //   if (this.isEmpty(this.toolbar)) {
       //     console.error("You must set toolbar!");
@@ -646,6 +623,5 @@
 
       // }
     }
-
   }
 </script>

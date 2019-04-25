@@ -6,7 +6,7 @@ module.exports = {
   },
   extends: [ 'plugin:vue/recommended' ],
   // required to lint *.vue files
-  plugins: [ 'vue', 'backpack' ],
+  plugins: [ 'vue' ],
   // add your custom rules here
   rules: {
     'no-console': 'off',

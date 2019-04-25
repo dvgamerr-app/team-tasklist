@@ -39,10 +39,14 @@ module.exports = {
   loading: { color: '#4caf50' },
   css: [
     './assets/scss/index.scss',
-    'codemirror/lib/codemirror.css'
+    'codemirror/lib/codemirror.css',
+    'vue-multiselect/dist/vue-multiselect.min.css',
+    'vue-datetime/dist/vue-datetime.css'
   ],
   plugins: [
     './plugins/vue-toast.js',
+    './plugins/vue-multiselect.js',
+    './plugins/vue-datepicker.js',
     { src: './plugins/vue-codemirror.js', ssr: false }
   ],
   router: {
