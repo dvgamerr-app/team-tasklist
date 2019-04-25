@@ -9,7 +9,7 @@
     </div>
     <div class="row mt-3">
       <div class="col-lg-18">
-        <editor v-model="todo.description" :options="optDescription" />
+        <editor v-model="todo.description" />
       </div>
       
       <div class="col-lg-18 mt-sm-4 mt-lg-0">
@@ -71,7 +71,7 @@
 </template>
 <script>
 import moment from 'moment'
-import Editor from '../components/editor.vue'
+import Editor from '../../components/editor.vue'
 
 export default {
   components: {
@@ -80,10 +80,11 @@ export default {
   data: () => ({
     saved: false,
     todo: {
-      duedate: (new Date()).toISOString(),
+      title: '',
       project: '',
       description: '',
       assign: [],
+      duedate: null,
       priority: 0,
       status: 1,
       private: false
@@ -102,20 +103,13 @@ export default {
       { text: 'Low', value: 1 },
       { text: 'Medium', value: 2 },
       { text: 'High', value: 3 }
-    ],
-    optDescription: {                   
-      lineNumbers: true,
-      styleActiveLine: true,
-      styleSelectedText: true,
-      lineWrapping: true,
-      indentWithTabs: true,
-      tabSize: 2,
-      indentUnit: 2
-    }
+    ]
   }),
-  async asyncData ({ $axios, param, params }) {
-    console.log(param, params)
-    return { history: [] }
+  async asyncData ({ $axios, params }) {
+    if (params.id) {
+
+      return { todo: {} }
+    }
   },
   created () {
   },
@@ -130,10 +124,10 @@ export default {
         this.saved = false
         if (data.error) throw new Error(data.error)
         this.$toast.open({ message: 'Task Added.', type: 'success' })
-        this.$router.push({ name: 'task-edit', param: { id: data.id } })
+        this.$router.push({ name: 'todo-edit', param: { id: data.id } })
       } catch (ex) {
         this.$bvToast.toast(ex.message || ex, {
-          title: 'Task-List',
+          title: 'Todo',
           toaster: 'b-toaster-bottom-right',
           variant: 'error',
           autoHideDelay: 5000

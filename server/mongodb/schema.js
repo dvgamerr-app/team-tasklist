@@ -12,6 +12,9 @@ module.exports = [
       email: { type: String, index: true },
       level: { type: Number, index: true },
       pwd: String,
+      permission: Array,
+      facebook: Object,
+      line: Object,
       enabled: { type: Boolean, index: true },
       lasted: { type: Date, index: true },
       updated: Date,
@@ -19,15 +22,16 @@ module.exports = [
     })
   },
   {
-    id: 'TaskList',
-    name: 'db-tasklist',
+    id: 'Todo',
+    name: 'db-Todo',
     schema: Schema({
+      title: { type: String, index: true },
       description: String,
       project: { type: String, index: true },
       duedate: { type: Date, index: true },
       priority: { type: Number, index: true },
       assign: Array,
-      owner: String,
+      owner: { name: String, id: String },
       tags: Array,
       status: { type: Number, index: true },
       private: { type: Boolean, index: true },
@@ -37,15 +41,12 @@ module.exports = [
     })
   },
   {
-    id: 'TaskListHistory',
-    name: 'db-tasklist-history',
+    id: 'TodoComment',
+    name: 'db-Todo-comment',
     schema: Schema({
       description: String,
-      project: { type: String, index: true },
-      duedate: { type: Date, index: true },
-      priority: { type: Number, index: true },
-      tags: Array,
       deleted: { type: Boolean, index: true },
+      owner: { name: String, id: String },
       updated: Date,
       created: Date,
     })

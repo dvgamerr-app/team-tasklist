@@ -118,13 +118,13 @@
           //   cmd: 'image',
           //   hotkey: 'Ctrl-P'
           // },
-          'fullscreen': {
-            cmd: 'fullscreen',
-            className: 'arrows-alt',
-            title: 'Toggle Fullscreen',
-            hotkey: 'F11',
-            ready: true
-          },
+          // 'fullscreen': {
+          //   cmd: 'fullscreen',
+          //   className: 'arrows-alt',
+          //   title: 'Toggle Fullscreen',
+          //   hotkey: 'F11',
+          //   ready: true
+          // },
           'preview': {
             cmd: 'preview',
             className: 'eye',
@@ -169,10 +169,10 @@
         defaults: {
           mode: 'gfm',
           theme: "elegent",
-          lineNumbers: true,
-          styleActiveLine: true,
+          lineNumbers: false,
+          styleActiveLine: false,
           styleSelectedText: true,
-          lineWrapping: true,
+          lineWrapping: false,
           indentWithTabs: true,
           autoRefresh:true,
           tabSize: 2,
@@ -558,6 +558,7 @@
           this.shortcuts[e.hotkey] = () => vm.command(e.cmd)
         }
         this.cmOptions = Object.assign({ extraKeys: this.shortcuts, initialValue: this.value }, this.defaults, this.options)
+        console.log(this.cmOptions)
       }
       //   if (this.isEmpty(this.toolbar)) {
       //     console.error("You must set toolbar!");

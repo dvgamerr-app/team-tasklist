@@ -7,7 +7,7 @@ module.exports = async (req, res) => {
     const { TaskList } = await mongo.open()
     let item = await new TaskList(Object.assign(body, {
       duedate: new Date(body.duedate),
-      owner: auth._id,
+      owner: { id: auth._id, name: auth.username },
       tags: [],
       deleted: false,
       updated: new Date(),
@@ -15,6 +15,7 @@ module.exports = async (req, res) => {
     })).save()
     res.json({ id: item._id })
   } catch (ex) {
+    logger.warning(req.url, ex.message || ex)
     res.json({ error: false })
   } finally {
     res.end()

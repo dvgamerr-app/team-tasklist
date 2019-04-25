@@ -58,7 +58,7 @@ const NuxtBuilder = async () => {
     await new UserAccount({
       username: 'dvgamerr',
       fullname: 'Kananek Thongkam',
-      email: 'dvgamerr@touno.io',
+      email: 'info.dvgamer@gmail.com',
       level: '3',
       pwd: md5('dvg7po8ai'),
       enabled: true,

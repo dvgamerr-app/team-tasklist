@@ -8,7 +8,7 @@ export default {
   data: () => ({
   }),
   async asyncData ({ redirect }) {
-    redirect('/task')
+    redirect('/todo/task')
     return {}
   },
   created () {
