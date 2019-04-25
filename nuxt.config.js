@@ -36,7 +36,7 @@ module.exports = {
     globPatterns: [ '**/*.{js,vue,html}' ],
     swDest: 'static/sw.js'
   },
-  loading: { color: '#4caf50' },
+  loading: { color: '#ee5151' },
   css: [
     './assets/scss/index.scss',
     'codemirror/lib/codemirror.css',
@@ -47,6 +47,7 @@ module.exports = {
     './plugins/vue-toast.js',
     './plugins/vue-multiselect.js',
     './plugins/vue-datepicker.js',
+    { src: './plugins/vue-loading.js', ssr: false },
     { src: './plugins/vue-codemirror.js', ssr: false }
   ],
   router: {

@@ -1,16 +1,19 @@
 <template lang="html">
   <b-navbar class="border-bottom mb-3">
+    <no-ssr>
+      <vue-loading :active="fullscreen" :is-full-screen="true" />
+    </no-ssr>
     <b-container>
       <b-navbar-brand to="/">
-        <fa icon="calendar-check" /> <b>TEAM</b> <small>Task-List</small>
+        <fa icon="calendar-check" /> <b>TEAM</b> <small>Todo</small>
       </b-navbar-brand>
-      <b-navbar-nav v-if="$auth.loggedIn">
-        <b-nav-item to="/task">Tasks</b-nav-item>
-        <b-nav-item to="/project">Projects</b-nav-item>
-      </b-navbar-nav>
       <b-navbar-nav v-if="$auth.loggedIn" class="ml-auto">
-        <b-nav-item exact to="/task-new"><fa icon="plus" /> Add Task</b-nav-item>
-        <b-nav-item-dropdown :text="'User'" right>
+        <b-nav-item-dropdown :text="'TODO'" right>
+          <b-dropdown-item exact to="/task-new"><fa icon="plus" /> Add Task</b-dropdown-item>
+          <b-dropdown-item to="/task">Tasks</b-dropdown-item>
+          <b-dropdown-item to="/project">Projects</b-dropdown-item>
+        </b-nav-item-dropdown>
+        <b-nav-item-dropdown :text="'Setting'" right>
           <b-dropdown-item @click.prevent="onSignOut"><fa icon="sign-out-alt" /> Logout</b-dropdown-item>
         </b-nav-item-dropdown>
       </b-navbar-nav>
@@ -19,11 +22,14 @@
 </template>
 <script>
 export default {
-  created () {
-  },
+  data: () => ({
+    fullscreen: false
+  }),
   methods: {
-    onSignOut () {
-      this.$auth.logout()
+    async onSignOut () {
+      this.fullscreen = true;
+      await this.$auth.logout()
+      this.fullscreen = false;
     }
   }
 }
