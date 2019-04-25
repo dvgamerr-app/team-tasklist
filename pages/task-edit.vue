@@ -1,4 +1,4 @@
 <script>
-import task from '../task-new.vue'
+import task from './task-new.vue'
 export default task
 </script>

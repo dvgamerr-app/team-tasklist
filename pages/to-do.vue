@@ -1,5 +1,5 @@
 <template lang="html">
-  <div class="container pt-5 pb-3">
+  <div class="todo">
     <no-ssr>
       <div class="row">
         <div class="col-sm-36">

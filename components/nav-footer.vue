@@ -1,5 +1,5 @@
 <template lang="html">
-  <b-navbar class="mt-3 nav-footer fixed-bottom">
+  <b-navbar class="mt-3 nav-footer">
     <b-container>
       <b-navbar-nav />
       <b-navbar-nav class="ml-auto">

@@ -1,5 +1,5 @@
 <template lang="html">
-  <div class="container pt-5 pb-3 projects">
+  <div class="task">
     <div class="row">
       <div class="col-sm-36">
         <h3>To-Do</h3>
@@ -130,7 +130,7 @@ export default {
         this.saved = false
         if (data.error) throw new Error(data.error)
         this.$toast.open({ message: 'Task Added.', type: 'success' })
-        this.$router.push({ name: 'task-id', param: { id: data.id } })
+        this.$router.push({ name: 'task-edit', param: { id: data.id } })
       } catch (ex) {
         this.$bvToast.toast(ex.message || ex, {
           title: 'Task-List',
