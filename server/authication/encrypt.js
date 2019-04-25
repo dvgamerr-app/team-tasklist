@@ -24,6 +24,8 @@ module.exports = {
       return jsonwebtoken.sign({ hash: hashId, raw }, process.env.JWT_KEYHASH)
     },
     decode (raw) {
+      raw = raw.replace(/^bearer /ig, '')
+      if (!raw || raw === 'undefined') return
       return jsonwebtoken.verify(raw, process.env.JWT_KEYHASH)
     }
 

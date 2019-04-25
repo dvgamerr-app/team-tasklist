@@ -7,6 +7,36 @@ $border-radius-sm:            .0rem;
 @import 'bootstrap/scss/bootstrap.scss';
 @import 'bootstrap-vue/dist/bootstrap-vue.css';
 
+@import 'vue-toast-notification/src/scss/index.scss';
+
+.notices {
+  .toast-success {
+    color: #28a745;
+    border-top: #28a745 solid 5px;
+  }
+  .toast-info {
+    color: #17a2b8;
+    border-top: #17a2b8 solid 5px;
+  }
+  .toast-warning {
+    color: #ffc107;
+    border-top: #ffc107 solid 5px;
+  }
+  .toast-error {
+    color: #dc3545;
+    border-top: #dc3545 solid 5px;
+  }
+  .toast-default {
+    color: #343a40;
+    border-top: #343a40 solid 5px;
+  }
+  .toast {
+    background-color: #ececec;
+    font-weight: bold;
+    border-radius: 0.25em 0.25em 0 0;
+  }
+}
+
 .navbar-nav  {
   .dropdown-menu {
     .dropdown-item {

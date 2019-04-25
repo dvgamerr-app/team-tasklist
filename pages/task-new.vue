@@ -78,6 +78,7 @@ export default {
     Editor
   },
   data: () => ({
+    saved: false,
     todo: {
       duedate: (new Date()).toISOString(),
       project: '',
@@ -118,22 +119,39 @@ export default {
   created () {
   },
   methods: {
-    onSaveTask () {
-      console.log('onSaveTask', this.todo)
+    async onSaveTask () {
+      if (!this.todo.project) return this.$toast.open({ message: 'Project name is empty.', type: 'warning' })
+      if (!this.todo.description) return this.$toast.open({ message: 'Description is empty.', type: 'warning' })
+      if (this.todo.assign.length === 0) return this.$toast.open({ message: 'Assign name for task.', type: 'warning' })
+      try {
+        this.saved = true
+        let { data } = await this.$axios.post('/api/task-list', this.todo)
+        this.saved = false
+        if (data.error) throw new Error(data.error)
+        this.$toast.open({ message: 'Task Added.' + data.id, type: 'success' })
+        // this.$router.push({ name: 'task-index-status', param: { status: 'pending' } })
+      } catch (ex) {
+        this.$bvToast.toast(ex.message || ex, {
+          title: 'Task-List',
+          toaster: 'b-toaster-bottom-right',
+          variant: 'error',
+          autoHideDelay: 5000
+        })
+      }
     },
     onProjectChange (value) {
-      console.log('onProjectChange', value)
+      // console.log('onProjectChange', value)
       this.todo.project = value
       // this.$refs.dueweb.focus()
     },
     onProjectSelect (option) {
-      console.log('onProjectSelect', option)
+      // console.log('onProjectSelect', option)
     },
     onAssignChange (value) {
       this.todo.assign.push(value)
     },
     onAssignSelect (option) {
-      console.log('onAssignSelect', option)
+      // console.log('onAssignSelect', option)
     },
     onDueDateChange (date) {
       this.todo.duedate = date.toISOString()

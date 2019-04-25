@@ -6,6 +6,7 @@ const app = express()
 
 const logger = require('@debuger')('SERVER')
 const mongo = require('@mongo')
+const { bearer } = require('./authication/encrypt')
 // Import and Set Nuxt.js options
 const config = require('../nuxt.config.js')
 config.dev = !(process.env.NODE_ENV === 'production')
@@ -30,10 +31,24 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
 const auth = require('./authication')
-
 app.use('/auth', auth())
 
-// app.use('/api', require('./api'))
+const apiMiddlewere = async (req, res, next) => {
+  let raw = req.headers['authorization']
+  try {
+    if (!raw || !/^bearer /ig.test(raw)) return res.status(401).end()
+    let { UserAccount } = await mongo.open()
+    let decode = bearer.decode(raw)
+    let account = await UserAccount.findById(decode.raw)
+    if (!account || !account.enabled) return res.status(402).end()
+    req.auth = account
+    next()
+  } catch (ex) {
+    logger.warning(ex.message)
+    return res.status(401).end()
+  }
+}
+app.use('/api', apiMiddlewere, require('./api'))
 
 const NuxtBuilder = async () => {
   // Init Nuxt.js
