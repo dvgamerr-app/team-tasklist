@@ -3,7 +3,7 @@ const pkg = require('./package')
 module.exports = {
   mode: 'universal',
   head: {
-    titleTemplate: title => `${title ? `${title} · ` : ''}Team Task-List`
+    titleTemplate: title => `${title ? `${title} · ` : ''}TEAM Task-List`
   },
   meta: [
     { charset: 'utf-8' },
@@ -14,10 +14,10 @@ module.exports = {
     { name: 'author', content: 'Mr. Kananek T.' }
   ],
   manifest: {
-    name: 'Team Task-List Projects',
+    name: 'TEAM Task-List',
     lang: 'en',
     description: '',
-    short_name: 'Team Task-List',
+    short_name: 'TEAM Task-List',
     icons: [
       { src: '/favicon.ico', sizes: '16x16' }
     ],

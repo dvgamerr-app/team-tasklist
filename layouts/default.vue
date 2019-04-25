@@ -1,15 +1,20 @@
-<template>
+<template lang="html">
   <div>
     <navigation />
-    <nuxt />
+    <div class="container container-main">
+      <nuxt />
+    </div>
+    <nav-footer />
   </div>
 </template>
 <script>
 import navigation from '~/components/navigation.vue'
+import navFooter from '~/components/nav-footer.vue'
 
 export default {
   components: {
-    navigation
+    navigation,
+    navFooter
   }
 }
 </script>

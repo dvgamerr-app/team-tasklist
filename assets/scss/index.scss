@@ -9,6 +9,10 @@ $border-radius-sm:            .0rem;
 
 @import 'vue-toast-notification/src/scss/index.scss';
 
+.container.container-main {
+  min-height: calc(100vh - 6.65rem);
+}
+
 .notices {
   .toast-success {
     color: #28a745;

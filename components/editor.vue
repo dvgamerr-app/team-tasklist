@@ -1,4 +1,4 @@
-<template>
+<template lang="html">
   <div :class="['v-md-container', css, fullscreen ? 'v-md-fullscreen' : '']">
     <div class="v-md-toolbar">
       <div v-for="(group, i) in groupButtons()" :key="i" class="btn-group mr-3" role="group">

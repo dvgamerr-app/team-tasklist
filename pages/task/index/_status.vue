@@ -1,4 +1,4 @@
-<template>
+<template lang="html">
   <div class="row mb-5 pb-5">
     <div class="col-sm-36">
       <b-table striped hover small :items="items" :fields="fields" show-empty>
@@ -11,13 +11,13 @@
           <col style="width:80px">
         </template>
         <template slot="index" slot-scope="data">
-          {{ data.index + 1 }}
+          <span v-text="data.index + 1" />
         </template>
         <template slot="assign" slot-scope="data">
           <b-badge v-for="name in data.item.assign" :key="name" variant="light" v-text="name" />
         </template>
         <template slot="description" slot-scope="data">
-          {{ data.item.description }}
+          <input type="text" :value="data.item.description">
           <b-badge v-if="data.item.priority === 1" variant="low">Low</b-badge>
           <b-badge v-if="data.item.priority === 2" variant="medium">Medium</b-badge>
           <b-badge v-if="data.item.priority === 3" variant="high">High</b-badge>
@@ -72,7 +72,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang="css">
 button.btn.btn-outline {
   padding: 0px 3px;
 }

@@ -1,4 +1,4 @@
-<template>
+<template lang="html">
   <div class="container pt-5 pb-3 projects">
     <div class="row">
       <div class="col-sm-36">

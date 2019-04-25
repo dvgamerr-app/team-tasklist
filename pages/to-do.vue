@@ -1,4 +1,4 @@
-<template>
+<template lang="html">
   <div class="container pt-5 pb-3">
     <no-ssr>
       <div class="row">
