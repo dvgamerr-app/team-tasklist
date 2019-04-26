@@ -1,37 +1,69 @@
 <template lang="html">
-  <div :class="['v-md-container', css, fullscreen ? 'v-md-fullscreen' : '']">
-    <div class="v-md-toolbar">
-      <div v-for="(group, i) in groupButtons()" :key="i" class="btn-group mr-3" role="group">
-        <button
-          v-for="btn in group" :key="btn.cmd" type="button"
-          :data-cmd="btn.cmd" :title="btn.title" :class="btn.className" @click.prevent="command(btn.cmd)"
-        >
-          <fa :icon="btn.faIcon" />
-        </button>
+  <b-card no-body>
+    <!-- <no-ssr>
+      <div slot="placeholder" class="v-md-loading">
+        loading...
+      </div> -->
+    <div class="tabs">
+      <div class="card-header">
+        <ul class="nav nav-tabs card-header-tabs">
+          <li role="presentation" class="nav-item">
+            <span class="nav-link" :class="!preview ? 'active' : ''" @click.prevent="onWrite">Write</span>
+          </li>
+          <li class="nav-item">
+            <span class="nav-link" :class="preview ? 'active' : ''" @click.prevent="onPreview">Preview</span>
+          </li>
+        </ul>
+        <div v-if="!preview" class="v-md-toolbar">
+          <div v-for="(group, i) in groupButtons()" :key="i" class="btn-group mr-3" role="group">
+            <button
+              v-for="btn in group" :key="btn.cmd" type="button" :data-cmd="btn.cmd" :title="btn.title" 
+              :class="[ 'btn-md-icon', 'btn-sm', btn.className ]" @click.prevent="command(btn.cmd)"
+            >
+              <fa :icon="btn.faIcon" />
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="tab-content mt-3">
+        <div class="tab-pane v-md-container card-body is-loading" :class="!preview ? 'active' : ''">
+          <textarea 
+            ref="txt" v-model="txtValue" placeholder="Leave comment" class="v-md-wrapper form-control" 
+            :style="styles" @change="onTextChange"
+          />
+        </div>
+        <div class="tab-pane v-md-preview card-body" :class="preview ? 'active' : ''">
+          <div v-if="txtHtmlRender" class="markdown-body" :style="styles" v-html="txtHtmlRender" />
+          <div v-else class="markdown-body" :style="styles">
+            Nothing to preview.
+          </div>
+        </div>
       </div>
     </div>
-    <div class="v-md-wrapper" :style="styles">
-      <no-ssr placeholder="Loading">
-        <codemirror
-          v-if="!preview" ref="cm" v-model="cmValue" :style="styles" :options="cmOptions" :name="name" 
-          @ready="onCmReady" @focus="onCmFocus" @input="onCmChange"
-        />
-        <div v-else class="v-md-preview" v-html="cmHtmlRender" />
-      </no-ssr>
-    </div>
-  </div>
+    <!-- <b-tabs card content-class="mt-3">
+      <b-tab title="Write" tabindex="-1" :active="!preview" :class="['v-md-container', css, fullscreen ? 'v-md-fullscreen' : '']" @click="command('preview', false)">
+        <textarea class="v-md-wrapper form-control" placeholder="Leave comment" />
+        <div class="v-md-wrapper" :style="styles">
+          <codemirror
+            ref="cm" v-model="txtValue" :style="styles" :options="cmOptions" :name="name" 
+            @ready="onCmReady" @focus="onCmFocus" @input="onTextChange"
+          />
+        </div>
+      </b-tab>
+      <b-tab title="Preview" tabindex="-1" :active="preview" class="v-md-preview" @click="command('preview', true)">
+        <div :style="styles" v-html="txtHtmlRender" />
+      </b-tab>
+    </b-tabs> -->
+    <!-- </no-ssr> -->
+  </b-card>
 </template>
 
 <script>
-  import Markdown from 'markdownparser'
+  // import Markdown from 'markdownparser'
   import MarkdownIt from 'markdown-it'
 
   export default {
     props: {
-      css: {
-        type: String,
-        default: ''
-      },
       width: {
         type: String,
         default: '100%'
@@ -46,7 +78,7 @@
       },
       name: {
         type: String,
-        default: 'html'
+        default: 'editor'
       },
       value: {
         type: String,
@@ -57,6 +89,10 @@
         type: String,
         default: 'btn'
       },
+      autoSave: {
+        type: Boolean,
+        default: false
+      },
       options: {
         type: Object,
         default: () => ({})
@@ -64,123 +100,65 @@
     },
     data() {
       return {
-        id: 'v-md-editor-' + new Date().getTime(),
+        id: 'v-md-editor',
         preview: false,
         fullscreen: false,
         buttons: {
-          // 'bold': {
-          //   title: 'Bold',
-          //   className: 'bold',
-          //   cmd: 'bold',
-          //   hotkey: 'Ctrl-B'
-          // },
-          // 'italic': {
-          //   title: 'Italic',
-          //   className: 'italic',
-          //   cmd: 'italic',
-          //   hotkey: 'Ctrl-I'
-          // },
-
-          // 'strikethrough': {
-          //   cmd: 'strikethrough',
-          //   className: 'strikethrough',
-          //   title: 'Strikethrough'
-          // },
-
-          // 'heading': {
-          //   title: 'Heading',
-          //   className: 'heading',
-          //   cmd: 'heading',
-          //   hotkey: 'Ctrl-H'
-          // },
-
-          // 'code': {
-          //   title: 'Code',
-          //   className: 'code',
-          //   cmd: 'code',
-          //   hotkey: 'Ctrl-X'
-          // },
+          'bold': {
+            title: 'Bold',
+            className: 'bold',
+            cmd: 'bold',
+            hotkey: 'Ctrl-B'
+          },
+          'italic': {
+            title: 'Italic',
+            className: 'italic',
+            cmd: 'italic',
+            hotkey: 'Ctrl-I'
+          },
+          'heading': {
+            title: 'Heading',
+            className: 'heading',
+            cmd: 'heading',
+            hotkey: 'Ctrl-H'
+          },
+          'code': {
+            title: 'Code',
+            className: 'code',
+            cmd: 'code'
+          },
           // 'quote': {
           //   title: 'Quote',
           //   className: 'quote-left',
           //   cmd: 'quote',
           //   hotkey: 'Ctrl-Q'
           // },
-          // 'link': {
-          //   title: 'Link',
-          //   className: 'link',
-          //   cmd: 'link',
-          //   hotkey: 'Ctrl-K'
-          // },
-          // 'image': {
-          //   title: 'Image',
-          //   className: 'image',
-          //   cmd: 'image',
-          //   hotkey: 'Ctrl-P'
-          // },
-          // 'fullscreen': {
-          //   cmd: 'fullscreen',
-          //   className: 'arrows-alt',
-          //   title: 'Toggle Fullscreen',
-          //   hotkey: 'F11',
-          //   ready: true
-          // },
-          'preview': {
-            cmd: 'preview',
-            className: 'eye',
-            title: 'Toggle Preview',
-            hotkey: 'Ctrl-P',
-            ready: true
+          'link': {
+            title: 'Link',
+            className: 'link',
+            cmd: 'link',
+            hotkey: 'Ctrl-K'
           },
-
           'clipboard': {
             cmd: 'clipboard',
             className: 'clipboard',
             title: 'Copy & Markdown Format',
-            hotkey: 'Ctrl-V'
+            // hotkey: 'Ctrl-V'
+          },
+          'bullist': {
+            cmd: 'bullist',
+            className: 'list-ul',
+            title: 'Generic List',
+
+          },
+          'numlist': {
+            cmd: 'numlist',
+            className: 'list-ol',
+            title: 'Numbered List'
           }
-
-          // 'undo': {
-          //   cmd: 'undo',
-          //   className: 'undo-alt',
-          //   title: 'Undo',
-          //   hotkey: 'Ctrl-Z'
-          // },
-
-          // 'redo': {
-          //   cmd: 'redo',
-          //   className: 'redo-alt',
-          //   title: 'Redo',
-          //   hotkey: 'Ctrl-Y'
-          // },
-
-          // 'bullist': {
-          //   cmd: 'bullist',
-          //   className: 'list-ul',
-          //   title: 'Generic List',
-
-          // },
-          // 'numlist': {
-          //   cmd: 'numlist',
-          //   className: 'list-ol',
-          //   title: 'Numbered List'
-          // }
         },
-        defaults: {
-          mode: 'gfm',
-          theme: "elegent",
-          lineNumbers: false,
-          styleActiveLine: false,
-          styleSelectedText: true,
-          lineWrapping: false,
-          indentWithTabs: true,
-          autoRefresh:true,
-          tabSize: 2,
-          indentUnit: 2
-        },
-        cmValue: '',
-        cmOptions: {},
-        cmHtmlRender: '',
+        txtValue: '',
+        txtHtmlRender: '',
         shortcuts: {}
       }
     },
@@ -188,17 +166,23 @@
       styles () {
         return {
           width: isNaN(this.width) ? this.width : this.width + '%',
-          height: isNaN(this.height) ? this.height : this.height + '%'
+          'min-height': isNaN(this.height) ? this.height : this.height + '%'
         }
+      },
+      txtId () {
+        return `${this.id}-${this.name}`
       }
     },
 
     watch: {
-      cmValue (val) {
+      txtValue (val) {
         if (val != this.value) this.$emit('input', val)
       },
+      value (val) {
+        if (val != this.txtValue) this.txtValue = val
+      }
     },
-    mounted() {
+    mounted () {
       this.build()
     },
     // destroyed() {
@@ -423,13 +407,7 @@
       //   ed.focus();
 
       // },
-      command (key) {
-        console.log('command:', key)
-        let ed = this.$refs.cm
-        console.log(ed)
-      //   var text = ed.getSelection();
-      //   var stat = this.state();
-
+      command (key, value = null) {
         switch (key) {
           case 'undo': ed.undo(); break
           case 'redo': ed.redo(); break
@@ -455,9 +433,9 @@
       //       ed.replaceSelection('\n### ' + text);
       //       break;
 
-      //     case 'clipboard':
-      //       this.obj('modal-clipboard').modal('show');
-      //       break;
+          case 'clipboard':
+            console.log('start', ed.getCursor('start'))
+            break
 
       //     case 'image':
       //       this.obj('modal-image').modal('show');
@@ -495,61 +473,31 @@
                 langPrefix: 'language-',  // CSS language prefix for fenced blocks. Can be useful for external highlighters. 
                 highlight: (str, lang) => '<pre class="hljs" data-lang="' + lang + '"><code>' + md.utils.escapeHtml(str) + '</code></pre>'
               })
-              this.cmHtmlRender = md.render(this.cmValue)
+              this.txtHtmlRender = md.render(this.txtValue)
             }
-            this.preview ^= true
+            // ed.$refs.textarea.focus()
+            if (value !== null) this.preview = value; else this.preview ^= true
             break
         }
       },
-      // drawImage() {
-      //   var url = this.obj('img-src').val();
-      //   var title = this.obj('img-title').val();
-      //   if (this.isUrl(url)) {
-      //     var stat = this.state();
-      //     this._replaceSelection(stat.image, ["![#title#](", '#url# "#title#")'], {
-      //       title: title,
-      //       url: url
-      //     });
-      //      this.hideModal('modal-image');
-
-      //   } else {
-      //     this.obj('image-alert').fadeIn();
-      //   }
-
-      // },
-
-      // drawLink() {
-      //   var url = this.obj('link-src').val();
-      //   var title = this.obj('link-title').val();
-      //   if (this.isUrl(url)) {
-      //     var stat = this.state();
-      //     this._replaceSelection(stat.link, ['[#title#]', '(#url# "#title#")'], {
-      //       title: title,
-      //       url: url
-      //     });
-           
-      //     this.hideModal('modal-link');
-          
-
-      //   } else {
-      //     this.obj('link-alert').fadeIn();
-      //   }
-
-      // },
-
-      // toMarkdown() {
-      //   var html = this.obj('clipboard-text').val();
-      //   var text = Markdown.parse(html);
-      //   this.editor.replaceSelection(text);
-      //   this.editor.focus();
-
-      //   this.hideModal('modal-clipboard');
-      // },
-      onCmReady () {
+      onWrite () {
+        let vm = this
+        this.command('preview', false)
+        this.$nextTick(() => {
+          vm.$refs.txt.focus()
+        })
       },
-      onCmFocus () {
+      onPreview () {
+        this.command('preview', true)
       },
-      onCmChange () {
+      onTextChange () {
+        this.setText(this.txtValue)
+      },
+      setText (val) {
+        this.$auth.$storage.setLocalStorage(this.txtId, val)
+      },
+      getText () {
+        return this.$auth.$storage.setLocalStorage(this.txtId)
       },
       build () {
         let vm = this
@@ -557,8 +505,13 @@
           const e = this.buttons[key];
           this.shortcuts[e.hotkey] = () => vm.command(e.cmd)
         }
-        this.cmOptions = Object.assign({ extraKeys: this.shortcuts, initialValue: this.value }, this.defaults, this.options)
-        console.log(this.cmOptions)
+        let data = this.getText()
+        if (data && data.length !== 0 && this.autoSave) {
+          this.txtValue = data
+        }
+        this.$nextTick(() => {
+          vm.$refs.txt.focus()
+        })
       }
       //   if (this.isEmpty(this.toolbar)) {
       //     console.error("You must set toolbar!");
@@ -626,3 +579,30 @@
     }
   }
 </script>
+
+<style lang="scss" scoped>
+.v-md-loading {
+  font-size: 1rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  text-align: center;
+  padding: 0.7rem 0;
+}
+.v-md-toolbar {
+  position: absolute;
+  right: 0;
+  top: 6px;
+  .card-header {
+    height: 44px;
+  }
+}
+.card-header-tabs {
+  .nav-item {
+    .nav-link {
+      padding: 6px 24px;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+  }
+}
+</style>

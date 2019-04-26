@@ -72,7 +72,7 @@ export default {
 }
 </script>
 
-<style lang="css">
+<style lang="scss" scoped>
 button.btn.btn-outline {
   padding: 0px 3px;
 }

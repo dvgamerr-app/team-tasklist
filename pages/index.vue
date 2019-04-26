@@ -7,8 +7,8 @@ export default {
   name: 'Dashboard',
   data: () => ({
   }),
-  async asyncData ({ redirect }) {
-    redirect('/todo/task')
+  async asyncData ({ query, redirect }) {
+    redirect(query.redirect || '/todo/task')
     return {}
   },
   created () {

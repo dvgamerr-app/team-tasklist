@@ -1,0 +1,29 @@
+
+.v-md-container, .v-md-preview {
+  padding: 0 15px 15px 15px;
+}
+
+.v-md-container > .v-md-toolbar {
+  padding: 8px 5px;
+  border-bottom:  solid 1px #ddd;
+}
+
+.v-md-wrapper {
+  position: relative;   
+}
+
+.v-md-container {
+  button {
+    padding: 1px 6px;
+  }
+  .svg-inline--fa  {
+    font-size: 1rem;
+  }
+}
+
+.btn-md-icon {
+  color: #586069;
+}
+.btn-md-icon:hover {
+  color: #0366d6;
+}

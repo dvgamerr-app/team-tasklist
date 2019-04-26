@@ -23,7 +23,7 @@ module.exports = [
   },
   {
     id: 'Todo',
-    name: 'db-Todo',
+    name: 'db-todo',
     schema: Schema({
       title: { type: String, index: true },
       description: String,
@@ -42,7 +42,7 @@ module.exports = [
   },
   {
     id: 'TodoComment',
-    name: 'db-Todo-comment',
+    name: 'db-todo-comment',
     schema: Schema({
       description: String,
       deleted: { type: Boolean, index: true },

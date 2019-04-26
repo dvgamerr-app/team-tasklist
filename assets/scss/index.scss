@@ -9,38 +9,16 @@ $border-radius-sm:            .0rem;
 
 @import 'vue-toast-notification/src/scss/index.scss';
 
+@import './toast.scss';
+@import './component.scss';
+@import './editor.scss';
+
 .container.container-main {
-  min-height: calc(100vh - 6.65rem);
+  min-height: calc(100vh - 6.666rem);
 }
-
-.notices {
-  .toast-success {
-    color: #28a745;
-    border-top: #28a745 solid 5px;
-  }
-  .toast-info {
-    color: #17a2b8;
-    border-top: #17a2b8 solid 5px;
-  }
-  .toast-warning {
-    color: #ffc107;
-    border-top: #ffc107 solid 5px;
-  }
-  .toast-error {
-    color: #dc3545;
-    border-top: #dc3545 solid 5px;
-  }
-  .toast-default {
-    color: #343a40;
-    border-top: #343a40 solid 5px;
-  }
-  .toast {
-    background-color: #ececec;
-    font-weight: bold;
-    border-radius: 0.25em 0.25em 0 0;
-  }
+.markdown-body {
+  font-size: .85rem !important;
 }
-
 .navbar-nav  {
   .dropdown-menu {
     .dropdown-item {
@@ -180,140 +158,4 @@ textarea.reason {
   font-weight: bold;
   font-size: 10px;
   padding: 2px 6px;
-}
-
-.v-md-container{
-  background: #f5f5f5;
-  border: solid 1px #ddd;
-}
-
-.v-md-container > .v-md-toolbar{
-  padding: 8px 5px;
-  border-bottom:  solid 1px #ddd;
-}
-
-.v-md-wrapper{
-  position: relative;   
-}
-
-.v-md-preview{
-  position: absolute;
-  top:0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  z-index: 999;
-  background: #fff;
-  padding: 5px;
-  overflow: auto;
-  color: #333;
-  height: auto !important;
-}
-
-
-.v-md-container {
-  button {
-    padding: 1px 6px;
-  }
-  .svg-inline--fa  {
-    font-size: 1rem;
-  }
-}
-
-.v-md-fullscreen{
-  width: 100%;
-  height: 100% !important;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  position: fixed;
-  overflow: hidden;
-  z-index: 99999;
-}
-
-.v-md-container .CodeMirror{
-  width: 100%;
-  height: 100%;
-  font-family: Arial;
-}
-
-.v-md-fullscreen .v-md-preview {
-  position: fixed !important;
-  top: 52px;
-}
-
-.CodeMirror-fullscreen{
-  position: fixed !important;
-  top: 52px;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: auto !important;
-  z-index: 9;
-}
-
-.v-md-container .modal{
-  z-index: 1080 !important;
-}
-
-.v-md-container .modal .btn{
-  min-width: 90px;
-}
-.float-left{
-  float: left !important;
-}
-.multiselect {
-  .multiselect__tags {
-    height: 40px;
-    border-radius: 0px !important;
-    border: 1px solid #ced4da !important;
-    .multiselect__tag-icon {
-      top: -1px;
-    }
-  }
-  .multiselect__single {
-    padding-top:2px;
-  }
-  .multiselect__placeholder {
-    padding-left: 5px;
-    padding-top: 0px;
-  }
-  &.multiselect--active {
-    .multiselect__tags {
-      padding-top:8px;
-      height: 40px;
-    }
-  }
-}
-.vdp-datepicker {
-  .placeholder-icon {
-    position: absolute;
-    top: 0.7rem;
-    right: 0.7rem;
-    display: flex;
-    color: #999;
-  }
-  input.form-control {
-    background-color: transparent !important;
-    &[readonly]:focus {
-      border-color: #ced4da;
-      box-shadow: none;
-    //   border-color: #80bdff;
-    //   box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-    }
-  }
-}
-.vdatetime {
-  .placeholder-icon {
-    position: absolute;
-    top: 0.7rem;
-    right: 1.06rem;
-    display: flex;
-    color: #999;
-  }
-}
-input::-webkit-input-placeholder {
-  color: #adadad !important;
-  font-size: 14px;
 }

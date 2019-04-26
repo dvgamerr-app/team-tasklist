@@ -2,78 +2,89 @@
   <div class="task">
     <div class="row">
       <div class="col-sm-36">
-        <h3>To-Do</h3>
+        <h3 class="mb-0">To-Do</h3>
         <small>New Task-List with markdown description.</small>
         <hr>
       </div>
     </div>
-    <div class="row mt-3">
-      <div class="col-lg-20">
-        <b-form-group>
-          <b-form-input v-model="todo.title" placeholder="Title" />
-        </b-form-group>
-        <editor v-model="todo.description" />
-      </div>
-      
-      <div class="col-lg-16 mt-sm-4 mt-lg-0">
-        <b-form-group label-cols-sm="6" label="Project:" label-align-sm="right" label-for="project">
-          <vue-multiselect
-            id="project" v-model="todo.project" :options="optProject" :taggable="true"
-            placeholder="Project name" tag-placeholder="enter to project created."
-            @tag="onProjectChange"
-          />
-        </b-form-group>
-
-        <b-form-group class="d-none d-md-flex" label-cols-sm="6" label="Due:" label-align-sm="right" label-for="dueweb">
-          <vue-datepicker
-            id="dueweb" ref="datepicker" :value="todo.duedate" format="dd MMMM yyyy"
-            input-class="form-control" placeholder="Due Date" @selected="onDueDateChange"
-          >
-            <span slot="afterDateInput" class="placeholder-icon">
-              <fa icon="calendar-alt" />  
-            </span>
-          </vue-datepicker>
-        </b-form-group>
-        <b-form-group class="d-flex d-md-none" label-cols-sm="6" label="Due:" label-align-sm="right" label-for="duemobile">
-          <vue-datemobile 
-            id="duemobile" ref="datemobile" v-model="todo.duedate" format="dd MMMM yyyy"
-            input-class="form-control" placeholder="Due Date"
-          >
-            <span slot="after" class="placeholder-icon">
-              <fa icon="calendar-alt" />  
-            </span>
-          </vue-datemobile>
-        </b-form-group>
-
-        <b-form-group label-cols-sm="6" label="Assign:" label-align-sm="right" label-for="assign">
-          <vue-multiselect
-            id="assign" v-model="todo.assign" :options="optAssign"
-            placeholder="Worker" tag-placeholder="enter to assign name"
-            label="name" track-by="_id" :multiple="true"
-            @tag="onAssignChange"
-          />
-        </b-form-group>
-
-        <b-form-group label-cols-sm="6" label="Priority:" label-align-sm="right" class="mb-0" label-for="priority">
-          <b-form-radio-group id="priority" v-model="todo.priority" class="pt-2" :options="optPriority" />
-        </b-form-group>
+    <form v-tabindex>
+      <div class="row">
+        <div class="col-lg-24">
+          <b-form-group>
+            <div class="d-flex flex-wrap flex-md-nowrap align-items-center">
+              <div class="v-md-thumbnail mr-2 d-none d-md-block">
+                <img :src="gravatar" class="v-md-avatar">
+              </div>
+              <div class="v-title">
+                <b-form-input v-model="todo.title" :state="validate.title" tabindex="1" placeholder="Title" />
+                <b-form-invalid-feedback>Please input subject or short description for task.</b-form-invalid-feedback>
+              </div>
+            </div>
+          </b-form-group>
+          <editor ref="editor" v-model="todo.description" auto-save :name="$route.params.id ? 'todo-edit' : 'todo-new'" />
+        </div>
         
-        <b-form-group label-cols-sm="6" label="Status:" label-align-sm="right" class="mb-0" label-for="status">
-          <b-form-radio-group id="status" v-model="todo.status" class="pt-2" :options="optStatus" />
-        </b-form-group>
-        
-        <b-form-group label-cols-sm="6" label="Private:" label-align-sm="right" class="mb-0" label-for="private">
-          <b-form-checkbox id="private" v-model="todo.private" class="pt-2" switch /> 
-        </b-form-group>
-        <b-form-group label-cols-sm="6" label-align-sm="right" class="mb-0 pt-2">
-          <b-button variant="primary" @click.prevent="onSaveTask">Primary</b-button>
-        </b-form-group>
+        <div class="col-lg-12 mt-sm-4 mt-lg-0">
+          <b-form-group label-cols-sm="6" label="Project:" label-align-sm="right" label-for="project">
+            <vue-multiselect
+              id="project" v-model="todo.project" :options="optProject" :taggable="true"
+              placeholder="Project name" tag-placeholder="enter to project created."
+              @tag="onProjectChange"
+            />
+          </b-form-group>
+
+          <b-form-group class="d-none d-md-flex" label-cols-sm="6" label="Due:" label-align-sm="right" label-for="dueweb">
+            <vue-datepicker
+              id="dueweb" ref="datepicker" :value="todo.duedate" format="dd MMMM yyyy"
+              input-class="form-control" placeholder="Due Date" @selected="onDueDateChange"
+            >
+              <span slot="afterDateInput" class="placeholder-icon">
+                <fa icon="calendar-alt" />  
+              </span>
+            </vue-datepicker>
+          </b-form-group>
+          <b-form-group class="d-flex d-md-none" label-cols-sm="6" label="Due:" label-align-sm="right" label-for="duemobile">
+            <vue-datemobile 
+              id="duemobile" ref="datemobile" v-model="todo.duedate" format="dd MMMM yyyy"
+              input-class="form-control" placeholder="Due Date"
+            >
+              <span slot="after" class="placeholder-icon">
+                <fa icon="calendar-alt" />  
+              </span>
+            </vue-datemobile>
+          </b-form-group>
+
+          <b-form-group label-cols-sm="6" label="Assign:" label-align-sm="right" label-for="assign">
+            <vue-multiselect
+              id="assign" v-model="todo.assign" :options="optAssign"
+              placeholder="Worker" tag-placeholder="enter to assign name"
+              label="name" track-by="_id" :multiple="true"
+              @tag="onAssignChange"
+            />
+          </b-form-group>
+
+          <b-form-group label-cols-sm="6" label="Priority:" label-align-sm="right" class="mb-0" label-for="priority">
+            <b-form-radio-group id="priority" v-model="todo.priority" class="pt-2" :options="optPriority" />
+          </b-form-group>
+          
+          <b-form-group label-cols-sm="6" label="Status:" label-align-sm="right" class="mb-0" label-for="status">
+            <b-form-radio-group id="status" v-model="todo.status" class="pt-2" :options="optStatus" />
+          </b-form-group>
+          
+          <b-form-group label-cols-sm="6" label="Private:" label-align-sm="right" class="mb-0" label-for="private">
+            <b-form-checkbox id="private" v-model="todo.private" class="pt-2" switch /> 
+          </b-form-group>
+          <b-form-group label-cols-sm="6" label-align-sm="right" class="mb-0 pt-2">
+            <b-button variant="primary" @click.prevent="onSaveTask">Primary</b-button>
+          </b-form-group>
+        </div>
       </div>
-    </div>
+    </form>
   </div>
 </template>
 <script>
 import moment from 'moment'
+import md5 from 'md5'
 import Editor from '../../components/editor.vue'
 
 export default {
@@ -82,6 +93,9 @@ export default {
   },
   data: () => ({
     saved: false,
+    validate: {
+      title: null
+    },
     todo: {
       title: '',
       project: '',
@@ -109,6 +123,12 @@ export default {
       { text: 'High', value: 3 }
     ]
   }),
+  computed: {
+    gravatar () {
+      let avatar = this.$auth.user.email ? md5(this.$auth.user.email) : '00000'
+      return `//www.gravatar.com/avatar/${avatar}?d=retro&size=64`
+    }
+  },
   async asyncData ({ $axios, params }) {
     if (params.id) {
 
@@ -119,6 +139,8 @@ export default {
   },
   methods: {
     async onSaveTask () {
+      this.validate.title = this.todo.title ? null : false
+      if (!this.todo.title) return this.$toast.open({ message: 'Title is empty.', type: 'warning' })
       if (!this.todo.project) return this.$toast.open({ message: 'Project name is empty.', type: 'warning' })
       if (!this.todo.description) return this.$toast.open({ message: 'Description is empty.', type: 'warning' })
       if (this.todo.assign.length === 0) return this.$toast.open({ message: 'Assign name for task.', type: 'warning' })
@@ -127,8 +149,9 @@ export default {
         let { data } = await this.$axios.post('/api/task-list', this.todo)
         this.saved = false
         if (data.error) throw new Error(data.error)
+        this.$refs.editor.setText()
         this.$toast.open({ message: 'Task Added.', type: 'success' })
-        this.$router.push({ name: 'todo-edit', param: { id: data.id } })
+        this.$router.push({ name: 'todo-edit-id', params: { id: data.id } })
       } catch (ex) {
         this.$bvToast.toast(ex.message || ex, {
           title: 'Todo',
@@ -151,6 +174,26 @@ export default {
 }
 </script>
 <style lang="scss">
-
+  .task {
+    h3 + small {
+      font-size: 0.7rem;
+    }
+  }
+  .v-md-avatar {
+    border-radius: .3rem;
+  }
+  .v-md-thumbnail {
+    width: 64px;
+    height: 64px;
+  }
+  .v-title {
+    display: block;
+    width: 100%;
+    margin-top: -10px;
+    .invalid-feedback {
+      position: absolute;
+      font-size: .7rem;
+    }
+  }
 </style>
 

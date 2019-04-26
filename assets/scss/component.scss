@@ -1,0 +1,55 @@
+
+.multiselect {
+  .multiselect__tags {
+    height: 40px;
+    border-radius: 0px !important;
+    border: 1px solid #ced4da !important;
+    .multiselect__tag-icon {
+      top: -1px;
+    }
+  }
+  .multiselect__single {
+    padding-top:2px;
+  }
+  .multiselect__placeholder {
+    padding-left: 5px;
+    padding-top: 0px;
+  }
+  &.multiselect--active {
+    .multiselect__tags {
+      padding-top:8px;
+      height: 40px;
+    }
+  }
+}
+.vdp-datepicker {
+  .placeholder-icon {
+    position: absolute;
+    top: 0.7rem;
+    right: 0.7rem;
+    display: flex;
+    color: #999;
+  }
+  input.form-control {
+    background-color: transparent !important;
+    &[readonly]:focus {
+      border-color: #ced4da;
+      box-shadow: none;
+    //   border-color: #80bdff;
+    //   box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+  }
+}
+.vdatetime {
+  .placeholder-icon {
+    position: absolute;
+    top: 0.7rem;
+    right: 1.06rem;
+    display: flex;
+    color: #999;
+  }
+}
+.form-control::-webkit-input-placeholder {
+  color: #adadad !important;
+  font-size: 14px;
+}

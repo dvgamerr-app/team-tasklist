@@ -1,5 +1,6 @@
 const express = require('express')
 const md5 = require('md5')
+const nodemailer = require('nodemailer')
 const bodyParser = require('body-parser')
 const { Nuxt } = require('nuxt')
 const app = express()
@@ -71,6 +72,7 @@ const NuxtBuilder = async () => {
     await nuxt.ready()
     app.use(nuxt.render)
   }
+
   // Listen the server
   await app.listen(port, host)
   logger.start(`Listening on http://${host}:${port}`)

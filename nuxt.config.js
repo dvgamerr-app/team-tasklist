@@ -41,10 +41,12 @@ module.exports = {
     './assets/scss/index.scss',
     'codemirror/lib/codemirror.css',
     'vue-multiselect/dist/vue-multiselect.min.css',
-    'vue-datetime/dist/vue-datetime.css'
+    'vue-datetime/dist/vue-datetime.css',
+    'github-markdown-css/github-markdown.css'
   ],
   plugins: [
     './plugins/vue-toast.js',
+    './plugins/vue-tabindex.js',
     './plugins/vue-multiselect.js',
     './plugins/vue-datepicker.js',
     { src: './plugins/vue-loading.js', ssr: false },

@@ -8,15 +8,18 @@
           <h2>Sign-In</h2>
           <small>Please sign-in with TOUNO.io ID to proceed.</small>
           <div class="login-form pt-3">
-            <form @submit.prevent="onLogin">
+            <form v-tabindex @submit.prevent="onLogin">
               <div class="form-group">
-                <input v-model="username" type="text" class="form-control username" placeholder="TEAM Account ID (@touno.io)">
-                <input v-model="password" type="password" class="form-control password" placeholder="Password">
+                <input v-model="username" tabindex="1" type="text" class="form-control username" placeholder="TEAM Account ID (@touno.io)">
+                <input v-model="password" tabindex="2" type="password" class="form-control password" placeholder="Password">
               </div>
               <div class="form-group">
-                <b-form-checkbox name="checkbox-1"> Remember Me</b-form-checkbox>
+                <b-form-checkbox v-model="remember"> Remember Me</b-form-checkbox>
               </div>
-              <button :disabled="submitted" type="submit" class="btn btn-block btn-primary" v-text="submitted ? 'Please wait...' : 'Sign In'" />
+              <button
+                :disabled="submitted" tabindex="3" type="submit" class="btn btn-block btn-primary"
+                v-text="submitted ? 'Please wait...' : retry > 0 ? 'Retry again, Sign In' : 'Sign In'"
+              />
             </form>
             <div class="row forgot-menu">
               <div class="col-36 pt-3">
@@ -42,27 +45,43 @@ export default {
   data: () => ({
     username: '',
     password: '',
-    submitted: false
+    remember: false,
+    submitted: false,
+    retry: 0
   }),
-  created () {
+  mounted () {
+    let signin = this.$auth.$storage.getLocalStorage('signin-remember', true)
+    if (!signin) return
+
+    if (signin.username) this.username = signin.username
+    if (signin.remember) {
+      this.password = signin.password
+      this.remember = signin.remember
+    }
     // if (process.client && window.localStorage.getItem('_token.local') !== 'false') this.$router.replace('/')
   },
   methods: {
-    onLogin () {
-      let vm = this
-      if (!vm.username || !vm.password) return
-      vm.submitted = true
-      vm.$auth.loginWith('local', { data: { username: vm.username.trim(), password: md5(vm.password) } }).then(() => {
-        if (vm.$auth.loggedIn) {
-          vm.$router.replace('/')
-        } else {
-          vm.submitted = false
-          vm.$toast.error('Username or Password worng.', { duration: 1000 })
-        }
-      }).catch(ex => {
-        vm.submitted = false
-        vm.$toast.error(ex.message, { duration: 5000 })
-      })
+    async onLogin () {
+      if (!this.username) return this.$toast.error('Username is empty.', { duration: 1000 })
+      if (!this.password) return this.$toast.error('Password is empty.', { duration: 1000 })
+      try {
+        this.submitted = true
+        await this.$auth.loginWith('local', { data: { username: this.username.trim(), password: md5(this.password) } })
+        if (!this.$auth.loggedIn) throw new Error('Username or Password worng.')
+        this.submitted = false
+
+        this.$auth.$storage.setLocalStorage('signin-remember', {
+          username: this.username,
+          password: this.password,
+          remember: this.remember
+        }, true)
+
+        this.$router.push({ path: '/', query: JSON.parse(JSON.stringify(this.$route.query)) })
+      } catch (ex) {
+        this.$toast.error(!ex.response ? ex.message : ex.response.status > 400 ? 'Username or Password worng.' : 'Server endpoint is offline.', { duration: 5000 })
+        this.submitted = false
+        this.retry++
+      }
     }
   }
 }
