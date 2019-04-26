@@ -16,7 +16,7 @@ module.exports = async (req, res) => {
     res.json({ id: item._id })
   } catch (ex) {
     logger.warning(req.url, ex.message || ex)
-    res.json({ error: true })
+    res.json({ error: ex.message || ex })
   } finally {
     res.end()
   }

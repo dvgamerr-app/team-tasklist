@@ -1,7 +1,8 @@
 const { Router } = require('express')
 const router = Router()
 
-router.post('/task-list', require('./task-list/task-new'))
+router.post('/todo', require('./todo/new'))
+router.use('/todo/search', require('./todo/search'))
 // router.get('/history', require('./history'))
 // router.get('/history/:id', require('./history/id'))
 // router.post('/history/del/:id', require('./history/delete'))

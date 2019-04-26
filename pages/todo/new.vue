@@ -130,6 +130,7 @@ export default {
     }
   },
   async asyncData ({ $axios, params }) {
+    let project = await $axios.get('/api/todo/search/project')
     if (params.id) {
 
       return { todo: {} }
