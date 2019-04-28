@@ -1,9 +1,5 @@
 <template lang="html">
   <b-card no-body>
-    <!-- <no-ssr>
-      <div slot="placeholder" class="v-md-loading">
-        loading...
-      </div> -->
     <div class="tabs">
       <div class="card-header">
         <ul class="nav nav-tabs card-header-tabs">
@@ -15,10 +11,10 @@
           </li>
         </ul>
         <div v-if="!preview" class="v-md-toolbar">
-          <div v-for="(group, i) in groupButtons()" :key="i" class="btn-group mr-3" role="group">
+          <div v-for="(group, i) in groupButtons()" :key="i" class="btn-group ml-1" role="group">
             <button
               v-for="btn in group" :key="btn.cmd" type="button" :data-cmd="btn.cmd" :title="btn.title" 
-              :class="[ 'btn-md-icon', 'btn-sm', btn.className ]" @click.prevent="command(btn.cmd)"
+              :class="[ 'btn-md-icon', 'btn-sm', 'btn', btn.btnClass || '' ]" @click.prevent="command(btn.cmd)"
             >
               <fa :icon="btn.faIcon" />
             </button>
@@ -39,22 +35,18 @@
           </div>
         </div>
       </div>
-    </div>
-    <!-- <b-tabs card content-class="mt-3">
-      <b-tab title="Write" tabindex="-1" :active="!preview" :class="['v-md-container', css, fullscreen ? 'v-md-fullscreen' : '']" @click="command('preview', false)">
-        <textarea class="v-md-wrapper form-control" placeholder="Leave comment" />
-        <div class="v-md-wrapper" :style="styles">
-          <codemirror
-            ref="cm" v-model="txtValue" :style="styles" :options="cmOptions" :name="name" 
-            @ready="onCmReady" @focus="onCmFocus" @input="onTextChange"
-          />
+      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pl-3 pr-3 pb-3">
+        <div class="f-xs">
+          <fa :icon="['fab','markdown']" /> <span class="d-none d-sm-inline">Styling with Markdown is supported</span>
         </div>
-      </b-tab>
-      <b-tab title="Preview" tabindex="-1" :active="preview" class="v-md-preview" @click="command('preview', true)">
-        <div :style="styles" v-html="txtHtmlRender" />
-      </b-tab>
-    </b-tabs> -->
-    <!-- </no-ssr> -->
+        <div class="ml-auto">
+          <slot name="button" />
+          <button v-if="!$slots.button" type="submit" class="btn btn-success" @click.prevent="onSubmit">
+            {{ buttonText }}
+          </button>
+        </div>
+      </div>
+    </div>
   </b-card>
 </template>
 
@@ -85,17 +77,17 @@
         default: '',
         required: false
       },
-      buttonClass: {
+      buttonText: {
         type: String,
-        default: 'btn'
+        default: 'Submit new Task'
       },
       autoSave: {
         type: Boolean,
         default: false
       },
-      options: {
-        type: Object,
-        default: () => ({})
+      onSubmit: {
+        type: Function,
+        default: () => (() => {})
       }
     },
     data() {
@@ -136,6 +128,7 @@
           'link': {
             title: 'Link',
             className: 'link',
+            btnClass: 'd-none d-sm-inline',
             cmd: 'link',
             hotkey: 'Ctrl-K'
           },
@@ -148,12 +141,14 @@
           'bullist': {
             cmd: 'bullist',
             className: 'list-ul',
+            btnClass: 'd-none d-sm-inline',
             title: 'Generic List',
 
           },
           'numlist': {
             cmd: 'numlist',
             className: 'list-ol',
+            btnClass: 'd-none d-sm-inline',
             title: 'Numbered List'
           }
         },
@@ -204,6 +199,7 @@
               id: `${vm.id}-${e}`,
               cmd: btn.cmd,
               title: btn.title,
+              btnClass: btn.btnClass,
               className: [ vm.buttonClass, btn.ready ? 'ready' : '' ],
               faIcon: btn.className
             })
@@ -212,12 +208,8 @@
         if (btns.length > 0) groups.push(btns)
         return groups.length === 0 ? [ btns ] : groups
       },
-      isEmpty: function (s) {
-        return s === null || s === undefined ? true : /^[\s\xa0]*$/.test(s);
-      },
-      isUrl: function (s) {
-        return this.isEmpty(s) ? false : s.match(/((http|https):\/\/)?(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/gi);
-      },
+      isEmpty: s => s === null || s === undefined ? true : /^[\s\xa0]*$/.test(s),
+      isUrl: s => this.isEmpty(s) ? false : s.match(/((http|https):\/\/)?(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/gi),
       format() {
         var a = arguments[0];
         for (var i = 1; i <= arguments.length; i++) {
@@ -226,27 +218,27 @@
         return a; // Make chainable
 
       },
-      uid(name) {
-        return this.format('%s-%s', this.id, name);
+      setToggleBlock(type, start, end) {
+        end = this.isEmpty(end) ? start : end
+        const tArea = this.$refs.txt
+        let startPos = tArea.selectionStart
+        let endPos = tArea.selectionEnd
+        let cursorPos = startPos
+        let tmpStr = tArea.value
+
+        // let text = ed.getLine(startPoint.line)
+        // start = text.slice(0, startPoint.ch)
+        // end = text.slice(startPoint.ch)
+
+        start = start.replace(/(\*\*|__)(?![\s\S]*(\*\*|__))/, '');
+        end = end.replace(/(\*\*|__)/, '');
+        console.log(`${type}: cursor set ${startPos} ${endPos} :`, tmpStr)
+
+        cursorPos += start.length
+        this.setCursorPosition(tArea, cursorPos)
       },
-      // obj(name) {
-      //   return $('#' + this.uid(name));
-      // },
-
-      // _toggleBlock(type, start, end) {
-
-      //   end = this.isEmpty(end) ? start : end;
-      //   var ed = this.editor;
-      //   var startPoint = ed.getCursor("start");
-      //   var endPoint = ed.getCursor("end");
-      //   var text;
-      //   var stat = this.state();
-
       //   if (stat[type]) {
 
-      //     text = ed.getLine(startPoint.line);
-      //     start = text.slice(0, startPoint.ch);
-      //     end = text.slice(startPoint.ch);
       //     if (type == "bold") {
       //       start = start.replace(/(\*\*|__)(?![\s\S]*(\*\*|__))/, "");
       //       end = end.replace(/(\*\*|__)/, "");
@@ -412,20 +404,20 @@
           case 'undo': ed.undo(); break
           case 'redo': ed.redo(); break
 
-      //     case 'bold':
-      //       this._toggleBlock('bold', '**');
-      //       break;
+          case 'bold':
+            this.setToggleBlock('bold', '**');
+            break;
 
       //     case 'italic':
-      //       this._toggleBlock('italic', '*');
+      //       this.setToggleBlock('italic', '*');
       //       break;
 
       //     case 'strikethrough':
-      //       this._toggleBlock('strikethrough', '~~');
+      //       this.setToggleBlock('strikethrough', '~~');
       //       break;
 
       //     case 'code':
-      //       this._toggleBlock('code', '```');
+      //       this.setToggleBlock('code', '```');
       //       break;
 
 
@@ -479,6 +471,12 @@
             if (value !== null) this.preview = value; else this.preview ^= true
             break
         }
+      },
+      setCursorPosition(el, pos) {
+        this.$nextTick(() => {
+          el.focus()
+          el.setSelectionRange(pos, pos)
+        })
       },
       onWrite () {
         let vm = this
@@ -589,9 +587,8 @@
   padding: 0.7rem 0;
 }
 .v-md-toolbar {
-  position: absolute;
-  right: 0;
-  top: 6px;
+  float: right;
+  margin-top: -25px;
   .card-header {
     height: 44px;
   }

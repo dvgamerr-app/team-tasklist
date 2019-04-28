@@ -21,7 +21,19 @@
               </div>
             </div>
           </b-form-group>
-          <editor ref="editor" v-model="todo.description" auto-save :name="$route.params.id ? 'todo-edit' : 'todo-new'" />
+          <editor ref="editor" v-model="todo.description" auto-save :name="$route.params.id ? 'todo-edit' : 'todo-new'">
+            <b-dropdown slot="button" split variant="success" class="f-sm editor-submit" @click.prevent="onSaveTask('1')">
+              <template slot="button-content">
+                <fa icon="clock" /> Submit waiting task
+              </template>
+              <b-dropdown-item href="#" class="f-sm" @click.prevent="onSaveTask('2')">
+                <fa icon="code" style="width:21px;" /> Submit processing task
+              </b-dropdown-item>
+              <b-dropdown-item href="#" class="f-sm" @click.prevent="onSaveTask('3')">
+                <fa icon="check" style="width:21px;" /> Task complated
+              </b-dropdown-item>
+            </b-dropdown>
+          </editor>
         </div>
         
         <div class="col-lg-12 mt-sm-4 mt-lg-0">
@@ -67,15 +79,12 @@
             <b-form-radio-group id="priority" v-model="todo.priority" class="pt-2" :options="optPriority" />
           </b-form-group>
           
-          <b-form-group label-cols-sm="6" label="Status:" label-align-sm="right" class="mb-0" label-for="status">
+          <!-- <b-form-group label-cols-sm="6" label="Status:" label-align-sm="right" class="mb-0" label-for="status">
             <b-form-radio-group id="status" v-model="todo.status" class="pt-2" :options="optStatus" />
-          </b-form-group>
+          </b-form-group> -->
           
           <b-form-group label-cols-sm="6" label="Private:" label-align-sm="right" class="mb-0" label-for="private">
             <b-form-checkbox id="private" v-model="todo.private" class="pt-2" switch /> 
-          </b-form-group>
-          <b-form-group label-cols-sm="6" label-align-sm="right" class="mb-0 pt-2">
-            <b-button variant="primary" @click.prevent="onSaveTask">Primary</b-button>
           </b-form-group>
         </div>
       </div>
@@ -178,6 +187,11 @@ export default {
   .task {
     h3 + small {
       font-size: 0.7rem;
+    }
+    .editor-submit {
+      .dropdown-item {
+        padding-left: 1rem;
+      }
     }
   }
   .v-md-avatar {

@@ -78,7 +78,8 @@ module.exports = {
   fontawesome: {
     component: 'fa',
     imports: [
-      { icons: ['fas'], set: '@fortawesome/free-solid-svg-icons' }
+      { icons: ['fas'], set: '@fortawesome/free-solid-svg-icons' },
+      { icons: ['fab'], set: '@fortawesome/free-brands-svg-icons' }
     ]
   },
   bootstrapVue: { bootstrapCSS: false },
