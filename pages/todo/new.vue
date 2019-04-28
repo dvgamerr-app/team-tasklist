@@ -9,7 +9,7 @@
     </div>
     <form v-tabindex>
       <div class="row">
-        <div class="col-lg-24">
+        <div class="col-lg-24 col-xl-26">
           <b-form-group>
             <div class="d-flex flex-wrap flex-md-nowrap align-items-center">
               <div class="v-md-thumbnail mr-2 d-none d-md-block">
@@ -22,22 +22,66 @@
             </div>
           </b-form-group>
           <editor ref="editor" v-model="todo.description" auto-save :name="$route.params.id ? 'todo-edit' : 'todo-new'">
-            <b-dropdown slot="button" split variant="success" class="f-sm editor-submit" @click.prevent="onSaveTask('1')">
+            <b-dropdown slot="button" split variant="success" class="f-sm editor-submit" @click.prevent="onSaveTask(1)">
               <template slot="button-content">
                 <fa icon="clock" /> Submit waiting task
               </template>
-              <b-dropdown-item href="#" class="f-sm" @click.prevent="onSaveTask('2')">
+              <b-dropdown-item href="#" class="f-sm" @click.prevent="onSaveTask(2)">
                 <fa icon="code" style="width:21px;" /> Submit processing task
               </b-dropdown-item>
-              <b-dropdown-item href="#" class="f-sm" @click.prevent="onSaveTask('3')">
+              <b-dropdown-item href="#" class="f-sm" @click.prevent="onSaveTask(3)">
                 <fa icon="check" style="width:21px;" /> Task complated
               </b-dropdown-item>
             </b-dropdown>
           </editor>
         </div>
         
-        <div class="col-lg-12 mt-sm-4 mt-lg-0">
-          <b-form-group label-cols-sm="6" label="Project:" label-align-sm="right" label-for="project">
+        <div class="col-lg-12 col-xl-10 mt-sm-4 mt-lg-0">
+          <div>
+            <div class="d-flex align-items-center">
+              <b>Private</b>
+              <b-checkbox id="private" v-model="todo.private" switch /> 
+            </div>
+          </div>
+          <div class="border-bottom f-sm">
+            <div class="d-flex align-items-center">
+              <b>Assignees</b>
+              <fa icon="cog" class="ml-auto" />
+            </div>
+            <div class="d-flex align-items-center">
+              assign myself
+            </div>
+          </div>
+          <div class="border-bottom f-sm">
+            <div class="d-flex align-items-center">
+              <b>Labels</b>
+              <fa icon="cog" class="ml-auto" />
+            </div>
+            <div class="d-flex align-items-center">
+              None yet
+            </div>
+          </div>
+          <div class="border-bottom f-sm">
+            <div class="d-flex align-items-center">
+              <b>Project</b>
+              <fa icon="cog" class="ml-auto" />
+            </div>
+            <div class="d-flex align-items-center">
+              None yet
+            </div>
+          </div>
+          <div class="border-bottom f-sm">
+            <div class="d-flex align-items-center">
+              <b>Priority</b>
+              <fa icon="cog" class="ml-auto" />
+            </div>
+            <div class="d-flex align-items-center f-sm">
+              None yet
+            </div>
+          </div>
+
+
+          <!-- <b-form-group label-cols-sm="6" label="Assignees" label-align-sm="right" label-for="project">
             <vue-multiselect
               id="project" v-model="todo.project" :options="optProject" :taggable="true"
               placeholder="Project name" tag-placeholder="enter to project created."
@@ -77,15 +121,11 @@
 
           <b-form-group label-cols-sm="6" label="Priority:" label-align-sm="right" class="mb-0" label-for="priority">
             <b-form-radio-group id="priority" v-model="todo.priority" class="pt-2" :options="optPriority" />
-          </b-form-group>
+          </b-form-group> -->
           
           <!-- <b-form-group label-cols-sm="6" label="Status:" label-align-sm="right" class="mb-0" label-for="status">
             <b-form-radio-group id="status" v-model="todo.status" class="pt-2" :options="optStatus" />
           </b-form-group> -->
-          
-          <b-form-group label-cols-sm="6" label="Private:" label-align-sm="right" class="mb-0" label-for="private">
-            <b-form-checkbox id="private" v-model="todo.private" class="pt-2" switch /> 
-          </b-form-group>
         </div>
       </div>
     </form>
@@ -144,8 +184,12 @@ export default {
 
       return { todo: {} }
     }
+    return {
+      optProject: project.data
+    }
   },
   created () {
+    // console.log(this.optProject)
   },
   methods: {
     async onSaveTask () {
