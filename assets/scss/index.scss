@@ -2,8 +2,19 @@ $grid-columns:                36;
 $border-radius:               .0rem;
 $border-radius-lg:            .0rem;
 $border-radius-sm:            .0rem;
-// $font-size-base:              .78rem;
 
+$primary:       #4a8cd2;
+// $secondary:     $gray-600 !default;
+$success:       #41b883;
+// $info:          $cyan !default;
+// $warning:       $yellow !default;
+// $danger:        $red !default;
+// $light:         $gray-100 !default;
+// $dark:          $gray-800 !default;
+
+
+// $font-size-base:              .78rem;
+// 
 @import 'bootstrap/scss/bootstrap.scss';
 @import 'bootstrap-vue/dist/bootstrap-vue.css';
 
@@ -168,4 +179,8 @@ textarea.reason {
 }
 .f-md {
   font-size: 1rem;
+}
+.btn-xs {
+  padding: .05rem .25rem;
+  font-size: .9rem;
 }

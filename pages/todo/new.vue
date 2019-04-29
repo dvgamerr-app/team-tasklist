@@ -38,47 +38,44 @@
         
         <div class="col-lg-12 col-xl-10 mt-sm-4 mt-lg-0">
           <div>
-            <div class="d-flex align-items-center">
-              <b>Private</b>
+            <div class="d-flex align-items-center box-private">
+              <label for="private"><b>Private</b></label>
               <b-checkbox id="private" v-model="todo.private" switch /> 
             </div>
           </div>
-          <div class="border-bottom f-sm">
-            <div class="d-flex align-items-center">
-              <b>Assignees</b>
-              <fa icon="cog" class="ml-auto" />
+          <todo-dropdown label="Project" :toggle-icon.sync="edit.project" :label-value="todo.project">
+            <vue-multiselect
+              id="project" :options="optProject" :taggable="true"
+              placeholder="Project name" tag-placeholder="enter to project created."
+              :clear-on-select="false" label="_id" track-by="_id" @tag="onProjectChange" @select="onProjectChange"
+            />
+            <template slot="value" lang="html">
+              <span class="badge badge-primary">
+                {{ todo.project }}
+                <span class="btn-close" @click.prevent="setTodo('project', '')">&times;</span>
+              </span>
+            </template>
+          </todo-dropdown>
+          <todo-dropdown v-if="!todo.private" label="Assign" :toggle-icon.sync="edit.assign" label-default="assign myself">
+            <div>
+              Due
             </div>
-            <div class="d-flex align-items-center">
-              assign myself
+          </todo-dropdown>
+          <todo-dropdown label="Due" :toggle-icon.sync="edit.duedate">
+            <div>
+              Due
             </div>
-          </div>
-          <div class="border-bottom f-sm">
-            <div class="d-flex align-items-center">
-              <b>Labels</b>
-              <fa icon="cog" class="ml-auto" />
+          </todo-dropdown>
+          <todo-dropdown label="Priority" :toggle-icon.sync="edit.priority">
+            <div>
+              Priority
             </div>
-            <div class="d-flex align-items-center">
-              None yet
+          </todo-dropdown>
+          <todo-dropdown label="Lables" :toggle-icon.sync="edit.lable">
+            <div>
+              editor
             </div>
-          </div>
-          <div class="border-bottom f-sm">
-            <div class="d-flex align-items-center">
-              <b>Project</b>
-              <fa icon="cog" class="ml-auto" />
-            </div>
-            <div class="d-flex align-items-center">
-              None yet
-            </div>
-          </div>
-          <div class="border-bottom f-sm">
-            <div class="d-flex align-items-center">
-              <b>Priority</b>
-              <fa icon="cog" class="ml-auto" />
-            </div>
-            <div class="d-flex align-items-center f-sm">
-              None yet
-            </div>
-          </div>
+          </todo-dropdown>
 
 
           <!-- <b-form-group label-cols-sm="6" label="Assignees" label-align-sm="right" label-for="project">
@@ -134,16 +131,25 @@
 <script>
 import moment from 'moment'
 import md5 from 'md5'
-import Editor from '../../components/editor.vue'
+import Editor from '../../components/todo/editor.vue'
+import TodoDropdown from '../../components/todo/todo-dropdown.vue'
 
 export default {
   components: {
-    Editor
+    Editor,
+    TodoDropdown
   },
   data: () => ({
     saved: false,
     validate: {
       title: null
+    },
+    edit: {
+      project: false,
+      assign: false,
+      duedate: false,
+      priority: false,
+      label: false
     },
     todo: {
       title: '',
@@ -216,13 +222,19 @@ export default {
       }
     },
     onProjectChange (value) {
-      this.todo.project = value
+      this.todo.project = value._id || value
+      this.edit.project = false
+      console.log(this.todo.project)
     },
     onAssignChange (value) {
       this.todo.assign.push(value)
     },
     onDueDateChange (date) {
       this.todo.duedate = date.toISOString()
+    },
+    setTodo (name, val) {
+      this.todo[name] = val
+      this.edit[name] = false
     }
   }
 }
@@ -237,22 +249,84 @@ export default {
         padding-left: 1rem;
       }
     }
-  }
-  .v-md-avatar {
-    border-radius: .3rem;
-  }
-  .v-md-thumbnail {
-    width: 64px;
-    height: 64px;
-  }
-  .v-title {
-    display: block;
-    width: 100%;
-    margin-top: -10px;
-    .invalid-feedback {
-      position: absolute;
-      font-size: .7rem;
+    .box-private {
+      padding: .9rem 0;
+      > label {
+        margin-bottom: 0px;
+        margin-right: .5rem;
+      }
+    }
+    .multiselect {
+      min-height: 32px;
+      &.multiselect--active {
+        color: #495057 !important;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        outline: 0;
+        .multiselect__tags {
+          border-color: #80bdff !important;
+        }
+        .multiselect__select {
+          height: 20px;
+        }
+        .multiselect__content-wrapper {
+          box-shadow: 0.1rem 0.2rem 0.2rem 0.01rem rgba(173, 173, 173, 0.25);
+        }
+      }
+      .multiselect--active 
+      .multiselect__spinner {
+        right: 10px;
+        top: 6px;
+        width: 22px;
+        height: 22px;
+      }
+
+      .multiselect__tags, 
+      .multiselect__input,
+      .multiselect__option,
+      .multiselect__option:after {
+        font-size: 0.8rem;
+      }
+      .multiselect__tags {
+        padding: .4em 2.5em 0 .1em;
+        height: 32px;
+        min-height: 32px;
+      }
+      .multiselect__input {
+        height: 20px;
+      }
+      .multiselect__select {
+        width: 34px;
+        height: 33px;
+      }
+      .multiselect__placeholder {
+        margin-bottom: 0px;
+      }
+      .multiselect__option, .multiselect__option:after {
+        padding: 6px;
+        min-height: 20px;
+        line-height: 20px;
+      }
+      .multiselect__option:after {
+        font-size: inherit;
+      }
+    }
+    .v-md-avatar {
+      border-radius: .3rem;
+    }
+    .v-md-thumbnail {
+      width: 64px;
+      height: 64px;
+    }
+    .v-title {
+      display: block;
+      width: 100%;
+      margin-top: -10px;
+      .invalid-feedback {
+        position: absolute;
+        font-size: .7rem;
+      }
     }
   }
+  
 </style>
 
