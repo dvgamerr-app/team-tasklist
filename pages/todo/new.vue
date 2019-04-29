@@ -49,7 +49,7 @@
               id="project" ref="project" :options="opt.project" :taggable="true"
               placeholder="Project name" tag-placeholder="enter to project created."
               :clear-on-select="false" :hide-selected="true" :searchable="true" 
-              :loading="loading.project" :internal-search="false"
+              :loading="loading.project" :internal-search="false" :block-keys="['Delete']"
               :close-on-select="false" :options-limit="100" :limit="5" :show-no-results="false"
               @tag="onProjectChange" @select="onProjectChange" @search-change="onProjectSearch"
             />
@@ -172,18 +172,13 @@ export default {
     loading: {
       project: false
     },
-    optTitle: [],
+    time: {
+      project: 0
+    },
     opt: {
       project: []
     },
-    optAssign: [
-      { name: 'Kananek T.', _id: '23423tgasdfgWHZDS' }
-    ],
-    optStatus: [
-      { text: 'Waiting', value: 1 },
-      { text: 'Pending', value: 2 },
-      { text: 'Completed', value: 3 }
-    ],
+    optAssign: [],
     optPriority: [
       { text: 'None', value: 0 },
       { text: 'Low', value: 1 },
@@ -238,8 +233,14 @@ export default {
         })
       }
     },
-    async onProjectSearch (value) {
-      return this.onSearchItems('project', value)
+    onProjectSearch (value) {
+      let vm = this
+      if (this.time.project) clearTimeout(this.time.project)
+
+      vm.time.project = setTimeout(() => {
+        vm.onSearchItems('project', value)
+        clearTimeout(vm.time.project)
+      }, 200)
     },
     async onSearchItems (name, value) {
       if (!value || !value.trim()) return
@@ -334,6 +335,9 @@ export default {
       .multiselect__select {
         width: 34px;
         height: 33px;
+        transition: none;
+        transition: none;
+        transition: none;
       }
       .multiselect__placeholder {
         margin-bottom: 0px;
