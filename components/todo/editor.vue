@@ -74,8 +74,7 @@
       },
       value: {
         type: String,
-        default: '',
-        required: false
+        default: ''
       },
       buttonText: {
         type: String,
@@ -499,10 +498,12 @@
       },
       build () {
         let vm = this
+        this.txtValue = this.value
         for (const key in this.buttons) {
           const e = this.buttons[key];
           this.shortcuts[e.hotkey] = () => vm.command(e.cmd)
         }
+        
         let data = this.getText()
         if (data && data.length !== 0 && this.autoSave) {
           this.txtValue = data

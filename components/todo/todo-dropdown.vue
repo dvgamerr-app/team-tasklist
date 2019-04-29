@@ -2,7 +2,7 @@
   <div class="todo-dropdown border-bottom f-sm pb-2 mb-3">
     <div class="d-flex align-items-center">
       <b v-text="label" />
-      <button type="button" class="btn btn-xs ml-auto" @click.prevent="$emit('update:toggleIcon', !toggleIcon)">
+      <button type="button" class="btn btn-xs ml-auto" @click.prevent="onToggle">
         <fa :icon="!toggleIcon ? 'cog' : 'times'" />
       </button>
     </div>
@@ -21,25 +21,35 @@
 <script>
 export default {
   props: {
-    'label': {
+    label: {
       type: String,
       default: 'Title'
     },
-    'toggleIcon': {
+    toggleIcon: {
       type: Boolean,
       default: false
     },
-    'labelDefault': {
+    labelDefault: {
       type: String,
       default: 'None yet'
     },
-    'labelValue': {
+    labelValue: {
       type: String,
       default: null
-    }
+    },
+    onClick: {
+      type: Function,
+      default: () => null
+    },
   },
   data: () => ({
-  })
+  }),
+  methods: {
+    onToggle () {
+      this.$emit('update:toggleIcon', !this.toggleIcon)
+      if (this.onClick) this.onClick()
+    }
+  }
 }
 </script>
 
@@ -58,6 +68,7 @@ export default {
     }
   }
   .btn-xs {
+    color: #586069;
     box-shadow: none;
     .svg-inline--fa {
       width: 16px;

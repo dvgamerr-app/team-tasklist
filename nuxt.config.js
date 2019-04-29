@@ -3,7 +3,7 @@ const pkg = require('./package')
 module.exports = {
   mode: 'universal',
   head: {
-    titleTemplate: title => `${title ? `${title} · ` : ''}TEAM Task-List`
+    titleTemplate: title => `${title ? `${title} · ` : ''}TEAM`
   },
   meta: [
     { charset: 'utf-8' },

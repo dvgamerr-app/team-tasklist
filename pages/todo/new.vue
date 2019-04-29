@@ -2,8 +2,9 @@
   <div class="task">
     <div class="row">
       <div class="col-sm-36">
-        <h3 class="mb-0">To-Do</h3>
-        <small>New Task-List with markdown description.</small>
+        <h3 v-if="!$route.params.id" class="mb-0">Create new Todo</h3>
+        <h3 v-else class="mb-0">To-Do: {{ todo.title }}</h3>
+        <small>Todo with markdown description.</small>
         <hr>
       </div>
     </div>
@@ -21,7 +22,7 @@
               </div>
             </div>
           </b-form-group>
-          <editor ref="editor" v-model="todo.description" auto-save :name="$route.params.id ? 'todo-edit' : 'todo-new'">
+          <editor ref="editor" :value.sync="todo.description" auto-save :name="$route.params.id ? 'todo-edit' : 'todo-new'">
             <b-dropdown slot="button" split variant="success" class="f-sm editor-submit" @click.prevent="onSaveTask(1)">
               <template slot="button-content">
                 <fa icon="clock" /> Submit waiting task
@@ -43,17 +44,22 @@
               <b-checkbox id="private" v-model="todo.private" switch /> 
             </div>
           </div>
-          <todo-dropdown label="Project" :toggle-icon.sync="edit.project" :label-value="todo.project">
+          <todo-dropdown label="Project" :toggle-icon.sync="edit.project" :label-value="todo.project" :on-click="onProjectToggle">
             <vue-multiselect
-              id="project" :options="optProject" :taggable="true"
+              id="project" ref="project" :options="opt.project" :taggable="true"
               placeholder="Project name" tag-placeholder="enter to project created."
-              :clear-on-select="false" label="_id" track-by="_id" @tag="onProjectChange" @select="onProjectChange"
+              :clear-on-select="false" :hide-selected="true" :searchable="true" 
+              :loading="loading.project" :internal-search="false"
+              :close-on-select="false" :options-limit="100" :limit="5" :show-no-results="false"
+              @tag="onProjectChange" @select="onProjectChange" @search-change="onProjectSearch"
             />
             <template slot="value" lang="html">
-              <span class="badge badge-primary">
-                {{ todo.project }}
-                <span class="btn-close" @click.prevent="setTodo('project', '')">&times;</span>
-              </span>
+              <no-ssr>
+                <span class="badge badge-primary">
+                  {{ todo.project }}
+                  <span class="btn-close" @click.prevent="setTodo('project', '')">&times;</span>
+                </span>
+              </no-ssr>
             </template>
           </todo-dropdown>
           <todo-dropdown v-if="!todo.private" label="Assign" :toggle-icon.sync="edit.assign" label-default="assign myself">
@@ -80,7 +86,7 @@
 
           <!-- <b-form-group label-cols-sm="6" label="Assignees" label-align-sm="right" label-for="project">
             <vue-multiselect
-              id="project" v-model="todo.project" :options="optProject" :taggable="true"
+              id="project" v-model="todo.project" :options="opt.project" :taggable="true"
               placeholder="Project name" tag-placeholder="enter to project created."
               @tag="onProjectChange"
             />
@@ -129,12 +135,14 @@
   </div>
 </template>
 <script>
-import moment from 'moment'
 import md5 from 'md5'
 import Editor from '../../components/todo/editor.vue'
 import TodoDropdown from '../../components/todo/todo-dropdown.vue'
 
 export default {
+  head: {
+    title: 'Create new Todo'
+  },
   components: {
     Editor,
     TodoDropdown
@@ -161,8 +169,13 @@ export default {
       status: 1,
       private: false
     },
+    loading: {
+      project: false
+    },
     optTitle: [],
-    optProject: [],
+    opt: {
+      project: []
+    },
     optAssign: [
       { name: 'Kananek T.', _id: '23423tgasdfgWHZDS' }
     ],
@@ -185,28 +198,24 @@ export default {
     }
   },
   async asyncData ({ $axios, params }) {
-    let project = await $axios.get('/api/todo/search/project')
     if (params.id) {
-
-      return { todo: {} }
+      let { data } = await $axios.get('/api/todo/' + params.id)
+      return { todo: data }
     }
     return {
-      optProject: project.data
     }
   },
-  created () {
-    // console.log(this.optProject)
-  },
   methods: {
-    async onSaveTask () {
+    async onSaveTask (status) {
       this.validate.title = this.todo.title ? null : false
+      this.todo.status = status
       if (!this.todo.title) return this.$toast.open({ message: 'Title is empty.', type: 'warning' })
       if (!this.todo.project) return this.$toast.open({ message: 'Project name is empty.', type: 'warning' })
       if (!this.todo.description) return this.$toast.open({ message: 'Description is empty.', type: 'warning' })
-      if (this.todo.assign.length === 0) return this.$toast.open({ message: 'Assign name for task.', type: 'warning' })
+      if (this.todo.assign.length === 0 && status === 3) return this.$toast.open({ message: 'Assign name for task.', type: 'warning' })
       try {
         this.saved = true
-        let { data } = await this.$axios.post('/api/task-list', this.todo)
+        let { data } = await this.$axios.post('/api/todo', this.todo)
         this.saved = false
         if (data.error) throw new Error(data.error)
         this.$refs.editor.setText()
@@ -221,10 +230,39 @@ export default {
         })
       }
     },
+    onProjectToggle () {
+      if (this.edit.project) {
+        let vm = this
+        this.$nextTick(() => {
+          vm.$refs.project.$refs.search.focus()
+        })
+      }
+    },
+    async onProjectSearch (value) {
+      return this.onSearchItems('project', value)
+    },
+    async onSearchItems (name, value) {
+      if (!value || !value.trim()) return
+
+      value = value.replace(/[\\\/]/ig, '')
+      this.loading[name] = true
+      try {
+        const { data } = await this.$axios.get(`/api/todo/search/${name}/` + value)
+        this.opt[name] = data
+      } catch (ex) {
+        console.log(ex)
+        this.opt[name] = []
+      } finally {
+        this.loading[name] = false
+      }
+    },
     onProjectChange (value) {
-      this.todo.project = value._id || value
+      if (!value || !value.trim()) return
+
+      value = value.trim().replace(/[\\\/]/ig, '')
+      if (value.length < 3) return this.$toast.open({ message: 'Project name short.', type: 'warning' })
+      this.todo.project = value.trim().replace(/[\\\/]/ig, '')
       this.edit.project = false
-      console.log(this.todo.project)
     },
     onAssignChange (value) {
       this.todo.assign.push(value)
@@ -272,7 +310,6 @@ export default {
           box-shadow: 0.1rem 0.2rem 0.2rem 0.01rem rgba(173, 173, 173, 0.25);
         }
       }
-      .multiselect--active 
       .multiselect__spinner {
         right: 10px;
         top: 6px;

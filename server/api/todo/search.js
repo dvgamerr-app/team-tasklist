@@ -3,12 +3,12 @@ const mongo = require('@mongo')
 const { Router } = require('express')
 const router = Router()
 
-router.get('/project', async (req, res) => {
+router.get('/project/:search', async (req, res) => {
   let { search } = req.params
   try {
     const { Todo } = await mongo.open()
-    let data = await Todo.aggregate([ { $group : { _id : '$project' } } ])
-    res.json(data)
+    let data = await Todo.aggregate([ { $match: { project: new RegExp(search,"ig") } }, { $group : { _id : '$project' } } ])
+    res.json(data.map(e => e._id))
   } catch (ex) {
     logger.warning(req.url, ex.message || ex)
     res.json({ error: ex.message || ex })

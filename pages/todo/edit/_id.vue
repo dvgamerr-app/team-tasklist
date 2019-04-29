@@ -1,4 +1,8 @@
 <script>
 import task from '../new.vue'
-export default task
+export default Object.assign(task, {
+  head: {
+    title: 'Todo'
+  }
+})
 </script>
