@@ -41,7 +41,7 @@ const apiMiddlewere = async (req, res, next) => {
     let { UserAccount } = await mongo.open()
     let decode = bearer.decode(raw)
     let account = await UserAccount.findById(decode.raw)
-    if (!account || !account.enabled) return res.status(402).end()
+    if (!account || !account.enabled) return res.status(401).end()
     req.auth = account
     next()
   } catch (ex) {

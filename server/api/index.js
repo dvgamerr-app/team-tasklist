@@ -3,6 +3,7 @@ const router = Router()
 
 router.post('/todo', require('./todo/new'))
 router.get('/todo/:id', require('./todo/id'))
+router.get('/todo/list/:status', require('./todo/list'))
 router.use('/todo/search', require('./todo/search'))
 // router.get('/history', require('./history'))
 // router.get('/history/:id', require('./history/id'))

@@ -22,7 +22,7 @@
               </div>
             </div>
           </b-form-group>
-          <editor ref="editor" :value.sync="todo.description" auto-save :name="$route.params.id ? 'todo-edit' : 'todo-new'">
+          <editor ref="editor" v-model="todo.description" auto-save :name="$route.params.id ? 'todo-edit' : 'todo-new'">
             <b-dropdown slot="button" split variant="success" class="f-sm editor-submit" @click.prevent="onSaveTask(1)">
               <template slot="button-content">
                 <fa icon="clock" /> Submit waiting task
@@ -215,7 +215,7 @@ export default {
         if (data.error) throw new Error(data.error)
         this.$refs.editor.setText()
         this.$toast.open({ message: 'Task Added.', type: 'success' })
-        this.$router.push({ name: 'todo-edit-id', params: { id: data.id } })
+        this.$router.push({ name: 'todo-id', params: { id: data.id } })
       } catch (ex) {
         this.$bvToast.toast(ex.message || ex, {
           title: 'Todo',
