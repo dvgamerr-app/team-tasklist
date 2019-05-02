@@ -5,27 +5,35 @@
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
           <h3 class="mb-0">Task-List</h3>
           <div class="box-filter">
-            aa
+            <b-dropdown slot="button" variant="outline-primary" right size="sm">
+              <template slot="button-content">Status</template>
+              <b-dropdown-item :active="filter.status === 1" href="#" class="f-sm" @click.prevent="setStatus(1)">Processing</b-dropdown-item>
+              <b-dropdown-item :active="filter.status === 2" href="#" class="f-sm" @click.prevent="setStatus(2)">Waiting</b-dropdown-item>
+              <b-dropdown-item :active="filter.status === 3" href="#" class="f-sm" @click.prevent="setStatus(3)">Complaed</b-dropdown-item>
+            </b-dropdown>
           </div>
-          <!-- <b-nav small pills class="small">
-            <b-nav-item :active="status === 'pending'" to="/todo/task/pending">Pending <b-badge v-if="pending > 0" variant="info" v-text="pending" /></b-nav-item>
-            <b-nav-item :active="status === 'processing'" to="/todo/task/processing">Processing</b-nav-item>
-            <b-nav-item :active="status === 'completed'" to="/todo/task/completed">Completed</b-nav-item>
-            <b-nav-item :active="status === 'deleted'" to="/todo/task/deleted">Deleted</b-nav-item>
-          </b-nav> -->
         </div>
       </div>
     </div>
     <div class="row">
+      <div v-if="items.length === 0" class="col-md-24 offset-md-6 box f-sm">
+        <div class="todos-empty-content">
+          <h4>Todos let you see what you should do next</h4>
+          <p>When todo assigned to you this will trigger a new item in your todo list, automatically.</p>
+          <p>You will always know what to work on next.</p>
+        </div>
+      </div>
       <div class="col-sm-36 box f-sm">
         <div v-for="e in getFilterItems()" :key="e._id" class="box-row pb-2 border-bottom pl-2 pt-1">
-          <span class="pr-1">
+          <span class="icon">
             <fa :icon="getTaskIcon(e)" :class="getTaskClass(e)" />
           </span>
           <nuxt-link :to="`/todo/task/${e._id}`" class="v-align-middle no-underline h5" v-text="e.title" />
-          <div class="f-xs text-muted pl-3 ml-1">
+          <div class="f-xs text-muted desc">
+            <span v-if="e.priority" class="badge badge-warning priority" v-text="getPriority(e)" />
             <span v-if="e.duedate" class="duedate-by" v-text="getDuedate(e)" />
             <span v-else class="opened-by" v-text="getOpened(e)" />
+            <span v-for="user in e.assign" :key="user._id" class="badge badge-info" v-text="user.name" />
           </div>
         </div>
       </div>
@@ -69,12 +77,24 @@ export default {
     getOpened (e) {
       return `opened ${moment(e.created).fromNow()} by ${e.owner.name}`
     },
+    getPriority (e) {
+      return e.priority === 1 ? 'Low' : e.priority === 2 ? 'Medium' : e.priority === 3 ? 'High' : ''
+    },
     getTaskIcon (e) {
-      return e.private ? 'lock' : 'clock'
+      return e.private ? 'lock' : e.duedate ? 'clock' : 'thumbtack'
     },
     getTaskClass (e) {
       let diff = !e.duedate ? null : moment().diff(moment(e.duedate), 'day')
       return !e.duedate ? 'text-muted' : diff === null ? '' : diff >= -1 ? 'text-danger' : diff > -7 ? 'text-warning' : ''
+    },
+    async setStatus (data) {
+      if (this.filter.status === data) return
+      this.filter.status = data
+      await this.reloadTodoItems()
+    },
+    async reloadTodoItems () {
+      const { data } = await this.$axios.get(`/api/todo/list/${this.filter.status}`)
+      this.items = data
     }
   }
 }
@@ -87,6 +107,13 @@ export default {
   white-space: nowrap;
   overflow: hidden !important;
   text-overflow: ellipsis;
+  .icon {
+    width: 18px;
+    display: inline-block;
+  }
+  .desc {
+    margin-left: 1.45rem;
+  }
   .h5.no-underline {
     text-decoration: none;
     color: #333;

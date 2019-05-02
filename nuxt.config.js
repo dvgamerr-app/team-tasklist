@@ -14,12 +14,12 @@ module.exports = {
     { name: 'author', content: 'Mr. Kananek T.' }
   ],
   manifest: {
-    name: 'TEAM Task-List',
+    name: 'TEAM',
     lang: 'en',
     description: '',
-    short_name: 'TEAM Task-List',
+    short_name: 'TEAM',
     icons: [
-      { src: '/favicon.ico', sizes: '16x16' }
+      { src: '/app.ico', sizes: '16x16' }
     ],
     start_url: '/',
     display: 'standalone',
@@ -27,7 +27,7 @@ module.exports = {
     theme_color: '#ffffff',
     background_color: '#ffffff',
     browser_action: {
-      default_icon: '/favicon.ico',
+      default_icon: '/app.ico',
       default_popup: '/'
     }
   },
