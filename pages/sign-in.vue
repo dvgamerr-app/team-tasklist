@@ -1,7 +1,9 @@
 <template lang="html">
   <div class="row">
     <div class="d-none d-md-flex col-36" style="height:10vh" />
-    <div class="d-none d-lg-flex col-lg-12 col-xl-16 mx-auto" />
+    <div class="d-none d-lg-flex col-lg-12 col-xl-16">
+      <img class="ml-auto todos" src="~/assets/todos_empty.svg">
+    </div>
     <div class="col-36 col-lg-24 col-xl-20 mx-auto">
       <div class="row">
         <div class="col-30 col-md-24 mx-auto">
@@ -88,6 +90,10 @@ export default {
 </script>
 
 <style lang="scss">
+img.todos {
+  max-width: 450px;
+  width: 264px;
+}
 .login-form {
   .custom-control-label {
     font-size: 0.9rem;
