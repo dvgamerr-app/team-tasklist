@@ -8,8 +8,8 @@
         <fa icon="calendar-check" /> <b>TEAM</b> <small>Task List</small>
       </b-navbar-brand>
       <b-navbar-nav v-if="$auth.loggedIn" class="ml-auto">
-        <b-nav-item-dropdown size="sm" text="Todo" right>
-          <b-dropdown-item to="/todo/new"><fa icon="plus" /> New</b-dropdown-item>
+        <b-nav-item-dropdown size="sm" text="Todos" right>
+          <b-dropdown-item to="/todo/new"><fa icon="plus" /> New Todo</b-dropdown-item>
           <b-dropdown-divider />
           <b-dropdown-item to="/todo/task">Tasks List</b-dropdown-item>
           <b-dropdown-item to="/todo/project">Project</b-dropdown-item>

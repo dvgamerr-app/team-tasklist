@@ -25,10 +25,10 @@
           <editor ref="editor" v-model="todo.description" auto-save :name="$route.params.id ? 'todo-edit' : 'todo-new'">
             <b-dropdown slot="button" split variant="success" class="f-sm editor-submit" @click.prevent="onSaveTask(1)">
               <template slot="button-content">
-                <fa icon="clock" /> Submit waiting task
+                <fa icon="code" /> Submit new task
               </template>
               <b-dropdown-item href="#" class="f-sm" @click.prevent="onSaveTask(2)">
-                <fa icon="code" style="width:21px;" /> Submit processing task
+                <fa icon="clock" style="width:21px;" /> Submit waiting task
               </b-dropdown-item>
               <b-dropdown-item href="#" class="f-sm" @click.prevent="onSaveTask(3)">
                 <fa icon="check" style="width:21px;" /> Task complated
