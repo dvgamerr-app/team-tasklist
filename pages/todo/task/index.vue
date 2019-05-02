@@ -1,7 +1,7 @@
 <template lang="html">
   <div class="task-list">
     <div class="row">
-      <div class="col-sm-36 mb-2">
+      <div class="col-sm-36 mb-2 ">
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
           <h3 class="mb-0">Task-List</h3>
           <div class="box-filter">
@@ -14,6 +14,7 @@
             <b-nav-item :active="status === 'deleted'" to="/todo/task/deleted">Deleted</b-nav-item>
           </b-nav> -->
         </div>
+        <hr>
       </div>
     </div>
     <div class="row">
