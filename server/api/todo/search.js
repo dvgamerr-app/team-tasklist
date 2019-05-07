@@ -7,7 +7,7 @@ router.get('/project/:search', async (req, res) => {
   let { search } = req.params
   try {
     const { Todo } = await mongo.open()
-    let data = await Todo.aggregate([ { $match: { project: new RegExp(search,"ig") } }, { $group : { _id : '$project' } } ])
+    let data = await Todo.aggregate([ { $match: { project: new RegExp(search,'ig') } }, { $group : { _id : '$project' } } ])
     res.json(data.map(e => e._id))
   } catch (ex) {
     logger.warning(req.url, ex.message || ex)
@@ -16,6 +16,26 @@ router.get('/project/:search', async (req, res) => {
     res.end()
   }
 })
+
+router.get('/assign/:search', async (req, res) => {
+  let { search } = req.params
+  try {
+    const { UserAccount } = await mongo.open()
+    let data = await UserAccount.find({ fullname: { $regex: new RegExp(search,'ig') } })
+    res.json(data.map(e => {
+      return {
+        id: e._id,
+        fullname: e.fullname
+      }
+    }))
+  } catch (ex) {
+    logger.warning(req.url, ex.message || ex)
+    res.json({ error: ex.message || ex })
+  } finally {
+    res.end()
+  }
+})
+
 
 router.get('/assign', async (req, res) => {
   let { search } = req.params

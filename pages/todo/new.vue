@@ -64,13 +64,25 @@
           </todo-dropdown>
           <todo-dropdown v-if="!todo.private" label="Assign" :toggle-icon.sync="edit.assign" label-default="assign myself" :on-click="onToggle('assign')">
             <vue-multiselect
-              id="assign" ref="assign" v-model="todo.assign" :options="opt.assign" :taggable="true"
-              placeholder="Assign name" tag-placeholder="enter to add assign."
-              :clear-on-select="true" :hide-selected="true" :searchable="true" 
-              :loading="loading.project" :internal-search="false" :block-keys="['Delete']"
-              :close-on-select="false" :options-limit="100" :limit="5" :show-no-results="false"
-              @tag="onAssignChange" @select="onAssignChange"
-            />
+              id="assign" ref="assign" v-model="todo.assign" :options="opt.assign" :taggable="false"
+              placeholder="Assign name" tag-placeholder="enter to add assign." track-by="id" label="fullname"
+              :clear-on-select="true" :hide-selected="false" :searchable="true" :multiple="true"
+              :loading="loading.assign" :internal-search="false" :block-keys="['Delete']"
+              :close-on-select="true" :options-limit="100" :limit="5" :show-no-results="true"
+              @tag="onAssignChange" @select="onAssignChange" @search-change="onAssignSearch"
+            >
+              <template slot="noResult" lang="html">
+                No Result
+              </template>
+            </vue-multiselect>
+            <template slot="value" lang="html">
+              <no-ssr>
+                <span v-for="user in todo.assign" :key="user.id" class="badge badge-primary">
+                  {{ user.fullname }}
+                  <span class="btn-close" @click.prevent="setTodo('assign', [])">&times;</span>
+                </span>
+              </no-ssr>
+            </template>
           </todo-dropdown>
           <todo-dropdown label="Due" :toggle-icon.sync="edit.duedate">
             <div>
@@ -175,10 +187,12 @@ export default {
       private: false
     },
     loading: {
-      project: false
+      project: false,
+      assign: false
     },
     time: {
-      project: 0
+      project: 0,
+      assign: 0
     },
     opt: {
       project: [],
@@ -220,7 +234,7 @@ export default {
         if (data.error) throw new Error(data.error)
         this.$refs.editor.setText()
         this.$toast.open({ message: 'Task Added.', type: 'success' })
-        this.$router.push({ name: 'todo-id', params: { id: data.id } })
+        this.$router.push({ name: 'todo-task-id', params: { id: data.id } })
       } catch (ex) {
         this.$bvToast.toast(ex.message || ex, {
           title: 'Todo',
@@ -232,10 +246,10 @@ export default {
     },
     onToggle (name) {
       if (this.edit[name]) {
-        let vm = this
-        this.$nextTick(() => {
-          vm.$refs[name].$refs.search.focus()
-        })
+        // let vm = this
+        // this.$nextTick(() => {
+        //   vm.$refs[name].$refs.search.focus()
+        // })
       }
     },
     onProjectSearch (value) {
@@ -245,6 +259,15 @@ export default {
       vm.time.project = setTimeout(() => {
         vm.onSearchItems('project', value)
         clearTimeout(vm.time.project)
+      }, 200)
+    },
+    onAssignSearch (value) {
+      let vm = this
+      if (this.time.assign) clearTimeout(this.time.assign)
+
+      vm.time.assign = setTimeout(() => {
+        vm.onSearchItems('assign', value)
+        clearTimeout(vm.time.assign)
       }, 200)
     },
     async onSearchItems (name, value) {
@@ -271,7 +294,8 @@ export default {
       this.edit.project = false
     },
     onAssignChange (value) {
-      this.todo.assign.push(value)
+      this.todo.assign.push({ id: value.id, fullname: value.fullname })
+      this.edit.assign = false
     },
     onDueDateChange (date) {
       this.todo.duedate = date.toISOString()
