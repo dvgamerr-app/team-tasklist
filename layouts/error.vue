@@ -1,5 +1,5 @@
 <template lang="html">
-  <div />
+  <div v-text="error.message" />
 </template>
 
 <script>
@@ -14,7 +14,7 @@ export default {
     }
   },
   mounted () {
-    this.$router.replace('/')
+    // this.$router.replace('/')
   }
 }
 </script>

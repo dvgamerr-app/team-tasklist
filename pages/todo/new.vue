@@ -44,7 +44,7 @@
               <b-checkbox id="private" v-model="todo.private" switch /> 
             </div>
           </div>
-          <todo-dropdown label="Project" :toggle-icon.sync="edit.project" :label-value="todo.project" :on-click="onProjectToggle">
+          <todo-dropdown label="Project" :toggle-icon.sync="edit.project" :label-value="todo.project" :on-click="onToggle('project')">
             <vue-multiselect
               id="project" ref="project" :options="opt.project" :taggable="true"
               placeholder="Project name" tag-placeholder="enter to project created."
@@ -62,10 +62,15 @@
               </no-ssr>
             </template>
           </todo-dropdown>
-          <todo-dropdown v-if="!todo.private" label="Assign" :toggle-icon.sync="edit.assign" label-default="assign myself">
-            <div>
-              Due
-            </div>
+          <todo-dropdown v-if="!todo.private" label="Assign" :toggle-icon.sync="edit.assign" label-default="assign myself" :on-click="onToggle('assign')">
+            <vue-multiselect
+              id="assign" ref="assign" v-model="todo.assign" :options="opt.assign" :taggable="true"
+              placeholder="Assign name" tag-placeholder="enter to add assign."
+              :clear-on-select="true" :hide-selected="true" :searchable="true" 
+              :loading="loading.project" :internal-search="false" :block-keys="['Delete']"
+              :close-on-select="false" :options-limit="100" :limit="5" :show-no-results="false"
+              @tag="onAssignChange" @select="onAssignChange"
+            />
           </todo-dropdown>
           <todo-dropdown label="Due" :toggle-icon.sync="edit.duedate">
             <div>
@@ -176,9 +181,9 @@ export default {
       project: 0
     },
     opt: {
-      project: []
+      project: [],
+      assign: []
     },
-    optAssign: [],
     optPriority: [
       { text: 'None', value: 0 },
       { text: 'Low', value: 1 },
@@ -225,11 +230,11 @@ export default {
         })
       }
     },
-    onProjectToggle () {
-      if (this.edit.project) {
+    onToggle (name) {
+      if (this.edit[name]) {
         let vm = this
         this.$nextTick(() => {
-          vm.$refs.project.$refs.search.focus()
+          vm.$refs[name].$refs.search.focus()
         })
       }
     },
