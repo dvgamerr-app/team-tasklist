@@ -21,20 +21,20 @@ module.exports = {
     icons: [
       { src: '/app.ico', sizes: '16x16' }
     ],
-    start_url: '/',
+    start_url: '/sign-in',
     display: 'standalone',
     orientation: 'portrait',
     theme_color: '#ffffff',
     background_color: '#ffffff',
     browser_action: {
       default_icon: '/app.ico',
-      default_popup: '/'
+      default_popup: '/sign-in'
     }
   },
   workbox: {
-    globDirectory: '.nuxt',
-    globPatterns: [ '**/*.{js,vue,html}' ],
-    swDest: 'static/sw.js'
+    // globDirectory: '.nuxt',
+    // globPatterns: [ '**/*.{js,vue,html}' ],
+    // swDest: 'static/sw.js'
   },
   loading: { color: '#ee5151' },
   css: [
