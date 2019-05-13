@@ -79,7 +79,7 @@
               <no-ssr>
                 <span v-for="user in todo.assign" :key="user.id" class="badge badge-primary">
                   {{ user.fullname }}
-                  <span class="btn-close" @click.prevent="setTodo('assign', [])">&times;</span>
+                  <span class="btn-close" @click.prevent="setTodo('assign', user.id)">&times;</span>
                 </span>
               </no-ssr>
             </template>
@@ -301,8 +301,12 @@ export default {
       this.todo.duedate = date.toISOString()
     },
     setTodo (name, val) {
-      this.todo[name] = val
-      this.edit[name] = false
+      if (name === 'assign') {
+        console.log(name, val, this.todo[name])
+      } else {
+        this.todo[name] = val
+        this.edit[name] = false
+      }
     }
   }
 }

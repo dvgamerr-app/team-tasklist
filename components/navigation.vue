@@ -8,9 +8,19 @@
         <fa icon="calendar-check" /> <b>TEAM</b> <small>Task List</small>
       </b-navbar-brand>
       <b-navbar-nav v-if="$auth.loggedIn" class="ml-auto">
-        <b-nav-item-dropdown size="sm" text="Todos" right>
-          <b-dropdown-item to="/todo/new"><fa icon="plus" /> New Todo</b-dropdown-item>
-          <b-dropdown-divider />
+        <b-nav-item-dropdown size="sm" right>
+          <template slot="button-content" lang="html">
+            <fa icon="plus" /> New Task
+          </template>
+          <b-dropdown-item to="/todo/new">Todo</b-dropdown-item>
+          <!-- <b-dropdown-item to="/note/new">Note</b-dropdown-item> -->
+        </b-nav-item-dropdown>
+        <!-- <b-dropdown-item to="/note/task" class="item-note">Notes</b-dropdown-item> -->
+        <b-dropdown-item to="/todo/task" class="item-todo">Todos</b-dropdown-item>
+        <b-nav-item-dropdown size="sm" right :class="($route.name || '').indexOf('todo-task') === 0 ? 'active' : ''">
+          <template slot="button-content" lang="html">
+            <span />
+          </template>
           <b-dropdown-item to="/todo/task">Tasks List</b-dropdown-item>
           <b-dropdown-item to="/todo/project">Project</b-dropdown-item>
         </b-nav-item-dropdown>
@@ -18,7 +28,9 @@
           <template slot="button-content" lang="html">
             <fa icon="cog" />
           </template>
-          <b-dropdown-header>Account</b-dropdown-header>
+          <b-dropdown-item to="/setting" exact><fa icon="cog" /> Setting</b-dropdown-item>
+          <b-dropdown-item to="/setting/profile"><fa icon="user" /> Profile</b-dropdown-item>
+          <b-dropdown-divider />
           <b-dropdown-item @click.prevent="onSignOut"><fa icon="sign-out-alt" /> Logout</b-dropdown-item>
         </b-nav-item-dropdown>
       </b-navbar-nav>
@@ -56,7 +68,10 @@ export default {
       font-size:1.4rem;
     }
   }
-  .nav-item {
+  .item-todo > a {
+    padding: 0.25rem .5rem 0.25rem 1.5rem
+  }
+  .dropdown-item, .nav-item {
     font-size: 0.85rem;
     cursor: pointer;
   }

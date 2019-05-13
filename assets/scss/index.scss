@@ -37,9 +37,19 @@ $success:       #41b883;
       padding: 0.2rem 1.2rem;
     }
   }
+  .b-nav-dropdown.active {
+    a:after {
+      color: #FFF;
+    }
+    text-decoration: none;
+    background-color: #4a8cd2;
+  }
   .dropdown-menu-right {
-    margin-top: 7px;
+    margin-top: 6px;
     right: 5px;
+    -webkit-box-shadow: 3px 3px 6px -6px rgba(0,0,0,1);
+    -moz-box-shadow: 3px 3px 6px -6px rgba(0,0,0,1);
+    box-shadow: 3px 3px 6px -6px rgba(0,0,0,1);
   }
 }
 
