@@ -37,7 +37,9 @@
       </div>
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pl-3 pr-3 pb-3">
         <div class="f-xs">
-          <fa :icon="['fab','markdown']" /> <span class="d-none d-sm-inline">Styling with Markdown is supported</span>
+          <a class="markdown-guide" target="_blank" href="https://www.markdownguide.org/basic-syntax/">
+            <fa :icon="['fab','markdown']" /> <span class="d-none d-sm-inline">Styling with Markdown is supported</span>
+          </a>
         </div>
         <div class="ml-auto">
           <slot name="button" />

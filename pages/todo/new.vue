@@ -62,7 +62,7 @@
               </no-ssr>
             </template>
           </todo-dropdown>
-          <todo-dropdown v-if="!todo.private" label="Assign" :toggle-icon.sync="edit.assign" label-default="assign myself" :on-click="onToggle('assign')">
+          <!-- <todo-dropdown v-if="!todo.private" label="Assign" :toggle-icon.sync="edit.assign" label-default="assign myself" :on-click="onToggle('assign')">
             <vue-multiselect
               id="assign" ref="assign" v-model="todo.assign" :options="opt.assign" :taggable="false"
               placeholder="Assign name" tag-placeholder="enter to add assign." track-by="id" label="fullname"
@@ -98,7 +98,7 @@
             <div>
               editor
             </div>
-          </todo-dropdown>
+          </todo-dropdown> -->
 
 
           <!-- <b-form-group label-cols-sm="6" label="Assignees" label-align-sm="right" label-for="project">
@@ -226,7 +226,7 @@ export default {
       if (!this.todo.title) return this.$toast.open({ message: 'Title is empty.', type: 'warning' })
       if (!this.todo.project) return this.$toast.open({ message: 'Project name is empty.', type: 'warning' })
       if (!this.todo.description) return this.$toast.open({ message: 'Description is empty.', type: 'warning' })
-      if (this.todo.assign.length === 0 && status === 3) return this.$toast.open({ message: 'Assign name for task.', type: 'warning' })
+      // if (this.todo.assign.length === 0 && status === 3) return this.$toast.open({ message: 'Assign name for task.', type: 'warning' })
       try {
         this.saved = true
         let { data } = await this.$axios.post('/api/todo', this.todo)
@@ -294,7 +294,7 @@ export default {
       this.edit.project = false
     },
     onAssignChange (value) {
-      this.todo.assign.push({ id: value.id, fullname: value.fullname })
+      // this.todo.assign.push({ id: value.id, fullname: value.fullname })
       this.edit.assign = false
     },
     onDueDateChange (date) {
