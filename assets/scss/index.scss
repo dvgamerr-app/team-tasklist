@@ -30,11 +30,18 @@ $success:       #41b883;
 .markdown-body {
   font-size: .85rem !important;
 }
+
 .navbar-nav  {
+  .nav-menu {
+    font-size: 1.4rem !important;
+  }
   .dropdown-menu {
     .dropdown-item {
-      font-size: 0.9rem;
-      padding: 0.2rem 1.2rem;
+      font-size: 0.75rem;
+      padding: 0.15rem .8rem;
+    }
+    .dropdown-divider {
+      margin: 0.1rem 0;
     }
   }
   .b-nav-dropdown.active {
@@ -45,7 +52,6 @@ $success:       #41b883;
     background-color: #4a8cd2;
   }
   .dropdown-menu-right {
-    margin-top: 6px;
     right: 5px;
     -webkit-box-shadow: 3px 3px 6px -6px rgba(0,0,0,1);
     -moz-box-shadow: 3px 3px 6px -6px rgba(0,0,0,1);

@@ -51,7 +51,7 @@ export default {
     submitted: false,
     retry: 0
   }),
-  mounted () {
+  created () {
     let signin = this.$auth.$storage.getLocalStorage('signin-remember', true)
     if (!signin) return
 
@@ -60,7 +60,7 @@ export default {
       this.password = signin.password
       this.remember = signin.remember
     }
-    // if (process.client && window.localStorage.getItem('_token.local') !== 'false') this.$router.replace('/')
+    if (process.client && window.localStorage.getItem('_token.local') !== 'false') this.$router.replace('/')
   },
   methods: {
     async onLogin () {

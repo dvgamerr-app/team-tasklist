@@ -100,14 +100,14 @@
             </div>
           </todo-dropdown> -->
 
-
-          <!-- <b-form-group label-cols-sm="6" label="Assignees" label-align-sm="right" label-for="project">
+          <!-- 
+          <b-form-group label-cols-sm="6" label="Assignees" label-align-sm="right" label-for="project">
             <vue-multiselect
               id="project" v-model="todo.project" :options="opt.project" :taggable="true"
               placeholder="Project name" tag-placeholder="enter to project created."
               @tag="onProjectChange"
             />
-          </b-form-group>
+          </b-form-group> -->
 
           <b-form-group class="d-none d-md-flex" label-cols-sm="6" label="Due:" label-align-sm="right" label-for="dueweb">
             <vue-datepicker
@@ -129,19 +129,19 @@
               </span>
             </vue-datemobile>
           </b-form-group>
-
+          <!-- 
           <b-form-group label-cols-sm="6" label="Assign:" label-align-sm="right" label-for="assign">
             <vue-multiselect
-              id="assign" v-model="todo.assign" :options="optAssign"
+              id="assign" v-model="todo.assign" :options="opt.assign"
               placeholder="Worker" tag-placeholder="enter to assign name"
               label="name" track-by="_id" :multiple="true"
               @tag="onAssignChange"
             />
-          </b-form-group>
+          </b-form-group> -->
 
           <b-form-group label-cols-sm="6" label="Priority:" label-align-sm="right" class="mb-0" label-for="priority">
             <b-form-radio-group id="priority" v-model="todo.priority" class="pt-2" :options="optPriority" />
-          </b-form-group> -->
+          </b-form-group>
           
           <!-- <b-form-group label-cols-sm="6" label="Status:" label-align-sm="right" class="mb-0" label-for="status">
             <b-form-radio-group id="status" v-model="todo.status" class="pt-2" :options="optStatus" />

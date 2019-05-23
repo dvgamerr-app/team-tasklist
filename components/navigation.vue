@@ -7,27 +7,16 @@
       <b-navbar-brand to="/">
         <fa icon="calendar-check" /> <b>TEAM</b> <small>Task List</small>
       </b-navbar-brand>
-      <b-navbar-nav v-if="$auth.loggedIn" class="ml-auto">
-        <b-nav-item-dropdown size="sm" right>
+      <b-navbar-nav v-if="$auth.loggedIn" class="ml-auto ">
+        <b-nav-item-dropdown class="nav-menu" size="sm" no-caret right>
           <template slot="button-content" lang="html">
-            <fa icon="plus" /> New Task
+            <fa icon="bars" />
           </template>
-          <b-dropdown-item to="/todo/new">Todo</b-dropdown-item>
-          <!-- <b-dropdown-item to="/note/new">Note</b-dropdown-item> -->
-        </b-nav-item-dropdown>
-        <!-- <b-dropdown-item to="/note/task" class="item-note">Notes</b-dropdown-item> -->
-        <b-dropdown-item to="/todo/task" class="item-todo">Todos</b-dropdown-item>
-        <b-nav-item-dropdown size="sm" right :class="($route.name || '').indexOf('todo-task') === 0 ? 'active' : ''">
-          <template slot="button-content" lang="html">
-            <span />
-          </template>
-          <b-dropdown-item to="/todo/task">Tasks List</b-dropdown-item>
+          <b-dropdown-item to="/todo/new">New Todo</b-dropdown-item>
+          <b-dropdown-divider />
+          <b-dropdown-item to="/todo/task">Tasks</b-dropdown-item>
           <b-dropdown-item to="/todo/project">Project</b-dropdown-item>
-        </b-nav-item-dropdown>
-        <b-nav-item-dropdown size="sm" no-caret right>
-          <template slot="button-content" lang="html">
-            <fa icon="cog" />
-          </template>
+          <b-dropdown-divider />
           <b-dropdown-item to="/setting" exact><fa icon="cog" /> Setting</b-dropdown-item>
           <b-dropdown-item to="/setting/profile"><fa icon="user" /> Profile</b-dropdown-item>
           <b-dropdown-divider />
