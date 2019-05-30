@@ -1,21 +1,17 @@
-const logger = require('@debuger')('SERVER')
-const mongo = require('@mongo')
+const mongo = require('../../mongodb')
 
 module.exports = async (req, res) => {
   let { auth, body } = req
   try {
-    const { Todo } = await mongo.open()
-    let item = await new Todo(Object.assign(body, {
+    await mongo.open()
+    const { Todo } = mongo.get()
+    let item = await Todo.insert(Object.assign(body, {
       duedate: body.duedate ? new Date(body.duedate) : null,
       owner: { id: auth._id, name: auth.username },
-      tags: [],
-      deleted: false,
-      updated: new Date(),
-      created: new Date(),
-    })).save()
+      tags: []
+    }))
     res.json({ id: item._id })
   } catch (ex) {
-    logger.warning(req.url, ex.message || ex)
     res.json({ error: ex.message || ex })
   } finally {
     res.end()

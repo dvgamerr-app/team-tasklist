@@ -1,6 +1,5 @@
 const bodyParser = require('body-parser')
-const logger = require('@debuger')('AUTH')
-
+const debuger = require('@touno-io/debuger')
 const { Router } = require('express')
 const router = Router()
 
@@ -12,8 +11,4 @@ router.post('/login', require('./router/login'))
 router.post('/logout', (req, res) => res.json({ ok: true }).end())
 
 // Export the server middleware
-module.exports = () => {
-  const port = process.env.PORT || 3001
-  logger.start(`Authentication on ${port} created`)
-  return router
-}
+module.exports = router

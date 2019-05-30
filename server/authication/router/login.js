@@ -1,12 +1,12 @@
 const { basic, bearer } = require('../encrypt')
-const mongo = require('@mongo')
-const logger = require('@debuger')('AUTH')
+const debuger = require('@touno-io/debuger')
+const mongo = require('../../mongodb')
 const md5 = require('md5')
 
 module.exports = async (req, res) => {
   let raw = req.headers['authorization']
   let { username, password } = req.body
-
+  const logger = await debuger('AUTH')
   try {
     let auth = { username, password }
     if (/^basic /ig.test(raw)) {
@@ -14,9 +14,10 @@ module.exports = async (req, res) => {
       auth = { username: usr, password: md5(pwd) }
       if (!auth.username) return res.status(401).json({})
     }
-    let { UserAccount } = await mongo.open()
+    await mongo.open()
+    let { Account } = mongo.get()
     auth.username = auth.username.trim().toLowerCase()
-    const account = await UserAccount.findOne({ username: auth.username, pwd: auth.password, enabled: true })
+    const account = await Account.findOne({ username: auth.username, pwd: auth.password, enabled: true })
     if (!account) throw new Error('auth unsuccessful.')
 
     res.json({ token: bearer.encode(account._id) })

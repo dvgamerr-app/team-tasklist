@@ -1,54 +1,55 @@
-const mongoose = require('mongoose')
-const { Schema } = mongoose
-const { Mixed } = Schema.Types
+const { ObjectId } = require('@touno-io/db/type')
 
 module.exports = [
   {
-    id: 'UserAccount',
-    name: 'db-account',
-    schema: Schema({
-      username: { type: String, index: true },
+    id: 'Account',
+    name: 'team-account',
+    schema: {
+      username: { type: String, index: true, require: true, unique: true },
+      pwd: { type: String, index: true, require: true },
       fullname: { type: String, index: true },
       email: { type: String, index: true },
       level: { type: Number, index: true },
-      pwd: String,
-      permission: Array,
-      facebook: Object,
-      line: Object,
-      enabled: { type: Boolean, index: true },
-      lasted: { type: Date, index: true },
-      updated: Date,
-      created: Date,
-    })
+      permission: { type: Array, default: null },
+      facebook: { type: Object, default: null },
+      line: { type: Object, default: null },
+      enabled: { type: Boolean, index: true, default: true },
+      lasted: { type: Date, index: true, default: Date.now },
+      updated: { type: Date, index: true, default: Date.now },
+      created: { type: Date, index: true, default: Date.now }
+    }
   },
   {
     id: 'Todo',
-    name: 'db-todo',
-    schema: Schema({
+    name: 'team-todo',
+    schema: {
+      owner: { type: ObjectId, index: true },
       title: { type: String, index: true },
       description: String,
       project: { type: String, index: true },
       duedate: { type: Date, index: true },
       priority: { type: Number, index: true },
-      assign: Array,
-      owner: { name: String, id: String },
-      tags: Array,
-      status: { type: Number, index: true },
-      private: { type: Boolean, index: true },
-      deleted: { type: Boolean, index: true },
-      updated: Date,
-      created: Date,
-    })
+      assign: [
+        { type: ObjectId, index: true }
+      ],
+      tags: [ String ],
+      status: { type: Number, index: true, default: 0 },
+      private: { type: Boolean, index: true, default: false  },
+      deleted: { type: Boolean, index: true, default: false  },
+      updated: { type: Date, index: true, default: Date.now },
+      created: { type: Date, index: true, default: Date.now },
+    }
   },
   {
-    id: 'TodoComment',
-    name: 'db-todo-comment',
-    schema: Schema({
+    id: 'Comment',
+    name: 'team-comment',
+    schema: {
+      todo: { type: ObjectId, index: true },
+      owner: { type: ObjectId, index: true },
       description: String,
       deleted: { type: Boolean, index: true },
-      owner: { name: String, id: String },
-      updated: Date,
-      created: Date,
-    })
+      updated: { type: Date, index: true, default: Date.now },
+      created: { type: Date, index: true, default: Date.now },
+    }
   }
 ]

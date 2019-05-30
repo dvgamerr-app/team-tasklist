@@ -1,5 +1,5 @@
-const logger = require('@debuger')('AUTH')
-const mongo = require('@mongo')
+const debuger = require('@touno-io/debuger')
+const mongo = require('../../mongodb')
 const { bearer } = require('../encrypt')
 
 const getAccountUser = user => {
@@ -11,26 +11,27 @@ const getAccountUser = user => {
 
 module.exports = async (req, res) => {
   let result = {}
+  const logger = await debuger('AUTH')
   try {
     let raw = req.headers['authorization']
     if (!raw) return res.json({})
-  
-    let { UserAccount } = await mongo.open()
+    await mongo.open()
+    let { Account } = mongo.get()
     if (/^bearer /ig.test(raw)) {
       raw = raw.replace(/^bearer /ig, '')
       if (!raw || raw === 'undefined') return res.json({})
       let decode = bearer.decode(raw)
-      let account = await UserAccount.findById(decode.raw)
+      let account = await Account.findById(decode.raw)
       result = getAccountUser(account)
-      await UserAccount.updateOne({ _id: decode.raw }, { lasted: new Date() })
+      await Account.updateOne({ _id: decode.raw }, { lasted: new Date() })
     // } else if (/^basic /ig.test(raw)) {
     //   const { usr, pwd } = basic.decode(raw)
     //   if (!usr) return res.json({})
 
-    //   const account = await UserAccount.findOne({ username: usr.trim().toLowerCase(), pwd: md5(pwd), enabled: true })
+    //   const account = await Account.findOne({ username: usr.trim().toLowerCase(), pwd: md5(pwd), enabled: true })
     //   result = getAccountUser(account)
       
-    //   await UserAccount.updateOne({ _id: account._id }, { lasted: new Date() })
+    //   await Account.updateOne({ _id: account._id }, { lasted: new Date() })
     }  
   } catch (ex) {
     logger.warning(ex.message || ex)

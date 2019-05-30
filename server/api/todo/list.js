@@ -1,10 +1,10 @@
-const logger = require('@debuger')('SERVER')
-const mongo = require('@mongo')
+const mongo = require('../../mongodb')
 
 module.exports = async (req, res) => {
   try {
     const { status } = req.params
-    const { Todo } = await mongo.open()
+    await mongo.open()
+    const { Todo } = mongo.get()
     let item = await Todo.find({
       $and: [ 
         {
@@ -21,7 +21,6 @@ module.exports = async (req, res) => {
     })
     res.json(item)
   } catch (ex) {
-    logger.warning(req.url, ex.message || ex)
     res.json({ error: ex.message || ex })
   } finally {
     res.end()

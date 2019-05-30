@@ -1,12 +1,11 @@
 const express = require('express')
 const md5 = require('md5')
-const nodemailer = require('nodemailer')
 const bodyParser = require('body-parser')
 const { Nuxt } = require('nuxt')
 const app = express()
 
-const logger = require('@debuger')('SERVER')
-const mongo = require('@mongo')
+const debuger = require('@touno-io/debuger')
+const mongo = require('./mongodb')
 const { bearer } = require('./authication/encrypt')
 // Import and Set Nuxt.js options
 const config = require('../nuxt.config.js')
@@ -31,16 +30,16 @@ if (config.dev) {
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
-const auth = require('./authication')
-app.use('/auth', auth())
+app.use('/auth', require('./authication'))
 
 const apiMiddlewere = async (req, res, next) => {
   let raw = req.headers['authorization']
   try {
     if (!raw || !/^bearer /ig.test(raw)) return res.status(401).end()
-    let { UserAccount } = await mongo.open()
+    await mongo.open()
+    let { Account } = mongo.get()
     let decode = bearer.decode(raw)
-    let account = await UserAccount.findById(decode.raw)
+    let account = await Account.findById(decode.raw)
     if (!account || !account.enabled) return res.status(401).end()
     req.auth = account
     next()
@@ -52,20 +51,18 @@ const apiMiddlewere = async (req, res, next) => {
 app.use('/api', apiMiddlewere, require('./api'))
 
 const NuxtBuilder = async () => {
+  const logger = await debuger('NUXT.JS')
   // Init Nuxt.js
   const nuxt = new Nuxt(config)
-  const { UserAccount } = await mongo.open()
-  if (!(await UserAccount.findOne({ username: 'dvgamerr' }))) {
-    await new UserAccount({
+  await mongo.open()
+  const { Account } = mongo.get()
+  if (!(await Account.findOne({ username: 'dvgamerr' }))) {
+    await new Account({
       username: 'dvgamerr',
       fullname: 'Kananek Thongkam',
       email: 'info.dvgamer@gmail.com',
-      level: '3',
-      pwd: md5('dvg7po8ai'),
-      enabled: true,
-      lasted: new Date(),
-      updated: new Date(),
-      created: new Date(),
+      level: 3,
+      pwd: md5('dvg7po8ai')
     }).save()
   }
   if (!config.dev) {
@@ -79,6 +76,6 @@ const NuxtBuilder = async () => {
 }
 
 NuxtBuilder().catch(ex => {
-  logger.error(ex)
+  console.error(ex)
   process.exit(1)
 })

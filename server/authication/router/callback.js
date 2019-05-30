@@ -1,16 +1,11 @@
-const logger = require('@debuger')('AUTH')
+const debuger = require('@touno-io/debuger')
 const simpleOauth = require('simple-oauth2')
 const request = require('request-promise')
-const mongo = require('@mongo')
-const { bearer } = require('../encrypt')
-
 
 // oauth2/v2.1/authorize?response_type=code&client_id=&redirect_uri=&state=12345abcde&scope=&nonce=09876xyz
-const redirectUri = 'https://8114995f.ngrok.io/auth/'
+const redirectUri = 'http://localhost:3001/auth/'
 let credentials = {
-  client: {
-    id: '1570860647'
-  },
+  client: { id: '1570860647' },
   auth: {
     tokenHost: `https://access.line.me/`,
     tokenPath: '/oauth2/v2.1/token',
@@ -19,6 +14,7 @@ let credentials = {
 }
 
 module.exports = async (req, res) => {
+  const logger = await debuger('AUTH')
   try {
     let stateLine = `line`
     let { code, state } = req.query
@@ -50,7 +46,7 @@ module.exports = async (req, res) => {
           }
         })
         const data = JSON.parse(result)
-        
+        console.log(data)
         // const oauth2 = simpleOauth.create(credentials)
         // const result = await oauth2.authorizationCode.getToken({
         //   grant_type: 'authorization_code',

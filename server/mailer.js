@@ -1,7 +1,7 @@
-const logger = require('@debuger')('Mailer')
+// const logger = require('@debuger')('Mailer')
 
 module.exports = (options, templateName = null) => {
-  if (!process.env.GMAIL_USR && !process.env.GMAIL_PWD) return logger.warning('Mailer is disabled.')
+  // if (!process.env.GMAIL_USR && !process.env.GMAIL_PWD) return logger.warning('Mailer is disabled.')
   
   const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -19,7 +19,7 @@ module.exports = (options, templateName = null) => {
   // }
   return new Promise((resolve, reject) => {
     transporter.sendMail(options, (err, info) => {
-      if (err) logger.error(err.response)
+      if (err) reject(err.response)
       resolve({
         error: !!err,
         message: err.response,

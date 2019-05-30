@@ -1,16 +1,15 @@
-const logger = require('@debuger')('SERVER')
-const mongo = require('@mongo')
+const mongo = require('../../mongodb')
 const { Router } = require('express')
 const router = Router()
 
 router.get('/project/:search', async (req, res) => {
   let { search } = req.params
   try {
-    const { Todo } = await mongo.open()
+    await mongo.open()
+    const { Todo } = mongo.get()
     let data = await Todo.aggregate([ { $match: { project: new RegExp(search,'ig') } }, { $group : { _id : '$project' } } ])
     res.json(data.map(e => e._id))
   } catch (ex) {
-    logger.warning(req.url, ex.message || ex)
     res.json({ error: ex.message || ex })
   } finally {
     res.end()
@@ -20,8 +19,9 @@ router.get('/project/:search', async (req, res) => {
 router.get('/assign/:search', async (req, res) => {
   let { search } = req.params
   try {
-    const { UserAccount } = await mongo.open()
-    let data = await UserAccount.find({ fullname: { $regex: new RegExp(search,'ig') } })
+    await mongo.open()
+    const { Account } = mongo.get()
+    let data = await Account.find({ fullname: { $regex: new RegExp(search,'ig') } })
     res.json(data.map(e => {
       return {
         id: e._id,
@@ -29,22 +29,20 @@ router.get('/assign/:search', async (req, res) => {
       }
     }))
   } catch (ex) {
-    logger.warning(req.url, ex.message || ex)
     res.json({ error: ex.message || ex })
   } finally {
     res.end()
   }
 })
 
-
 router.get('/assign', async (req, res) => {
   let { search } = req.params
   try {
-    const { Todo } = await mongo.open()
+    await mongo.open()
+    const { Todo } = mongo.get()
     let data = await Todo.aggregate([ { $group : { _id : '$project' } } ])
     res.json(data)
   } catch (ex) {
-    logger.warning(req.url, ex.message || ex)
     res.json({ error: ex.message || ex })
   } finally {
     res.end()
@@ -54,11 +52,11 @@ router.get('/assign', async (req, res) => {
 router.get('/tag', async (req, res) => {
   let { search } = req.params
   try {
-    const { Todo } = await mongo.open()
+    await mongo.open()
+    const { Todo } = mongo.get()
     let data = await Todo.aggregate([ { $group : { _id : '$project' } } ])
     res.json(data)
   } catch (ex) {
-    logger.warning(req.url, ex.message || ex)
     res.json({ error: ex.message || ex })
   } finally {
     res.end()
