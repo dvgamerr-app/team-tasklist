@@ -57,7 +57,8 @@ module.exports = {
     linkActiveClass: 'active',
     linkExactActiveClass: 'active'
   },
-  modules: [ 'nuxt-fontawesome',
+  modules: [
+    'nuxt-fontawesome',
     '@nuxtjs/axios',
     '@nuxtjs/auth',
     '@nuxtjs/pwa',
