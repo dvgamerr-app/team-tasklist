@@ -1,11 +1,10 @@
-const mongo = require('../../mongodb')
+const { touno } = require('@touno-io/db/schema')
 const md5 = require('md5')
 
 module.exports = async (req, res) => {
   let { id } = req.params
   try {
-    await mongo.open()
-    const { Account, Todo } = mongo.get()
+    const { Account, Todo } = touno.get()
     let item = await Todo.findOne({ _id: id })
     let owner = await Account.findOne({ _id: item.owner })
     let gravatar = md5(owner.email)

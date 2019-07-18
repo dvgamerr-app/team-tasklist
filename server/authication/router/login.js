@@ -1,6 +1,6 @@
 const { basic, bearer } = require('../encrypt')
 const debuger = require('@touno-io/debuger')
-const mongo = require('../../mongodb')
+const { touno } = require('@touno-io/db/schema')
 const md5 = require('md5')
 
 module.exports = async (req, res) => {
@@ -14,8 +14,7 @@ module.exports = async (req, res) => {
       auth = { username: usr, password: md5(pwd) }
       if (!auth.username) return res.status(401).json({})
     }
-    await mongo.open()
-    let { Account } = mongo.get()
+    let { Account } = touno.get()
     auth.username = auth.username.trim().toLowerCase()
     const account = await Account.findOne({ username: auth.username, pwd: auth.password, enabled: true })
     if (!account) throw new Error('auth unsuccessful.')
@@ -25,6 +24,6 @@ module.exports = async (req, res) => {
     logger.warning(ex)
     res.status(401).json({ error: ex.message || ex })
   } finally {
-    return res.end()
+    res.end()
   }
 }

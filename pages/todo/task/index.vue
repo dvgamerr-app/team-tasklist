@@ -56,16 +56,13 @@ export default {
   }),
   computed: {
   },
-  async asyncData ({ $axios, params }) {
+  async asyncData ({ $axios }) {
     const { data } = await $axios.get(`/api/todo/list/1`)
     return { items: data }
   },
   created () {
   },
   methods: {
-    isOverDuedate (date) {
-      return !e.duedate ? false : moment().diff(moment(date), 'day') > 0
-    },
     getFilterItems () {
       let data = this.items.filter(e => e.status === this.filter.status)
       data = data.sort((a, b) => !a.duedate || !b.duedate ? -1 : a.duedate > b.duedate ? 1 : -1)

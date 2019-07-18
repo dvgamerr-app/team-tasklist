@@ -1,10 +1,9 @@
-const mongo = require('../../mongodb')
+const { touno } = require('@touno-io/db/schema')
 
 module.exports = async (req, res) => {
   try {
     const { status } = req.params
-    await mongo.open()
-    const { Todo } = mongo.get()
+    const { Todo } = touno.get()
     let item = await Todo.find({
       $and: [ 
         {

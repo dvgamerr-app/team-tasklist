@@ -64,6 +64,6 @@ module.exports = async (req, res) => {
     logger.warning(ex.message || ex)
     res.status(401)
   } finally {
-    return res.end()
+    res.end()
   }
 }

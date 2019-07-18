@@ -10,7 +10,12 @@ module.exports = {
     { name: 'application-name', content: pkg.fullname },
     { name: 'name', content: pkg.fullname },
     { name: 'description', content: pkg.description, id: 'desc' },
-    { name: 'viewport', content: 'width=device-width, user-scalable=no' },
+    { 'http-equiv': 'X-UA-Compatible', content: 'IE=edge' },
+    { name: 'viewport', content: 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' },
+    { name: 'apple-mobile-web-app-capable', content: 'yes' },
+    { name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' },
+    { name: 'MobileOptimized', content: 'width' },
+    { name: 'HandheldFriendly', content: 'true' },
     { name: 'author', content: 'Mr. Kananek T.' }
   ],
   manifest: {
@@ -31,6 +36,9 @@ module.exports = {
       default_popup: '/sign-in'
     }
   },
+  icons: {
+    sizes: [ 32, 57, 72, 144, 512 ]
+  },
   workbox: {
     // globDirectory: '.nuxt',
     // globPatterns: [ '**/*.{js,vue,html}' ],
@@ -41,14 +49,14 @@ module.exports = {
     './assets/scss/index.scss',
     'codemirror/lib/codemirror.css',
     'vue-multiselect/dist/vue-multiselect.min.css',
-    'vue-datetime/dist/vue-datetime.css',
+    // 'vue-datetime/dist/vue-datetime.css',
     'github-markdown-css/github-markdown.css'
   ],
   plugins: [
     './plugins/vue-toast.js',
     './plugins/vue-tabindex.js',
     './plugins/vue-multiselect.js',
-    './plugins/vue-datepicker.js',
+    // './plugins/vue-datepicker.js',
     { src: './plugins/vue-loading.js', ssr: false },
     { src: './plugins/vue-codemirror.js', ssr: false }
   ],
@@ -58,10 +66,10 @@ module.exports = {
     linkExactActiveClass: 'active'
   },
   modules: [
-    'nuxt-fontawesome',
-    '@nuxtjs/axios',
+    [ '@nuxtjs/axios', { https: process.env.NODE_ENV !== 'development' } ],
+    [ '@nuxtjs/pwa', { icon: true } ],
     '@nuxtjs/auth',
-    '@nuxtjs/pwa',
+    'nuxt-fontawesome',
     'bootstrap-vue/nuxt'
   ],
   auth: {
@@ -85,17 +93,5 @@ module.exports = {
   },
   bootstrapVue: { bootstrapCSS: false },
   axios: { baseURL: process.env.AXIOS_BASE_URL || 'https://team.touno.io/' },
-  build: {
-    extend(config, ctx) {
-      // Run ESLint on save
-      if (ctx.isDev && ctx.isClient) {
-        config.module.rules.push({
-          enforce: 'pre',
-          test: /\.(js|vue)$/,
-          loader: 'eslint-loader',
-          exclude: /(node_modules)/
-        })
-      }
-    }
-  }
+  build: { quiet: false }
 }

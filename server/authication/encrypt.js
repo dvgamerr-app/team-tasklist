@@ -14,7 +14,9 @@ module.exports = {
       try {
         raw = Buffer.from(raw, 'base64').toString()
         if (!/.*?:.*/ig.test(raw)) return
-      } finally { }
+      } finally {
+        //
+      }
       return (/(?<usr>.*?):(?<pwd>.*)/ig.exec(raw) || {}).groups
     }
   },

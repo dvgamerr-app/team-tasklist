@@ -273,7 +273,7 @@ export default {
     async onSearchItems (name, value) {
       if (!value || !value.trim()) return
 
-      value = value.replace(/[\\\/]/ig, '')
+      value = value.replace(/[\\/]/ig, '')
       this.loading[name] = true
       try {
         const { data } = await this.$axios.get(`/api/todo/search/${name}/` + value)
@@ -288,12 +288,12 @@ export default {
     onProjectChange (value) {
       if (!value || !value.trim()) return
 
-      value = value.trim().replace(/[\\\/]/ig, '')
+      value = value.trim().replace(/[\\/]/ig, '')
       if (value.length < 3) return this.$toast.open({ message: 'Project name short.', type: 'warning' })
-      this.todo.project = value.trim().replace(/[\\\/]/ig, '')
+      this.todo.project = value.trim().replace(/[\\/]/ig, '')
       this.edit.project = false
     },
-    onAssignChange (value) {
+    onAssignChange () {
       // this.todo.assign.push({ id: value.id, fullname: value.fullname })
       this.edit.assign = false
     },

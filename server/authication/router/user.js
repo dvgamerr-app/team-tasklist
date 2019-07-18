@@ -1,5 +1,5 @@
 const debuger = require('@touno-io/debuger')
-const mongo = require('../../mongodb')
+const { touno } = require('@touno-io/db/schema')
 const { bearer } = require('../encrypt')
 
 const getAccountUser = user => {
@@ -15,8 +15,8 @@ module.exports = async (req, res) => {
   try {
     let raw = req.headers['authorization']
     if (!raw) return res.json({})
-    await mongo.open()
-    let { Account } = mongo.get()
+    await touno.open()
+    let { Account } = touno.get()
     if (/^bearer /ig.test(raw)) {
       raw = raw.replace(/^bearer /ig, '')
       if (!raw || raw === 'undefined') return res.json({})
@@ -38,6 +38,5 @@ module.exports = async (req, res) => {
     res.status(401)
   } finally {
     res.json({ user: result })
-    return res.end()
   }
 }

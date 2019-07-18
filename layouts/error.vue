@@ -3,8 +3,6 @@
 </template>
 
 <script>
-import md5 from 'md5'
-
 export default {
   auth: false,
   props: {

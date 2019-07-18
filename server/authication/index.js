@@ -1,5 +1,4 @@
 const bodyParser = require('body-parser')
-const debuger = require('@touno-io/debuger')
 const { Router } = require('express')
 const router = Router()
 

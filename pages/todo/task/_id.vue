@@ -114,7 +114,6 @@
 </template>
 <script>
 import moment from 'moment'
-import md5 from 'md5'
 
 import markdownBody from '../../../components/todo/markdown-body.vue'
 
@@ -131,7 +130,6 @@ export default {
   }),
   computed: {
     gravatar () {
-      let avatar = this.$auth.user.email ? md5(this.$auth.user.email) : '00000'
       return `//www.gravatar.com/avatar/${this.todo.gravatar}?d=retro&size=64`
     }
   },

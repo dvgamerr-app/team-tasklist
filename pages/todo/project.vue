@@ -76,7 +76,7 @@ export default {
     history: [],
     editor: false
   }),
-  async asyncData ({ $axios }) {
+  async asyncData () {
     return { history: [] }
   },
   methods: {
@@ -132,9 +132,9 @@ export default {
     onDelete (e) {
       let vm = this
       this.editor = true
-      let index = -1
-      let item = this.history.filter((a, i) => {
-        if (a.sKey === e) index = i
+      // let index = -1
+      let item = this.history.filter(a => {
+        // if (a.sKey === e) index = i
         return a.sKey === e
       })
       // console.log(index, item)

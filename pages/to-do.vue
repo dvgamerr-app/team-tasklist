@@ -49,7 +49,7 @@ export default {
   },
   async asyncData ({ redirect, params, $axios }) {
     let sKey = parseInt(params.id)
-    if (sKey == NaN) return redirect('/history')
+    if (isNaN(sKey)) return redirect('/history')
 
     let { data } = await $axios('/api/history/version/' + params.id)
     if (!data.records) return redirect('/history')

@@ -1,12 +1,11 @@
-const mongo = require('../../mongodb')
+const { touno } = require('@touno-io/db/schema')
 const { Router } = require('express')
 const router = Router()
 
 router.get('/project/:search', async (req, res) => {
   let { search } = req.params
   try {
-    await mongo.open()
-    const { Todo } = mongo.get()
+    const { Todo } = touno.get()
     let data = await Todo.aggregate([ { $match: { project: new RegExp(search,'ig') } }, { $group : { _id : '$project' } } ])
     res.json(data.map(e => e._id))
   } catch (ex) {
@@ -19,8 +18,7 @@ router.get('/project/:search', async (req, res) => {
 router.get('/assign/:search', async (req, res) => {
   let { search } = req.params
   try {
-    await mongo.open()
-    const { Account } = mongo.get()
+    const { Account } = touno.get()
     let data = await Account.find({ fullname: { $regex: new RegExp(search,'ig') } })
     res.json(data.map(e => {
       return {
@@ -36,10 +34,9 @@ router.get('/assign/:search', async (req, res) => {
 })
 
 router.get('/assign', async (req, res) => {
-  let { search } = req.params
+  // let { search } = req.params
   try {
-    await mongo.open()
-    const { Todo } = mongo.get()
+    const { Todo } = touno.get()
     let data = await Todo.aggregate([ { $group : { _id : '$project' } } ])
     res.json(data)
   } catch (ex) {
@@ -50,10 +47,9 @@ router.get('/assign', async (req, res) => {
 })
 
 router.get('/tag', async (req, res) => {
-  let { search } = req.params
+  // let { search } = req.params
   try {
-    await mongo.open()
-    const { Todo } = mongo.get()
+    const { Todo } = touno.get()
     let data = await Todo.aggregate([ { $group : { _id : '$project' } } ])
     res.json(data)
   } catch (ex) {

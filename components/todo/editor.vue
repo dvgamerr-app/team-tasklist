@@ -210,7 +210,7 @@
         return groups.length === 0 ? [ btns ] : groups
       },
       isEmpty: s => s === null || s === undefined ? true : /^[\s\xa0]*$/.test(s),
-      isUrl: s => this.isEmpty(s) ? false : s.match(/((http|https):\/\/)?(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/gi),
+      isUrl: s => this.isEmpty(s) ? false : s.match(/((http|https):\/\/)?(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-/]))?/gi),
       format() {
         var a = arguments[0];
         for (var i = 1; i <= arguments.length; i++) {
@@ -219,8 +219,8 @@
         return a; // Make chainable
 
       },
-      setToggleBlock(type, start, end) {
-        end = this.isEmpty(end) ? start : end
+      setToggleBlock (type, start) {
+        // end = this.isEmpty(end) ? start : end
         const tArea = this.$refs.txt
         let startPos = tArea.selectionStart
         let endPos = tArea.selectionEnd
@@ -232,7 +232,7 @@
         // end = text.slice(startPoint.ch)
 
         start = start.replace(/(\*\*|__)(?![\s\S]*(\*\*|__))/, '');
-        end = end.replace(/(\*\*|__)/, '');
+        // end = end.replace(/(\*\*|__)/, '');
         console.log(`${type}: cursor set ${startPos} ${endPos} :`, tmpStr)
 
         cursorPos += start.length
@@ -402,12 +402,12 @@
       // },
       command (key, value = null) {
         switch (key) {
-          case 'undo': ed.undo(); break
-          case 'redo': ed.redo(); break
+          // case 'undo': ed.undo(); break
+          // case 'redo': ed.redo(); break
 
           case 'bold':
-            this.setToggleBlock('bold', '**');
-            break;
+            this.setToggleBlock('bold', '**')
+            break
 
       //     case 'italic':
       //       this.setToggleBlock('italic', '*');
@@ -427,7 +427,7 @@
       //       break;
 
           case 'clipboard':
-            console.log('start', ed.getCursor('start'))
+            // console.log('start', ed.getCursor('start'))
             break
 
       //     case 'image':

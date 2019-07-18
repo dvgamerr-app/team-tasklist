@@ -1,18 +1,23 @@
 module.exports = {
-  root: true,
-  env: { browser: true, node: true },
-  parserOptions: {
-    parser: 'babel-eslint'
+  env: {
+      browser: true,
+      es6: true,
+      node: true
   },
-  extends: [ 'plugin:vue/recommended' ],
-  // required to lint *.vue files
+  extends: [ 'eslint:recommended', 'plugin:vue/essential' ],
+  globals: {
+    Atomics: 'readonly',
+    SharedArrayBuffer: 'readonly'
+  },
+  parserOptions: {
+    ecmaVersion: 2018,
+    sourceType: 'module'
+  },
   plugins: [ 'vue' ],
-  // add your custom rules here
   rules: {
     'no-console': 'off',
     'no-debugger': 'off',
     'vue/no-v-html': 'off',
-    'vue/singleline-html-element-content-newline': 'off',
     'vue/max-attributes-per-line': [ 2, {
       'singleline': 16,
       'multiline': { 'max': 8, 'allowFirstLine': false }
