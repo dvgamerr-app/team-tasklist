@@ -58,6 +58,7 @@ export default {
   },
   async asyncData ({ $axios }) {
     const { data } = await $axios.get(`/api/todo/list/1`)
+    if (data.error) throw new Error(data.error)
     return { items: data }
   },
   created () {

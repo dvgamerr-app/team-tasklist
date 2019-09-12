@@ -42,7 +42,8 @@ const apiMiddlewere = async (req, res, next) => {
     let decode = bearer.decode(raw)
     let account = await Account.findById(decode.raw)
     if (!account || !account.enabled) return res.status(401).end()
-    // req.auth = account
+    // eslint-disable-next-line require-atomic-updates
+    req.auth = account
     next()
   } catch (ex) {
     logger.warning(ex.message)

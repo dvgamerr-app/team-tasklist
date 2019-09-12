@@ -1,55 +1,5 @@
 <template lang="html">
-  <b-card no-body>
-    <div class="tabs">
-      <div class="card-header">
-        <ul class="nav nav-tabs card-header-tabs">
-          <li role="presentation" class="nav-item">
-            <span class="nav-link" :class="!preview ? 'active' : ''" @click.prevent="onWrite">Write</span>
-          </li>
-          <li class="nav-item">
-            <span class="nav-link" :class="preview ? 'active' : ''" @click.prevent="onPreview">Preview</span>
-          </li>
-        </ul>
-        <div v-if="!preview" class="v-md-toolbar">
-          <div v-for="(group, i) in groupButtons()" :key="i" class="btn-group ml-1" role="group">
-            <button
-              v-for="btn in group" :key="btn.cmd" type="button" :data-cmd="btn.cmd" :title="btn.title" 
-              :class="[ 'btn-md-icon', 'btn-sm', 'btn', btn.btnClass || '' ]" @click.prevent="command(btn.cmd)"
-            >
-              <fa :icon="btn.faIcon" />
-            </button>
-          </div>
-        </div>
-      </div>
-      <div class="tab-content mt-3">
-        <div class="tab-pane v-md-container card-body is-loading" :class="!preview ? 'active' : ''">
-          <textarea 
-            ref="txt" v-model="txtValue" placeholder="Leave comment" class="v-md-wrapper form-control" 
-            :style="styles" @change="onTextChange"
-          />
-        </div>
-        <div class="tab-pane v-md-preview card-body" :class="preview ? 'active' : ''">
-          <div v-if="txtHtmlRender" class="markdown-body" :style="styles" v-html="txtHtmlRender" />
-          <div v-else class="markdown-body" :style="styles">
-            Nothing to preview.
-          </div>
-        </div>
-      </div>
-      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pl-3 pr-3 pb-3">
-        <div class="f-xs">
-          <a class="markdown-guide" target="_blank" href="https://www.markdownguide.org/basic-syntax/">
-            <fa :icon="['fab','markdown']" /> <span class="d-none d-sm-inline">Styling with Markdown is supported</span>
-          </a>
-        </div>
-        <div class="ml-auto">
-          <slot name="button" />
-          <button v-if="!$slots.button" type="submit" class="btn btn-success" @click.prevent="onSubmit">
-            {{ buttonText }}
-          </button>
-        </div>
-      </div>
-    </div>
-  </b-card>
+  <div></div>
 </template>
 
 <script>

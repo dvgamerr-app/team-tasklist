@@ -52,7 +52,7 @@ export default {
     }
     .svg-inline--fa {
       color: #ee5151;
-      margin-top: 5px;
+      margin-top: 3px;
       vertical-align: top;
       font-size:1.4rem;
     }

@@ -4,11 +4,11 @@ module.exports = async (req, res) => {
   let { auth, body } = req
   try {
     const { Todo } = touno.get()
-    let item = await Todo.insert(Object.assign(body, {
+    let item = await new Todo(Object.assign(body, {
       duedate: body.duedate ? new Date(body.duedate) : null,
       owner: { id: auth._id, name: auth.username },
       tags: []
-    }))
+    })).save()
     res.json({ id: item._id })
   } catch (ex) {
     res.json({ error: ex.message || ex })

@@ -49,7 +49,6 @@ module.exports = {
     './assets/scss/index.scss',
     'codemirror/lib/codemirror.css',
     'vue-multiselect/dist/vue-multiselect.min.css',
-    // 'vue-datetime/dist/vue-datetime.css',
     'github-markdown-css/github-markdown.css'
   ],
   plugins: [
