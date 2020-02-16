@@ -85,3 +85,4 @@ sw.*
 package-lock.json
 /static/vendor
 ris-check-list.zip
+codealike.json
