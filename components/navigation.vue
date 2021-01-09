@@ -1,8 +1,8 @@
 <template lang="html">
   <b-navbar class="border-bottom mb-3">
-    <no-ssr>
+    <client-only>
       <vue-loading :active="fullscreen" :is-full-screen="true" />
-    </no-ssr>
+    </client-only>
     <b-container>
       <b-navbar-brand to="/">
         <fa icon="calendar-check" /> <b>TEAM</b> <small>Task List</small>

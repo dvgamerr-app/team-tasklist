@@ -1,7 +1,9 @@
+// eslint-disable-next-line nuxt/no-cjs-in-config
 const pkg = require('./package')
 
+// eslint-disable-next-line nuxt/no-cjs-in-config
 module.exports = {
-  mode: 'universal',
+  telemetry: false,
   head: {
     titleTemplate: title => `${title ? `${title} · ` : ''}TEAM`
   },
@@ -72,11 +74,12 @@ module.exports = {
     'bootstrap-vue/nuxt'
   ],
   auth: {
+    cookie: false,
     strategies: {
       local: {
         endpoints: {
           login: { url: '/auth/login', method: 'post', propertyName: 'token' },
-          logout: { url: '/auth/logout', method: 'post' },
+          logout: { url: '/auth/logout', method: 'get' },
           user: { url: '/auth/user', method: 'get', propertyName: 'user' }
         }
       }
@@ -92,5 +95,8 @@ module.exports = {
   },
   bootstrapVue: { bootstrapCSS: false },
   axios: { baseURL: process.env.AXIOS_BASE_URL || 'https://team.touno.io/' },
-  build: { quiet: false }
+  build: { quiet: false },
+  dev: !(process.env.NODE_ENV === 'production'),
+  localDB: !process.env.MONGODB_URI,
+  jwt: process.env.JWT_SECRET || 'abcdefghijklmnopqrstuvwxyz'
 }

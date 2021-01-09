@@ -38,12 +38,12 @@
             </template>
           </vue-multiselect>
           <template slot="value" lang="html">
-            <no-ssr>
+            <client-only>
               <span v-for="user in todo.assign" :key="user.id" class="badge badge-primary">
                 {{ user.fullname }}
                 <span class="btn-close" @click.prevent="setTodo('assign', user.id)">&times;</span>
               </span>
-            </no-ssr>
+            </client-only>
           </template>
         </todo-dropdown>
         <todo-dropdown label="Due" :toggle-icon.sync="edit.duedate">

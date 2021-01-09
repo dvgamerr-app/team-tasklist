@@ -14,6 +14,12 @@
               <div class="form-group">
                 <input v-model="username" tabindex="1" type="text" class="form-control username" placeholder="TEAM Account ID (@touno.io)">
                 <input v-model="password" tabindex="2" type="password" class="form-control password" placeholder="Password">
+                <small class="help-block text-danger text-bold">
+                  <span v-if="errorMessage">
+                    <fa icon="exclamation-triangle" />
+                    {{ errorMessage }}
+                  </span>
+                </small>
               </div>
               <div class="form-group">
                 <b-form-checkbox v-model="remember"> Remember Me</b-form-checkbox>
@@ -39,7 +45,7 @@
 </template>
 
 <script>
-import md5 from 'md5'
+import bcrypt from 'bcryptjs'
 
 export default {
   auth: false,
@@ -49,7 +55,8 @@ export default {
     password: '',
     remember: false,
     submitted: false,
-    retry: 0
+    retry: 0,
+    errorMessage: null
   }),
   created () {
     let signin = this.$auth.$storage.getLocalStorage('signin-remember', true)
@@ -60,27 +67,33 @@ export default {
       this.password = signin.password
       this.remember = signin.remember
     }
-    if (process.client && window.localStorage.getItem('_token.local') !== 'false') this.$router.replace('/')
+    if (this.$auth.loggedIn) this.$router.replace('/')
+    // if (process.client && window.localStorage.getItem('_token.local') !== 'false') this.$router.replace('/sign-in')
   },
   methods: {
     async onLogin () {
-      if (!this.username) return this.$toast.error('Username is empty.', { duration: 1000 })
-      if (!this.password) return this.$toast.error('Password is empty.', { duration: 1000 })
+      if (!this.username.trim()) return this.errorMessage = 'Username is empty.'
+      if (!this.password) return this.errorMessage = 'Password is empty.'
       try {
         this.submitted = true
-        await this.$auth.loginWith('local', { data: { username: this.username.trim(), password: md5(this.password) } })
+        const hash = bcrypt.hashSync(this.password, 4)
+
+        await this.$auth.loginWith('local', {
+          headers: { Authorization: `Basic ${Buffer.from(`${this.username.trim()}:${hash}`).toString('base64')}` },
+          data: { expired: !this.remember }
+        })
         if (!this.$auth.loggedIn) throw new Error('Username or Password worng.')
         this.submitted = false
 
         this.$auth.$storage.setLocalStorage('signin-remember', {
-          username: this.username,
-          password: this.password,
+          username: this.username.trim(),
+          password: hash,
           remember: this.remember
         }, true)
 
         this.$router.push({ path: '/', query: JSON.parse(JSON.stringify(this.$route.query)) })
       } catch (ex) {
-        this.$toast.error(!ex.response ? ex.message : ex.response.status > 400 ? 'Username or Password worng.' : 'Server endpoint is offline.', { duration: 5000 })
+        this.errorMessage = !ex.response ? ex.message : ex.response.status > 400 ? 'Username or Password worng.' : 'Server endpoint is offline.'
         this.submitted = false
         this.retry++
       }

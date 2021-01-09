@@ -1,26 +1,20 @@
 module.exports = {
   env: {
-      browser: true,
-      es6: true,
-      node: true
+    browser: true,
+    commonjs: true,
+    es2021: true,
+    node: true
   },
-  extends: [ 'eslint:recommended', 'plugin:vue/essential' ],
-  globals: {
-    Atomics: 'readonly',
-    SharedArrayBuffer: 'readonly'
-  },
+  extends: [
+    "eslint:recommended",
+    "plugin:nuxt/recommended"
+  ],
   parserOptions: {
-    ecmaVersion: 2018,
-    sourceType: 'module'
+    ecmaVersion: 12
   },
-  plugins: [ 'vue' ],
   rules: {
     'no-console': 'off',
     'no-debugger': 'off',
-    'vue/no-v-html': 'off',
-    'vue/max-attributes-per-line': [ 2, {
-      'singleline': 16,
-      'multiline': { 'max': 8, 'allowFirstLine': false }
-    }]
+    'vue/no-v-html': 'off'
   }
 }

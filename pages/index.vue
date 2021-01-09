@@ -12,7 +12,6 @@ export default {
     return {}
   },
   created () {
-    // console.log(this.$auth.$storage.$state)
     // if (process.client && window.localStorage.getItem('_token.local') !== 'false') this.$router.replace('/')
   },
   methods: {

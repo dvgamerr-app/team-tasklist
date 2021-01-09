@@ -17,8 +17,7 @@ $success:       #41b883;
 // 
 @import 'bootstrap/scss/bootstrap.scss';
 @import 'bootstrap-vue/dist/bootstrap-vue.css';
-
-@import 'vue-toast-notification/src/scss/index.scss';
+@import 'vue-toast-notification/dist/theme-default.css';
 
 @import './toast.scss';
 @import './component.scss';

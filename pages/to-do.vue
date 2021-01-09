@@ -1,6 +1,6 @@
 <template lang="html">
   <div class="todo">
-    <no-ssr>
+    <client-only>
       <div class="row">
         <div class="col-sm-36">
           <h3>History Version</h3>
@@ -30,7 +30,7 @@
           </div>
         </div>
       </div>
-    </no-ssr>
+    </client-only>
   </div>
 </template>
 
