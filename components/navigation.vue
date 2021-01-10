@@ -5,7 +5,7 @@
     </client-only>
     <b-container>
       <b-navbar-brand to="/">
-        <fa icon="calendar-check" /> <b>TEAM</b> <small>Task List</small>
+        <fa icon="calendar-check" /> <b>TEAM</b> <small>TOUNO.io</small>
       </b-navbar-brand>
       <b-navbar-nav v-if="$auth.loggedIn" class="ml-auto ">
         <b-nav-item-dropdown class="nav-menu" size="sm" no-caret right>
@@ -49,6 +49,8 @@ export default {
     color: #ee5151 !important;
     small {
       color: #3f3f3f;
+      font-weight: bold;
+      font-size: .9rem;
     }
     .svg-inline--fa {
       color: #ee5151;

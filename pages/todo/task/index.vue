@@ -43,7 +43,7 @@
 </template>
 
 <script>
-import moment from 'moment'
+import dayjs from 'dayjs'
 export default {
   head: {
     title: 'Tasks'
@@ -57,9 +57,9 @@ export default {
   computed: {
   },
   async asyncData ({ $axios }) {
-    const { data } = await $axios.get(`/api/todo/list/1`)
-    if (data.error) throw new Error(data.error)
-    return { items: data }
+    // const { data } = await $axios.get(`/api/todo/list/1`)
+    // if (data.error) throw new Error(data.error)
+    return { items: [] }
   },
   created () {
   },
@@ -70,11 +70,11 @@ export default {
       return data
     },
     getDuedate (e) {
-      let diff = !e.duedate ? null : moment().diff(moment(e.duedate), 'day')
-      return e.duedate ? `${diff > 0 ? 'over deadline past' : 'deadline in'} ${moment(e.duedate).fromNow(true)}` : ''
+      let diff = !e.duedate ? null : dayjs().diff(dayjs(e.duedate), 'day')
+      return e.duedate ? `${diff > 0 ? 'over deadline past' : 'deadline in'} ${dayjs(e.duedate).fromNow(true)}` : ''
     },
     getOpened (e) {
-      return `opened ${moment(e.created).fromNow()} by ${e.owner.name}`
+      return `opened ${dayjs(e.created).fromNow()} by ${e.owner.name}`
     },
     getPriority (e) {
       return e.priority === 1 ? 'Low' : e.priority === 2 ? 'Medium' : e.priority === 3 ? 'High' : ''
@@ -83,7 +83,7 @@ export default {
       return e.private ? 'lock' : e.duedate ? 'clock' : 'thumbtack'
     },
     getTaskClass (e) {
-      let diff = !e.duedate ? null : moment().diff(moment(e.duedate), 'day')
+      let diff = !e.duedate ? null : dayjs().diff(dayjs(e.duedate), 'day')
       return !e.duedate ? 'text-muted' : diff === null ? '' : diff >= -1 ? 'text-danger' : diff > -7 ? 'text-warning' : ''
     },
     async setStatus (data) {

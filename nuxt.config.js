@@ -20,31 +20,33 @@ module.exports = {
     { name: 'HandheldFriendly', content: 'true' },
     { name: 'author', content: 'Mr. Kananek T.' }
   ],
-  manifest: {
-    name: 'TEAM',
-    lang: 'en',
-    description: '',
-    short_name: 'TEAM',
-    icons: [
-      { src: '/app.ico', sizes: '16x16' }
-    ],
-    start_url: '/sign-in',
-    display: 'standalone',
-    orientation: 'portrait',
-    theme_color: '#ffffff',
-    background_color: '#ffffff',
-    browser_action: {
-      default_icon: '/app.ico',
-      default_popup: '/sign-in'
-    }
-  },
-  icons: {
-    sizes: [ 32, 57, 72, 144, 512 ]
-  },
-  workbox: {
-    // globDirectory: '.nuxt',
-    // globPatterns: [ '**/*.{js,vue,html}' ],
-    // swDest: 'static/sw.js'
+  pwa: {
+    manifest: {
+      name: 'TEAM',
+      lang: 'en',
+      description: '',
+      short_name: 'TEAM',
+      icons: [
+        { src: '/app.ico', sizes: '16x16' }
+      ],
+      start_url: '/',
+      display: 'standalone',
+      orientation: 'portrait',
+      theme_color: '#ffffff',
+      background_color: '#ffffff',
+      browser_action: {
+        default_icon: '/app.ico',
+        default_popup: '/'
+      }
+    },
+    icons: {
+      sizes: [ 32, 57, 72, 144, 512 ]
+    },
+    workbox: {
+      // globDirectory: '.nuxt',
+      // globPatterns: [ '**/*.{js,vue,html}' ],
+      // swDest: 'static/sw.js'
+    },
   },
   loading: { color: '#ee5151' },
   css: [
@@ -74,7 +76,6 @@ module.exports = {
     'bootstrap-vue/nuxt'
   ],
   auth: {
-    cookie: false,
     strategies: {
       local: {
         endpoints: {
@@ -93,9 +94,25 @@ module.exports = {
       { icons: ['fab'], set: '@fortawesome/free-brands-svg-icons' }
     ]
   },
+  buildModules: [
+    '@nuxtjs/pwa',
+    '@nuxtjs/eslint-module',
+    '@nuxtjs/stylelint-module'
+  ],
+  publicRuntimeConfig: {
+    axios: { browserBaseURL: process.env.BROWSER_BASE_URL }
+  },
+  axios: {
+    https: (process.env.NODE_ENV === 'production'),
+    baseURL: process.env.AXIOS_BASE_URL || 'https://team.touno.io/',
+    retry: { retries: 3 }
+  },
   bootstrapVue: { bootstrapCSS: false },
-  axios: { baseURL: process.env.AXIOS_BASE_URL || 'https://team.touno.io/' },
-  build: { quiet: false },
+  build: {
+    quiet: false,
+    babel: { compact: true },
+    parallel: !(process.env.NODE_ENV === 'production')
+  },
   dev: !(process.env.NODE_ENV === 'production'),
   localDB: !process.env.MONGODB_URI,
   jwt: process.env.JWT_SECRET || 'abcdefghijklmnopqrstuvwxyz'

@@ -113,7 +113,7 @@
   </div>
 </template>
 <script>
-import moment from 'moment'
+import dayjs from 'dayjs'
 
 import markdownBody from '../../../components/todo/markdown-body.vue'
 
@@ -140,8 +140,8 @@ export default {
   },
   methods: {
     getDuedate () {
-      let diff = !this.todo.duedate ? null : moment().diff(moment(this.todo.duedate), 'day')
-      return this.todo.duedate ? `${diff > 0 ? 'over deadline past' : 'deadline in'} ${moment(this.todo.duedate).fromNow(true)}` : ''
+      let diff = !this.todo.duedate ? null : dayjs().diff(dayjs(this.todo.duedate), 'day')
+      return this.todo.duedate ? `${diff > 0 ? 'over deadline past' : 'deadline in'} ${dayjs(this.todo.duedate).fromNow(true)}` : ''
     },
   }
 }

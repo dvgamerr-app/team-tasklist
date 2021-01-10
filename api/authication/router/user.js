@@ -40,6 +40,6 @@
 //     res.json({ user: result })
 //   }
 // }
-module.exports = async () => {
-  return { works: true }
+module.exports = async (request) => {
+  return { user: request.auth.credentials }
 }

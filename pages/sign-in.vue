@@ -68,7 +68,6 @@ export default {
       this.remember = signin.remember
     }
     if (this.$auth.loggedIn) this.$router.replace('/')
-    // if (process.client && window.localStorage.getItem('_token.local') !== 'false') this.$router.replace('/sign-in')
   },
   methods: {
     async onLogin () {
@@ -82,8 +81,11 @@ export default {
           headers: { Authorization: `Basic ${Buffer.from(`${this.username.trim()}:${hash}`).toString('base64')}` },
           data: { expired: !this.remember }
         })
+        console.log('$auth', this.$auth)
+
         if (!this.$auth.loggedIn) throw new Error('Username or Password worng.')
         this.submitted = false
+
 
         this.$auth.$storage.setLocalStorage('signin-remember', {
           username: this.username.trim(),

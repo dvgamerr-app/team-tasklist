@@ -32,8 +32,16 @@ const basicValidate = async (request, username, hash) => {
 }
 
 const jwtValidate = async (decoded) => {
-  console.log('jwtValidate', decoded)
-  return { isValid: true }
+  await project.open()
+  let { Account } = project.get()
+  const user = await Account.findOne({ _id: decoded.user.id })
+
+  delete user.pwd
+  delete user.enabled
+  delete user.line
+  delete user.facebook
+
+  return { isValid: true, credentials: user }
 }
 
 module.exports = async (server) => {

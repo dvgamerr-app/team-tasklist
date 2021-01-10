@@ -8,8 +8,7 @@ export default {
   data: () => ({
   }),
   async asyncData ({ query, redirect }) {
-    redirect(query.redirect || '/todo/task')
-    return {}
+    return redirect(query.redirect || '/todo/task')
   },
   created () {
     // if (process.client && window.localStorage.getItem('_token.local') !== 'false') this.$router.replace('/')
