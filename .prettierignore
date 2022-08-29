@@ -1,5 +1,13 @@
+###
+# Place your Prettier ignore content here
+
+###
+# .gitignore content is duplicated here due to https://github.com/prettier/prettier/issues/8506
+
+# Created by .ignore support plugin (hsz.mobi)
+### Node template
 # Logs
-logs
+/logs
 *.log
 npm-debug.log*
 yarn-debug.log*
@@ -20,7 +28,7 @@ coverage
 # nyc test coverage
 .nyc_output
 
-# Grunt intermediate storage (https://gruntjs.com/creating-plugins#storing-task-files)
+# Grunt intermediate storage (http://gruntjs.com/creating-plugins#storing-task-files)
 .grunt
 
 # Bower dependency directory (https://bower.io/)
@@ -65,7 +73,9 @@ typings/
 
 # nuxt.js build output
 .nuxt
-.build
+
+# Nuxt generate
+dist
 
 # vuepress build output
 .vuepress/dist
@@ -73,9 +83,14 @@ typings/
 # Serverless directories
 .serverless
 
-# FuseBox cache
-.fusebox/
+# IDE / Editor
+.idea
 
-package-lock.json
+# Service worker
+sw.*
 
-static
+# macOS
+.DS_Store
+
+# Vim swap files
+*.swp

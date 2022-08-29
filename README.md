@@ -10,13 +10,13 @@ Team Task-List to-do project.
 
 ![page-todo]
 
-[page-signin]: https://raw.githubusercontent.com/dvgamerr/web.team-tasklist/master/docs/page-signin.png "Sign In"
-[page-new-todo]: https://raw.githubusercontent.com/dvgamerr/web.team-tasklist/master/docs/page-new-todo.png "New Todo"
-[page-todo]: https://raw.githubusercontent.com/dvgamerr/web.team-tasklist/master/docs/page-todo.png "Todo List"
+[page-signin]: https://raw.githubusercontent.com/dvgamerr/web.team-tasklist/master/docs/page-signin.png 'Sign In'
+[page-new-todo]: https://raw.githubusercontent.com/dvgamerr/web.team-tasklist/master/docs/page-new-todo.png 'New Todo'
+[page-todo]: https://raw.githubusercontent.com/dvgamerr/web.team-tasklist/master/docs/page-todo.png 'Todo List'
 
 ## Build Setup
 
-``` bash
+```bash
 # install dependencies
 $ npm install
 
