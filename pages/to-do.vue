@@ -52,7 +52,7 @@
 </template>
 
 <script>
-import moment from 'moment'
+import dayjs from 'dayjs'
 export default {
   async asyncData({ redirect, params, $axios }) {
     const sKey = parseInt(params.id)
@@ -70,7 +70,7 @@ export default {
   }),
   computed: {
     getTaskDateTime() {
-      return moment(this.taskKey, 'YYYYMMDDHHmmssSSS').format(
+      return dayjs(this.taskKey, 'YYYYMMDDHHmmssSSS').format(
         'DD MMMM YYYY HH:mm:ss'
       )
     },
@@ -99,7 +99,7 @@ export default {
       }
     },
     parseDate(date) {
-      return moment(date).format('DD MMM YYYY HH:mm:ss')
+      return dayjs(date).format('DD MMM YYYY HH:mm:ss')
     },
     getLastVersion() {
       const nTask = []

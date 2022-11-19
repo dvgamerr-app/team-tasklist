@@ -90,3 +90,9 @@ sw.*
 *.swp
 
 .template
+assets/css/
+assets/fonts/
+
+*.log*
+.nitro
+.output

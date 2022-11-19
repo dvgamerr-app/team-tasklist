@@ -106,7 +106,7 @@
 </template>
 
 <script>
-import moment from 'moment'
+import dayjs from 'dayjs'
 
 export default {
   asyncData() {
@@ -119,11 +119,11 @@ export default {
   methods: {
     toTime(datetime, i) {
       return i > 0
-        ? moment(datetime).format('[at] HH:mm')
-        : moment(datetime).fromNow()
+        ? dayjs(datetime).format('[at] HH:mm')
+        : dayjs(datetime).fromNow()
     },
     parseDays(day) {
-      return moment(day).calendar(null, {
+      return dayjs(day).calendar(null, {
         sameDay: '[Today]',
         nextDay: '[Tomorrow]',
         nextWeek: 'dddd',
@@ -134,12 +134,12 @@ export default {
     },
     filterHistory(day) {
       return this.history
-        .filter((e) => day === moment(e.dCreated).format('YYYY-MM-DD'))
+        .filter((e) => day === dayjs(e.dCreated).format('YYYY-MM-DD'))
         .sort(() => 1)
     },
     getGroupHistory() {
       const group = this.history.map((e) =>
-        moment(e.dCreated).format('YYYY-MM-DD')
+        dayjs(e.dCreated).format('YYYY-MM-DD')
       )
       return [...new Set(group)].sort(() => 1)
     },
