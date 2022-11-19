@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/no-v-html -->
 <template>
   <div class="markdown-body" v-html="body" />
 </template>
@@ -8,26 +9,31 @@ export default {
   props: {
     content: {
       type: String,
-      default: () => ''
-    }
+      default: () => '',
+    },
   },
-  data () {
+  data() {
     return {
-      body: ''
+      body: '',
     }
   },
-  mounted () {
-    let md = new MarkdownIt({
+  mounted() {
+    const md = new MarkdownIt({
       html: true,
       linkify: true,
       typographer: true,
       breaks: true,
       quotes: '“”‘’',
       langPrefix: 'language-',
-      highlight: (str, lang) => '<pre class="hljs" data-lang="' + lang + '"><code>' + md.utils.escapeHtml(str) + '</code></pre>'
+      highlight: (str, lang) =>
+        '<pre class="hljs" data-lang="' +
+        lang +
+        '"><code>' +
+        md.utils.escapeHtml(str) +
+        '</code></pre>',
     })
     this.body = md.render(this.content)
-  }
+  },
 }
 </script>
 

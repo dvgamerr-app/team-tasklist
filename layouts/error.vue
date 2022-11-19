@@ -9,11 +9,11 @@ export default {
     error: {
       type: Object,
       default: () => {},
-    }
+    },
   },
-  mounted () {
+  mounted() {
     // this.$router.replace('/')
-  }
+  },
 }
 </script>
 
@@ -30,7 +30,9 @@ export default {
       margin-top: -2px;
       border-radius: 0 0 2px 2px;
     }
-    &:hover, &:focus, &:active {
+    &:hover,
+    &:focus,
+    &:active {
       box-shadow: none;
     }
   }

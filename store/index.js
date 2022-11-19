@@ -1,5 +1,5 @@
 export const state = () => ({
-  loading: false
+  loading: false,
 })
 
 // export const mutations = {

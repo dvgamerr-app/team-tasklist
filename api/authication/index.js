@@ -12,48 +12,48 @@
 // // Export the server middleware
 // module.exports = router
 
-const bcrypt = require('bcrypt')
-const { project } = require('@touno-io/db/schema')
-const config = require('../../nuxt.config')
+// const bcrypt = require('bcrypt')
+// const { project } = require('@touno-io/db/schema')
+// const config = require('../../nuxt.config')
 
-const basicValidate = async (request, username, hash) => {
-  await project.open()
-  let { Account } = project.get()
-  const credentials = await Account.findOne({ $or: [ { username: username }, { email: username } ], enabled: true })
-  if (!credentials) return { isValid: false, credentials: {} }
+// const basicValidate = async (request, username, hash) => {
+//   await project.open()
+//   const { Account } = project.get()
+//   const credentials = await Account.findOne({ $or: [ { username }, { email: username } ], enabled: true })
+//   if (!credentials) return { isValid: false, credentials: {} }
 
-  const isValid = await bcrypt.compare(Buffer.from(credentials.pwd, 'base64').toString('utf-8'), hash)
+//   const isValid = await bcrypt.compare(Buffer.from(credentials.pwd, 'base64').toString('utf-8'), hash)
 
-  delete credentials.pwd
-  delete credentials.enabled
-  delete credentials.line
-  delete credentials.facebook
-  return { isValid, credentials }
-}
+//   delete credentials.pwd
+//   delete credentials.enabled
+//   delete credentials.line
+//   delete credentials.facebook
+//   return { isValid, credentials }
+// }
 
-const jwtValidate = async (decoded) => {
-  await project.open()
-  let { Account } = project.get()
-  const user = await Account.findOne({ _id: decoded.user.id })
+// const jwtValidate = async (decoded) => {
+//   await project.open()
+//   const { Account } = project.get()
+//   const user = await Account.findOne({ _id: decoded.user.id })
 
-  delete user.pwd
-  delete user.enabled
-  delete user.line
-  delete user.facebook
+//   delete user.pwd
+//   delete user.enabled
+//   delete user.line
+//   delete user.facebook
 
-  return { isValid: true, credentials: user }
-}
+//   return { isValid: true, credentials: user }
+// }
 
-module.exports = async (server) => {
-  await server.register(require('@hapi/basic'))
-  await server.register(require('hapi-auth-jwt2'))
+// module.exports = async (server) => {
+//   await server.register(require('@hapi/basic'))
+//   await server.register(require('hapi-auth-jwt2'))
 
-  server.auth.strategy('basic', 'basic', {
-    validate: basicValidate
-  })
-  server.auth.strategy('jwt', 'jwt', {
-    key: Buffer.from(config.jwt).toString('base64'),
-    validate: jwtValidate
-  })
-  server.auth.default('jwt')
-}
+//   server.auth.strategy('basic', 'basic', {
+//     validate: basicValidate
+//   })
+//   server.auth.strategy('jwt', 'jwt', {
+//     key: Buffer.from(config.jwt).toString('base64'),
+//     validate: jwtValidate
+//   })
+//   server.auth.default('jwt')
+// }

@@ -7,9 +7,9 @@
       <b-navbar-brand to="/">
         <fa icon="calendar-check" /> <b>TEAM</b> <small>TOUNO.io</small>
       </b-navbar-brand>
-      <b-navbar-nav v-if="$auth.loggedIn" class="ml-auto ">
+      <b-navbar-nav v-if="$auth.loggedIn" class="ml-auto">
         <b-nav-item-dropdown class="nav-menu" size="sm" no-caret right>
-          <template slot="button-content" lang="html">
+          <template slot="button-content">
             <fa icon="bars" />
           </template>
           <b-dropdown-item to="/todo/new">New Todo</b-dropdown-item>
@@ -17,10 +17,16 @@
           <b-dropdown-item to="/todo/task">Tasks</b-dropdown-item>
           <b-dropdown-item to="/todo/project">Project</b-dropdown-item>
           <b-dropdown-divider />
-          <b-dropdown-item to="/setting" exact><fa icon="cog" /> Setting</b-dropdown-item>
-          <b-dropdown-item to="/setting/profile"><fa icon="user" /> Profile</b-dropdown-item>
+          <b-dropdown-item to="/setting" exact
+            ><fa icon="cog" /> Setting</b-dropdown-item
+          >
+          <b-dropdown-item to="/setting/profile"
+            ><fa icon="user" /> Profile</b-dropdown-item
+          >
           <b-dropdown-divider />
-          <b-dropdown-item @click.prevent="onSignOut"><fa icon="sign-out-alt" /> Logout</b-dropdown-item>
+          <b-dropdown-item @click.prevent="onSignOut"
+            ><fa icon="sign-out-alt" /> Logout</b-dropdown-item
+          >
         </b-nav-item-dropdown>
       </b-navbar-nav>
     </b-container>
@@ -29,15 +35,15 @@
 <script>
 export default {
   data: () => ({
-    fullscreen: false
+    fullscreen: false,
   }),
   methods: {
-    async onSignOut () {
-      this.fullscreen = true;
+    async onSignOut() {
+      this.fullscreen = true
       await this.$auth.logout()
-      this.fullscreen = false;
-    }
-  }
+      this.fullscreen = false
+    },
+  },
 }
 </script>
 
@@ -50,22 +56,22 @@ export default {
     small {
       color: #3f3f3f;
       font-weight: bold;
-      font-size: .9rem;
+      font-size: 0.9rem;
     }
     .svg-inline--fa {
       color: #ee5151;
       margin-top: 3px;
       vertical-align: top;
-      font-size:1.4rem;
+      font-size: 1.4rem;
     }
   }
   .item-todo > a {
-    padding: 0.25rem .5rem 0.25rem 1.5rem
+    padding: 0.25rem 0.5rem 0.25rem 1.5rem;
   }
-  .dropdown-item, .nav-item {
+  .dropdown-item,
+  .nav-item {
     font-size: 0.85rem;
     cursor: pointer;
   }
 }
-
 </style>

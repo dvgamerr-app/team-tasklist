@@ -14,11 +14,7 @@ import navFooter from '~/components/nav-footer.vue'
 export default {
   components: {
     navigation,
-    navFooter
-  }
+    navFooter,
+  },
 }
 </script>
-
-<style>
-
-</style>

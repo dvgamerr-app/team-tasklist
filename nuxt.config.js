@@ -41,9 +41,9 @@ export default {
     '@nuxt/typescript-build',
     '@nuxtjs/stylelint-module',
   ],
-  modules: ['@nuxtjs/axios', '@nuxtjs/pwa'],
+  modules: ['@nuxtjs/axios', '@nuxtjs/pwa', '@nuxtjs/auth-next'],
   plugins: [
-    './plugins/vue-fontawesome.js',
+    // './plugins/vue-fontawesome.js',
     // './plugins/vue-toast.js',
     // './plugins/vue-tabindex.js',
     // './plugins/vue-multiselect.js',
@@ -51,10 +51,12 @@ export default {
     // { src: './plugins/vue-codemirror.js', ssr: false }
   ],
   googleFonts: {
-    prefetch: true,
-    display: 'swap',
+    prefetch: false,
     families: {
       'Open Sans': [400, 500, 700],
+      Roboto: [400, 700],
+      Poppins: [400, 700],
+      Mulish: [400, 700],
     },
   },
   axios: {

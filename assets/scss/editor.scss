@@ -1,22 +1,22 @@
-
-.v-md-container, .v-md-preview {
+.v-md-container,
+.v-md-preview {
   padding: 0 15px 15px 15px;
 }
 
 .v-md-container > .v-md-toolbar {
   padding: 8px 5px;
-  border-bottom:  solid 1px #ddd;
+  border-bottom: solid 1px #ddd;
 }
 
 .v-md-wrapper {
-  position: relative;   
+  position: relative;
 }
 
 .v-md-container {
   button {
     padding: 1px 6px;
   }
-  .svg-inline--fa  {
+  .svg-inline--fa {
     font-size: 1rem;
   }
 }

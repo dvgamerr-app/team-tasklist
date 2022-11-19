@@ -4,7 +4,7 @@
       <div class="col-sm-36 title">
         <h3 class="mb-0">To-Do: {{ todo.title }}</h3>
         <small>{{ getDuedate() }} assign Kananek T.</small>
-        <hr>
+        <hr />
       </div>
     </div>
     <form>
@@ -12,7 +12,7 @@
         <div class="col-sm-36">
           <div class="d-flex flex-wrap flex-md-nowrap">
             <div class="v-md-thumbnail mr-3 d-none d-md-block">
-              <img :src="gravatar" class="v-md-avatar">
+              <img :src="gravatar" class="v-md-avatar" />
             </div>
             <b-card class="arrow">
               <h6 slot="header" class="mb-0">Header Slot</h6>
@@ -23,7 +23,7 @@
             </b-card>
           </div>
         </div>
-      
+
         <!-- <todo-dropdown v-if="!todo.private" label="Assign" :toggle-icon.sync="edit.assign" label-default="assign myself" :on-click="onToggle('assign')">
           <vue-multiselect
             id="assign" ref="assign" v-model="todo.assign" :options="opt.assign" :taggable="false"
@@ -62,7 +62,6 @@
           </div>
         </todo-dropdown> -->
 
-
         <!-- <b-form-group label-cols-sm="6" label="Assignees" label-align-sm="right" label-for="project">
           <vue-multiselect
             id="project" v-model="todo.project" :options="opt.project" :taggable="true"
@@ -77,17 +76,17 @@
             input-class="form-control" placeholder="Due Date" @selected="onDueDateChange"
           >
             <span slot="afterDateInput" class="placeholder-icon">
-              <fa icon="calendar-alt" />  
+              <fa icon="calendar-alt" />
             </span>
           </vue-datepicker>
         </b-form-group>
         <b-form-group class="d-flex d-md-none" label-cols-sm="6" label="Due:" label-align-sm="right" label-for="duemobile">
-          <vue-datemobile 
+          <vue-datemobile
             id="duemobile" ref="datemobile" v-model="todo.duedate" format="dd MMMM yyyy"
             input-class="form-control" placeholder="Due Date"
           >
             <span slot="after" class="placeholder-icon">
-              <fa icon="calendar-alt" />  
+              <fa icon="calendar-alt" />
             </span>
           </vue-datemobile>
         </b-form-group>
@@ -104,7 +103,7 @@
         <b-form-group label-cols-sm="6" label="Priority:" label-align-sm="right" class="mb-0" label-for="priority">
           <b-form-radio-group id="priority" v-model="todo.priority" class="pt-2" :options="optPriority" />
         </b-form-group> -->
-        
+
         <!-- <b-form-group label-cols-sm="6" label="Status:" label-align-sm="right" class="mb-0" label-for="status">
           <b-form-radio-group id="status" v-model="todo.status" class="pt-2" :options="optStatus" />
         </b-form-group> -->
@@ -118,32 +117,37 @@ import dayjs from 'dayjs'
 import markdownBody from '../../../components/todo/markdown-body.vue'
 
 export default {
-  head: {
-    title: 'Todo'
-  },
   components: {
-    markdownBody
+    markdownBody,
   },
-  data: () => ({
-    todo: {
-    }
-  }),
-  computed: {
-    gravatar () {
-      return `//www.gravatar.com/avatar/${this.todo.gravatar}?d=retro&size=64`
-    }
-  },
-  async asyncData ({ $axios, params }) {
-    let { data } = await $axios.get('/api/todo/' + params.id)
-    console.log('asyncData', data)
+  async asyncData({ $axios, params }) {
+    const { data } = await $axios.get('/api/todo/' + params.id)
+    // console.log('asyncData', data)
     return { todo: data }
   },
-  methods: {
-    getDuedate () {
-      let diff = !this.todo.duedate ? null : dayjs().diff(dayjs(this.todo.duedate), 'day')
-      return this.todo.duedate ? `${diff > 0 ? 'over deadline past' : 'deadline in'} ${dayjs(this.todo.duedate).fromNow(true)}` : ''
+  data: () => ({
+    todo: {},
+  }),
+  head: {
+    title: 'Todo',
+  },
+  computed: {
+    gravatar() {
+      return `//www.gravatar.com/avatar/${this.todo.gravatar}?d=retro&size=64`
     },
-  }
+  },
+  methods: {
+    getDuedate() {
+      const diff = !this.todo.duedate
+        ? null
+        : dayjs().diff(dayjs(this.todo.duedate), 'day')
+      return this.todo.duedate
+        ? `${diff > 0 ? 'over deadline past' : 'deadline in'} ${dayjs(
+            this.todo.duedate
+          ).fromNow(true)}`
+        : ''
+    },
+  },
 }
 </script>
 <style lang="scss">
@@ -160,11 +164,12 @@ export default {
   .card {
     width: 80%;
   }
-  .arrow:after, .arrow:before {
+  .arrow:after,
+  .arrow:before {
     right: 100%;
     top: 25px;
     border: solid transparent;
-    content: " ";
+    content: ' ';
     height: 0;
     width: 0;
     position: absolute;
@@ -183,12 +188,10 @@ export default {
     margin-top: -11px;
   }
 
-  @media screen and (max-width: 768px){
+  @media screen and (max-width: 768px) {
     .card {
       width: 100%;
     }
   }
-
 }
 </style>
-

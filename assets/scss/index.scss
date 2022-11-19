@@ -1,23 +1,22 @@
-$grid-columns:                36;
-$border-radius:               .0rem;
-$border-radius-lg:            .0rem;
-$border-radius-sm:            .0rem;
+$grid-columns: 36;
+$border-radius: 0rem;
+$border-radius-lg: 0rem;
+$border-radius-sm: 0rem;
 
-$primary:       #4a8cd2;
+$primary: #4a8cd2;
 // $secondary:     $gray-600 !default;
-$success:       #41b883;
+$success: #41b883;
 // $info:          $cyan !default;
 // $warning:       $yellow !default;
 // $danger:        $red !default;
 // $light:         $gray-100 !default;
 // $dark:          $gray-800 !default;
 
-
 // $font-size-base:              .78rem;
-// 
+//
 @import 'bootstrap/scss/bootstrap.scss';
 @import 'bootstrap-vue/dist/bootstrap-vue.css';
-@import 'vue-toast-notification/dist/theme-default.css';
+// @import 'vue-toast-notification/dist/theme-default.css';
 
 @import './toast.scss';
 @import './component.scss';
@@ -27,17 +26,17 @@ $success:       #41b883;
   min-height: calc(100vh - 6.666rem);
 }
 .markdown-body {
-  font-size: .85rem !important;
+  font-size: 0.85rem !important;
 }
 
-.navbar-nav  {
+.navbar-nav {
   .nav-menu {
     font-size: 1.4rem !important;
   }
   .dropdown-menu {
     .dropdown-item {
       font-size: 0.75rem;
-      padding: 0.15rem .8rem;
+      padding: 0.15rem 0.8rem;
     }
     .dropdown-divider {
       margin: 0.1rem 0;
@@ -45,16 +44,16 @@ $success:       #41b883;
   }
   .b-nav-dropdown.active {
     a:after {
-      color: #FFF;
+      color: #fff;
     }
     text-decoration: none;
     background-color: #4a8cd2;
   }
   .dropdown-menu-right {
     right: 5px;
-    -webkit-box-shadow: 3px 3px 6px -6px rgba(0,0,0,1);
-    -moz-box-shadow: 3px 3px 6px -6px rgba(0,0,0,1);
-    box-shadow: 3px 3px 6px -6px rgba(0,0,0,1);
+    -webkit-box-shadow: 3px 3px 6px -6px rgba(0, 0, 0, 1);
+    -moz-box-shadow: 3px 3px 6px -6px rgba(0, 0, 0, 1);
+    box-shadow: 3px 3px 6px -6px rgba(0, 0, 0, 1);
   }
 }
 
@@ -101,9 +100,9 @@ pre {
   font-weight: bold !important;
 }
 
-.main-head{
+.main-head {
   height: 150px;
-  background: #FFF;
+  background: #fff;
 }
 
 .sidenav {
@@ -128,55 +127,55 @@ textarea.reason {
 }
 
 @media screen and (max-height: 450px) {
-  .sidenav {padding-top: 15px;}
+  .sidenav {
+    padding-top: 15px;
+  }
 }
 
 @media screen and (max-width: 450px) {
-  .register-form{
+  .register-form {
     margin-top: 10%;
   }
 
   textarea.reason {
     width: 290px;
   }
-
 }
 
 @media screen and (min-width: 450px) {
   textarea.reason {
     width: 380px;
   }
-
 }
 
-@media screen and (min-width: 768px){
+@media screen and (min-width: 768px) {
   .main {
-    margin-left: 40%; 
+    margin-left: 40%;
   }
 
   textarea.reason {
     width: 600px;
   }
 
-  .sidenav{
+  .sidenav {
     width: 40%;
     position: fixed;
     z-index: 1;
     top: 0;
     left: 0;
   }
-  .register-form{
+  .register-form {
     margin-top: 20%;
   }
 }
 
-.login-main-text{
+.login-main-text {
   margin-top: 20%;
   padding: 60px;
   color: #fff;
 }
 
-.login-main-text h2{
+.login-main-text h2 {
   font-weight: 300;
 }
 
@@ -196,8 +195,8 @@ textarea.reason {
   font-size: 1rem;
 }
 .btn-xs {
-  padding: .05rem .25rem;
-  font-size: .9rem;
+  padding: 0.05rem 0.25rem;
+  font-size: 0.9rem;
 }
 .markdown-guide:hover {
   text-decoration: none !important;

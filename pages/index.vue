@@ -1,25 +1,19 @@
 <template lang="html">
   <div />
-</template> 
+</template>
 
 <script>
 export default {
   name: 'Dashboard',
-  data: () => ({
-  }),
-  async asyncData ({ query, redirect }) {
+  asyncData({ query, redirect }) {
     return redirect(query.redirect || '/todo/task')
   },
-  created () {
+  data: () => ({}),
+  created() {
     // if (process.client && window.localStorage.getItem('_token.local') !== 'false') this.$router.replace('/')
   },
   methods: {
-    onLogin () {
-    }
-  }
+    onLogin() {},
+  },
 }
 </script>
-
-<style>
-
-</style>
