@@ -29,7 +29,7 @@
     "nuxt": "^3.0.0",
     "primeflex": "^3.2.1",
     "primeicons": "^6.0.1",
-    "primevue": "^3.20.0"
+    "primevue": "^3.21.0"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.19.1",
